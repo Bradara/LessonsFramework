@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Стек и Опашка — Интерактивен урок</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-image: linear-gradient(135deg, rgba(18, 13, 56, 0.85), rgba(32, 16, 84, 0.85)),
+        url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1600&q=80');
+      background-size: cover;
+      background-attachment: fixed;
+      color: #e5e7eb;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+    }
+    .neon-border {
+      box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.25), 0 8px 30px rgba(99, 102, 241, 0.35);
+    }
+  </style>
+  
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.2.0",
+      "react-dom/client": "https://esm.sh/react-dom@18.2.0/client?deps=react@18.2.0",
+      "framer-motion": "https://esm.sh/framer-motion@10.16.16?deps=react@18.2.0,react-dom@18.2.0",
+      "lucide-react": "https://esm.sh/lucide-react@0.292.0?deps=react@18.2.0"
+    }
+  }
+  </script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="min-h-screen text-slate-100">
+  <div id="app" class="max-w-6xl mx-auto px-4 py-8"></div>
+
+  <script type="text/babel" data-type="module">
+    import React, { useState, useEffect, useMemo } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { motion, AnimatePresence } from 'framer-motion';
+    import {
+      BookOpen, FlaskConical, Gamepad2, HelpCircle, Sparkle,
+      Box, ArrowRightFromLine, Table2, Cpu 
+    } from 'lucide-react';
+
+    const LucideIcons = { BookOpen, FlaskConical, Gamepad2, HelpCircle, Sparkle, Box, ArrowRightFromLine, Table2, Cpu };
+
+    const tabs = [
+      { id: 'learn', label: 'Научи', icon: LucideIcons.BookOpen },
+      { id: 'demo', label: 'Демо', icon: LucideIcons.FlaskConical },
+      { id: 'game', label: 'Игра', icon: LucideIcons.Gamepad2 },
+      { id: 'quiz', label: 'Куиз', icon: LucideIcons.HelpCircle },
+      { id: 'summary', label: 'Обобщение', icon: LucideIcons.Sparkle },
+    ];
+
+    const slides = [
+      {
+        title: 'Въведение в АТД',
+        desc: 'Абстрактният тип данни описва какво правим, не как го реализираме. Интерфейс + операции + свойства.',
+        bullets: [
+          'АТД дефинира поведение, независимо от конкретната структура.',
+          'Цел: ясни контракти и сменяеми реализации.',
+          'Пример: Стек и Опашка имат различни правила за достъп.'
+        ],
+      },
+      {
+        title: 'Опашка (Queue) — FIFO',
+        desc: 'Първи влязъл → първи излязъл. Подходяща за задачи по ред, процеси, печатни опашки.',
+        bullets: [
+          'Enqueue / Push: добавя в края.',
+          'Dequeue / Pop: взема от началото.',
+          'Look / Peek: поглежда първия без да го премахва.'
+        ],
+      },
+      {
+        title: 'Стек (Stack) — LIFO',
+        desc: 'Последен влязъл → първи излязъл. Използва се за Undo, рекурсия, навигация назад.',
+        bullets: [
+          'Push: добавя на върха.',
+          'Pop: премахва от върха.',
+          'Look / Peek: виж върха без да го маха.'
+        ],
+      },
+      {
+        title: 'Реализация в C#',
+        desc: 'Статичен масив vs. динамични структури. В .NET имаме готови класове.',
+        bullets: [
+          'Статична реализация: масив + индекси → лимитирана дължина.',
+          'Dynamic: Queue<T> и Stack<T> автоматично растат (динамичен масив + internal buffer).',
+          'Операции O(1) амортизирано; избягвайте foreach по време на модификация.'
+        ],
+      },
+      {
+        title: 'Системен стек vs. Heap',
+        desc: 'Стек: кадри на функции, параметри, локални променливи. Heap: обекти с динамичен живот, управлявани от GC.',
+        bullets: [
+          'Рекурсия добавя нови стек кадри; дълбока рекурсия → StackOverflowException.',
+          'Heap обектите живеят, докато имат референции; GC освобождава.',
+          'Value types често са на стека; reference types – в heap, референцията е на стека.'
+        ],
+      },
+    ];
+
+    const quizQuestions = [
+      {
+        q: 'Кое правило описва опашката?',
+        options: ['LIFO', 'FIFO', 'DFS', 'LILO'],
+        answer: 'FIFO',
+      },
+      {
+        q: 'Как се казва операцията за вземане на елемент от началото на опашка?',
+        options: ['Push', 'Enqueue', 'Pop', 'Dequeue'],
+        answer: 'Dequeue',
+      },
+      {
+        q: 'Какво връща Stack<T>.Peek() в C#?',
+        options: ['Изтрива върха', 'Връща върха без изтриване', 'Добавя елемент', 'Нулира стека'],
+        answer: 'Връща върха без изтриване',
+      },
+      {
+        q: 'Какво става при прекалено дълбока рекурсия?',
+        options: ['GC се рестартира', 'StackOverflowException', 'OutOfMemoryException', 'Нищо, продължава'],
+        answer: 'StackOverflowException',
+      },
+      {
+        q: 'Как GC решава кои обекти да освободи?',
+        options: ['По ред на създаване', 'Без критерий', 'Без референции → за събиране', 'Ръчно маркиране'],
+        answer: 'Без референции → за събиране',
+      },
+      {
+        q: 'Каква е сложността на Push/Pop за стек при масивна реализация?',
+        options: ['O(n)', 'O(log n)', 'O(1)', 'O(n^2)'],
+        answer: 'O(1)',
+      },
+      {
+        q: 'Кой метод добавя елемент в Queue<T>?',
+        options: ['Push', 'Add', 'Enqueue', 'InsertFront'],
+        answer: 'Enqueue',
+      },
+      {
+        q: 'Кой метод премахва върха на Stack<T>?',
+        options: ['Peek', 'Pop', 'Shift', 'Drop'],
+        answer: 'Pop',
+      },
+      {
+        q: 'Undo функционалността най-често използва…',
+        options: ['Опашка', 'Граф', 'Стек', 'HashSet'],
+        answer: 'Стек',
+      },
+      {
+        q: 'Печатната опашка в ОС е пример за…',
+        options: ['LIFO', 'FIFO', 'BFS', 'DFS'],
+        answer: 'FIFO',
+      },
+    ];
+
+    const bracketSamples = [
+      { text: '{{[]}}', valid: true },
+      { text: '{[}]', valid: false },
+      { text: '()[{}]', valid: true },
+      { text: '((]', valid: false },
+      { text: '[{()}]()', valid: true },
+      { text: '([)]', valid: false },
+      { text: '{[()]}', valid: true },
+      { text: ']{[()]}', valid: false },
+      { text: '(()(()))', valid: true },
+      { text: '((())', valid: false },
+    ];
+
+    const SectionCard = ({ children }) => (
+      <div className="glass neon-border rounded-2xl p-6 text-slate-100 shadow-xl">
+        {children}
+      </div>
+    );
+
+    const Badge = ({ children }) => (
+      <span className="text-xs uppercase tracking-wide px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-200 border border-cyan-400/30">
+        {children}
+      </span>
+    );
+
+    const SlideDeck = () => {
+      const [current, setCurrent] = useState(0);
+
+      const nextSlide = () => setCurrent((p) => (p + 1) % slides.length);
+      const prevSlide = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
+
+      return (
+        <div className="relative w-full max-w-3xl mx-auto">
+          <div className="overflow-hidden relative min-h-[300px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+                className="glass rounded-xl p-8 border border-white/10 w-full"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <Badge>Слайд {current + 1} / {slides.length}</Badge>
+                  <span className="text-sm text-cyan-200/80">АТД</span>
+                </div>
+                
+                <h3 className="text-2xl font-bold text-white mb-4">{slides[current].title}</h3>
+                <p className="text-lg text-slate-200/90 mb-6 leading-relaxed">
+                  {slides[current].desc}
+                </p>
+                
+                <ul className="space-y-3 text-slate-100/90 list-disc list-inside bg-white/5 p-4 rounded-lg">
+                  {slides[current].bullets.map((b) => (
+                    <li key={b} className="leading-snug">{b}</li>
+                  ))}
+                </ul>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <div className="flex justify-between items-center mt-6">
+            <button
+              onClick={prevSlide}
+              className="glass px-4 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-2 text-cyan-200"
+            >
+              ← Предишен
+            </button>
+            <div className="flex gap-2">
+              {slides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrent(idx)}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    idx === current ? 'bg-cyan-400 scale-125' : 'bg-white/20 hover:bg-white/40'
+                  }`}
+                />
+              ))}
+            </div>
+            <button
+              onClick={nextSlide}
+              className="glass px-4 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-2 text-cyan-200"
+            >
+              Следващ →
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    const Demo = () => {
+      const [stack, setStack] = useState(['C', 'B', 'A']);
+      const [queue, setQueue] = useState(['1', '2', '3']);
+      const [input, setInput] = useState('');
+
+      const pushStack = () => {
+        if (!input.trim()) return;
+        setStack((s) => [input.trim(), ...s]);
+        setInput('');
+      };
+      const popStack = () => setStack((s) => (s.length ? s.slice(1) : s));
+
+      const enqueue = () => {
+        if (!input.trim()) return;
+        setQueue((q) => [...q, input.trim()]);
+        setInput('');
+      };
+      const dequeue = () => setQueue((q) => (q.length ? q.slice(1) : q));
+
+      return (
+        <div className="grid md:grid-cols-2 gap-6">
+          <SectionCard>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <Badge>Стек</Badge>
+                <h3 className="text-2xl font-semibold mt-2">LIFO</h3>
+              </div>
+              <LucideIcons.Box className="w-6 h-6 text-cyan-300" />
+            </div>
+            <div className="flex items-end space-x-2 h-56">
+              <AnimatePresence>
+                {stack.map((item, idx) => (
+                  <motion.div
+                    key={item + idx}
+                    initial={{ y: 40, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -40, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 120 }}
+                    className="bg-gradient-to-br from-cyan-500/70 to-indigo-500/70 text-white px-4 py-3 rounded-xl shadow-lg border border-white/10"
+                    style={{ minWidth: '64px' }}
+                  >
+                    {item}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={pushStack} className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold py-2 rounded-lg transition">
+                Push
+              </button>
+              <button onClick={popStack} className="bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 rounded-lg transition">
+                Pop
+              </button>
+            </div>
+          </SectionCard>
+
+          <SectionCard>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <Badge>Опашка</Badge>
+                <h3 className="text-2xl font-semibold mt-2">FIFO</h3>
+              </div>
+              <LucideIcons.ArrowRightFromLine className="w-6 h-6 text-cyan-300" />
+            </div>
+            <div className="flex items-center space-x-2 overflow-x-auto h-56">
+              <AnimatePresence>
+                {queue.map((item, idx) => (
+                  <motion.div
+                    key={item + idx}
+                    initial={{ x: -30, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 30, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 120 }}
+                    className="bg-gradient-to-br from-emerald-400/70 to-cyan-500/70 text-slate-900 font-semibold px-4 py-3 rounded-xl shadow-lg border border-white/10"
+                  >
+                    {item}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={enqueue} className="bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-semibold py-2 rounded-lg transition">
+                Enqueue
+              </button>
+              <button onClick={dequeue} className="bg-fuchsia-500 hover:bg-fuchsia-400 text-white font-semibold py-2 rounded-lg transition">
+                Dequeue
+              </button>
+            </div>
+          </SectionCard>
+
+          <SectionCard className="md:col-span-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex-1">
+                <label className="text-sm text-slate-200">Елемент за добавяне</label>
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') pushStack();
+                  }}
+                  placeholder="напр. X или 42"
+                  className="w-full mt-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+              <div className="text-sm text-slate-200/90 space-y-1">
+                <p>Стек: работим само с върха (дясно/горе).</p>
+                <p>Опашка: добавяме в края, вземаме от началото.</p>
+              </div>
+            </div>
+          </SectionCard>
+        </div>
+      );
+    };
+
+    const BracketGame = () => {
+      const [current, setCurrent] = useState(bracketSamples[0]);
+      const [score, setScore] = useState(0);
+      const [timeLeft, setTimeLeft] = useState(45);
+      const [isRunning, setIsRunning] = useState(false);
+      const [history, setHistory] = useState([]);
+
+      useEffect(() => {
+        if (!isRunning) return;
+        if (timeLeft <= 0) {
+          setIsRunning(false);
+          return;
+        }
+        const t = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
+        return () => clearTimeout(t);
+      }, [isRunning, timeLeft]);
+
+      const nextSample = () => {
+        const pick = bracketSamples[Math.floor(Math.random() * bracketSamples.length)];
+        setCurrent(pick);
+      };
+
+      const start = () => {
+        setScore(0);
+        setHistory([]);
+        setTimeLeft(45);
+        setIsRunning(true);
+        nextSample();
+      };
+
+      const answer = (val) => {
+        if (!isRunning || timeLeft <= 0) return;
+        const correct = current.valid === val;
+        setScore((s) => s + (correct ? 10 : -5));
+        setHistory((h) => [
+          { text: current.text, result: correct ? 'Вярно' : 'Грешно' },
+          ...h.slice(0, 4),
+        ]);
+        nextSample();
+      };
+
+      return (
+        <SectionCard>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <Badge>Игра</Badge>
+              <h3 className="text-2xl font-semibold mt-2">Скобов майстор</h3>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="px-3 py-1 rounded-full bg-white/10 border border-white/20">Скор: {score}</span>
+              <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-100 border border-cyan-400/30">Време: {timeLeft}s</span>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <motion.div
+              key={current.text + timeLeft}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-4xl font-bold tracking-widest px-6 py-4 rounded-2xl bg-gradient-to-r from-indigo-500/40 to-cyan-500/40 border border-white/10"
+            >
+              {current.text}
+            </motion.div>
+            <div className="flex gap-3">
+              <button onClick={() => answer(true)} className="bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-semibold px-4 py-2 rounded-lg transition">
+                Правилно
+              </button>
+              <button onClick={() => answer(false)} className="bg-rose-500 hover:bg-rose-400 text-white font-semibold px-4 py-2 rounded-lg transition">
+                Неправилно
+              </button>
+              <button onClick={start} className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold px-4 py-2 rounded-lg transition">
+                Старт / Рестарт
+              </button>
+            </div>
+          </div>
+          <div className="mt-4 text-sm text-slate-200/90">
+            <p>Цел: за 45 секунди натрупай максимален скор. +10 за вярно, -5 за грешно.</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {history.map((h, idx) => (
+                <span key={idx} className={`px-3 py-1 rounded-full text-xs border ${h.result === 'Вярно' ? 'bg-emerald-400/20 border-emerald-300/40' : 'bg-rose-500/20 border-rose-400/40'}`}>
+                  {h.text} → {h.result}
+                </span>
+              ))}
+            </div>
+          </div>
+        </SectionCard>
+      );
+    };
+
+    const Quiz = () => {
+      const [answers, setAnswers] = useState({});
+      const score = useMemo(() =>
+        quizQuestions.reduce((acc, q, idx) => acc + (answers[idx] === q.answer ? 1 : 0), 0),
+        [answers]
+      );
+
+      return (
+        <SectionCard>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <Badge>Куиз</Badge>
+              <h3 className="text-2xl font-semibold mt-2">10 въпроса</h3>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-sm">Резултат: {score} / 10</span>
+          </div>
+          <div className="space-y-4 max-h-[540px] overflow-y-auto pr-2">
+            {quizQuestions.map((q, idx) => (
+              <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <p className="font-semibold text-white mb-2">{idx + 1}. {q.q}</p>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {q.options.map((opt) => {
+                    const isSelected = answers[idx] === opt;
+                    const isCorrect = q.answer === opt;
+                    const stateClass = isSelected
+                      ? isCorrect
+                        ? 'border-emerald-300/60 bg-emerald-400/20 text-emerald-50'
+                        : 'border-rose-300/60 bg-rose-400/20 text-rose-50'
+                      : 'border-white/10 hover:border-cyan-300/50 hover:bg-cyan-500/10';
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => setAnswers((a) => ({ ...a, [idx]: opt }))}
+                        className={`text-left px-3 py-2 rounded-lg border transition ${stateClass}`}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+      );
+    };
+
+    const Summary = () => (
+      <div className="space-y-4">
+        <SectionCard>
+          <div className="flex items-center justify-between mb-3">
+            <Badge>Разлики</Badge>
+            <LucideIcons.Table2 className="w-5 h-5 text-cyan-200" />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-cyan-100">
+                <tr className="text-left">
+                  <th className="py-2">Характеристика</th>
+                  <th className="py-2">Стек (LIFO)</th>
+                  <th className="py-2">Опашка (FIFO)</th>
+                </tr>
+              </thead>
+              <tbody className="text-slate-100/90">
+                {[{
+                  k: 'Достъп', s: 'Върхът', q: 'Двата края: начало/край'
+                }, {
+                  k: 'Операции', s: 'Push / Pop / Peek', q: 'Enqueue / Dequeue / Peek'
+                }, {
+                  k: 'Употреби', s: 'Undo, рекурсия, навигация', q: 'Задачи по ред, печат, BFS'
+                }, {
+                  k: 'Сложност', s: 'O(1) за push/pop', q: 'O(1) за enqueue/dequeue'
+                }, {
+                  k: 'Риск', s: 'StackOverflow при дълбока рекурсия', q: 'Препълване на buffer при фикс. размер'
+                }].map((row) => (
+                  <tr key={row.k} className="border-t border-white/10">
+                    <td className="py-2 font-semibold text-white">{row.k}</td>
+                    <td className="py-2">{row.s}</td>
+                    <td className="py-2">{row.q}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SectionCard>
+        <SectionCard>
+          <div className="flex flex-wrap gap-3 text-sm text-slate-100/90">
+            <Badge>Факти</Badge>
+            <span className="px-3 py-1 rounded-full bg-emerald-400/15 border border-emerald-300/30">Undo = стек от действия</span>
+            <span className="px-3 py-1 rounded-full bg-cyan-400/15 border border-cyan-300/30">Печатна опашка = FIFO</span>
+            <span className="px-3 py-1 rounded-full bg-indigo-400/15 border border-indigo-300/30">Системен стек пази кадри за рекурсия</span>
+            <span className="px-3 py-1 rounded-full bg-fuchsia-400/15 border border-fuchsia-300/30">GC събира heap, не пипа стек кадрите</span>
+          </div>
+        </SectionCard>
+      </div>
+    );
+
+    const App = () => {
+      const [active, setActive] = useState('learn');
+
+      const renderSection = () => {
+        switch (active) {
+          case 'learn':
+            return <SlideDeck />;
+          case 'demo':
+            return <Demo />;
+          case 'game':
+            return <BracketGame />;
+          case 'quiz':
+            return <Quiz />;
+          case 'summary':
+            return <Summary />;
+          default:
+            return null;
+        }
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-cyan-200">АТД • Стек & Опашка</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-white mt-2">Интерактивен урок за 11-12 клас</h1>
+              <p className="text-slate-200/90 mt-2">Модерен cyber-glass UI с симулации, игра със скоби и 10 въпроса за самопроверка.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-sm flex items-center gap-2"><LucideIcons.Cpu className="w-4 h-4" />React + Tailwind</span>
+              <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-sm flex items-center gap-2"><LucideIcons.Sparkle className="w-4 h-4" />Framer Motion</span>
+            </div>
+          </div>
+
+          <nav className="glass neon-border rounded-2xl p-3 flex flex-wrap gap-2">
+            {tabs.map((t) => {
+              const Icon = t.icon;
+              const isActive = active === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setActive(t.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition text-sm font-semibold ${
+                    isActive
+                      ? 'bg-cyan-500 text-slate-900 border-transparent shadow-lg'
+                      : 'bg-white/5 text-white border-white/10 hover:border-cyan-300/40 hover:text-cyan-50'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" /> {t.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-4"
+            >
+              {renderSection()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      );
+    };
+
+    const root = createRoot(document.getElementById('app'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

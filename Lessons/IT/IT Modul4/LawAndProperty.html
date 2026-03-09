@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интелектуална Собственост - 12. Клас</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide React Fix & Load -->
+    <script>
+        // Fix for UMD builds expecting lowercase 'react'
+        window.react = window.React;
+    </script>
+    <script src="https://unpkg.com/lucide-react/dist/umd/lucide-react.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        legal: {
+                            blue: '#1e3a8a', // Corporate Blue
+                            dark: '#0f172a', // Slate 900
+                            gold: '#ca8a04', // Gold 600
+                            light: '#f1f5f9', // Slate 100
+                            accent: '#3b82f6' // Blue 500
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .slide-enter { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen relative overflow-x-hidden">
+
+    <!-- Background Image with Overlay -->
+    <div class="fixed inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=2000" 
+             alt="Legal Tech Background" 
+             class="w-full h-full object-cover opacity-10" />
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-100/80 to-blue-50/80"></div>
+    </div>
+
+    <div id="root" class="relative z-10 h-screen flex flex-col"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        // Access Lucide icons from the lucide-react global object
+        const { 
+            BookOpen, FlaskConical, Search, 
+            ClipboardCheck, Info, Scale, 
+            Shield, Lock, Copyright, 
+            FileText, AlertTriangle, CheckCircle, 
+            XCircle, Gavel, Cpu, Menu, X, ArrowRight, ArrowLeft
+        } = window.LucideReact;
+
+        // --- Data & Constants ---
+
+        const navigationItems = [
+            { id: 'learn', label: 'Научи', icon: BookOpen },
+            { id: 'lab', label: 'Лаборатория', icon: FlaskConical },
+            { id: 'detective', label: 'Детектив', icon: Search },
+            { id: 'judge', label: 'Съдия', icon: Gavel },
+            { id: 'quiz', label: 'Тест', icon: ClipboardCheck },
+            { id: 'summary', label: 'Обобщение', icon: Info },
+        ];
+
+        const slidesData = [
+            {
+                title: "Търговска марка и Патент",
+                icon: Shield,
+                content: (
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-legal-blue">
+                            <h3 class="font-bold text-legal-blue flex items-center gap-2 mb-2">
+                                <span class="text-2xl">®</span> Търговска Марка
+                            </h3>
+                            <p class="mb-2">Знак, който отличава стоките или услугите на едно лице от тези на други.</p>
+                            <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
+                                <li>Може да бъде: Думи, лого, звук, цвят, форма.</li>
+                                <li><strong>Срок:</strong> 10 години (може да се подновява неограничено).</li>
+                                <li><strong>Цел:</strong> Гаранция за качество, защита от имитации.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-amber-50 rounded-lg border-l-4 border-legal-gold">
+                            <h3 class="font-bold text-legal-gold flex items-center gap-2 mb-2">
+                                <span class="text-2xl">📜</span> Патент
+                            </h3>
+                            <p class="mb-2">Защитава изобретения и иновативни методи (технически решения).</p>
+                            <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
+                                <li><strong>Изискване:</strong> Новост, изобретателска стъпка и приложимост.</li>
+                                <li><strong>Права:</strong> Да произвежда, продава, внася изобретението.</li>
+                                <li>Възниква след издаване на документ от Патентно ведомство.</li>
+                            </ul>
+                        </div>
+                    </div>
+                )
+            },
+            {
+                title: "Авторско право (ЗАПСП)",
+                icon: Copyright,
+                content: (
+                    <div class="space-y-4">
+                        <div class="p-4 bg-white shadow-sm rounded-lg border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-2">Какво защитава?</h3>
+                            <p class="text-slate-600">Компютърни програми (изходен и обектен код) и подготвителна дейност.</p>
+                            <div class="mt-2 text-sm text-red-500 flex items-center gap-2 bg-red-50 p-2 rounded">
+                                <XCircle size={16} />
+                                <span>НЕ защитава: Идеи, алгоритми (като концепция) и графичен интерфейс (освен ако е арт творба).</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3 bg-slate-100 rounded">
+                                <strong class="block text-legal-blue mb-1">На кого принадлежи?</strong>
+                                <p class="text-sm">Ако е служебно (по трудов договор) &rarr; На <strong>Работодателя</strong>.</p>
+                                <p class="text-sm">Ако е по поръчка (фриланс) &rarr; На <strong>Автора</strong> (освен ако не е уговорено друго).</p>
+                            </div>
+                            <div class="p-3 bg-slate-100 rounded">
+                                <strong class="block text-legal-blue mb-1">Права на потребителя</strong>
+                                <ul class="text-sm list-disc list-inside">
+                                    <li>Да прави <strong>резервно копие</strong> (backup).</li>
+                                    <li>Да изучава и тества кода.</li>
+                                    <li>Да декомпилира за съвместимост (интероперабилност).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            {
+                title: "Търговска Тайна",
+                icon: Lock,
+                content: (
+                    <div class="space-y-6">
+                        <p class="text-lg">Информация за производство или търговия, която дава предимство пред конкуренцията.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                            {[
+                                { title: "Секретност", desc: "Не е публично известна.", icon: "🤫" },
+                                { title: "Стойност", desc: "Носи икономическа изгода.", icon: "💰" },
+                                { title: "Защита", desc: "Предприети са мерки за опазване.", icon: "🛡️" }
+                            ].map((item, idx) => (
+                                <div key={idx} class="p-4 border border-slate-200 rounded-lg hover:shadow-md transition bg-white">
+                                    <div class="text-4xl mb-2">{item.icon}</div>
+                                    <h4 class="font-bold text-slate-800">{item.title}</h4>
+                                    <p class="text-sm text-slate-500">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div class="bg-blue-900 text-white p-4 rounded-lg mt-4 text-sm">
+                            <span class="font-bold text-legal-gold">Важно:</span> Притежател е лицето, което контролира информацията. Пази се докато не бъде разгласена.
+                        </div>
+                    </div>
+                )
+            },
+            {
+                title: "Софтуерно Пиратство",
+                icon: AlertTriangle,
+                content: (
+                    <div class="space-y-4">
+                         <div class="flex items-start gap-4 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <FileText className="text-legal-blue shrink-0" size={32} />
+                            <div>
+                                <h3 class="font-bold text-lg">EULA (Лицензионно споразумение)</h3>
+                                <p class="text-sm text-slate-600">Правен договор между производителя и потребителя. Определя правилата за ползване.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                            <div class="p-3 border-l-4 border-red-500 bg-white shadow-sm">
+                                <h4 class="font-bold text-red-600">Клониране</h4>
+                                <p class="text-xs">1 лиценз &rarr; много инсталации.</p>
+                            </div>
+                            <div class="p-3 border-l-4 border-red-500 bg-white shadow-sm">
+                                <h4 class="font-bold text-red-600">Онлайн пиратство</h4>
+                                <p class="text-xs">Сваляне от P2P мрежи, торенти без права.</p>
+                            </div>
+                            <div class="p-3 border-l-4 border-red-500 bg-white shadow-sm">
+                                <h4 class="font-bold text-red-600">Фалшифициране</h4>
+                                <p class="text-xs">Продажба на копия като оригинали.</p>
+                            </div>
+                            <div class="p-3 border-l-4 border-red-500 bg-white shadow-sm">
+                                <h4 class="font-bold text-red-600">Наем/Заем</h4>
+                                <p class="text-xs">Незаконно отдаване на софтуер.</p>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        ];
+
+        const labItems = [
+            { id: 1, text: "Лого на фирма", category: "trademark" },
+            { id: 2, text: "Алгоритъм за криптиране", category: "patent" }, // Can be patent or trade secret, usually patent in edu context for method
+            { id: 3, text: "Изходен код на игра", category: "copyright" },
+            { id: 4, text: "Рецепта на Кока-Кола", category: "secret" },
+            { id: 5, text: "Слоган на продукт", category: "trademark" },
+            { id: 6, text: "Дизайн на двигател", category: "patent" },
+        ];
+
+        const quizQuestions = [
+            {
+                q: "Колко години е срокът на защита на търговска марка?",
+                a: ["50 години", "10 години", "До живот", "70 години"],
+                correct: 1 // 10 years
+            },
+            {
+                q: "Кой притежава правата върху софтуер, създаден по трудов договор?",
+                a: ["Програмистът", "Работодателят", "Държавата", "Никой"],
+                correct: 1 // Work for hire
+            },
+            {
+                q: "Какво НЕ защитава авторското право директно?",
+                a: ["Изходния код", "Обектния код", "Идеите и алгоритмите", "Подготвителната документация"],
+                correct: 2
+            },
+            {
+                q: "Коя е формата на пиратство, при която един лиценз се инсталира на много компютри?",
+                a: ["Фалшифициране", "Клониране", "Онлайн пиратство", "Ремиксиране"],
+                correct: 1
+            },
+            {
+                q: "Какво означава EULA?",
+                a: ["European Union Law Act", "End-User License Agreement", "Electronic User Legal Access", "End-User Legal Action"],
+                correct: 1
+            },
+            {
+                q: "Кога възниква патентната защита?",
+                a: ["Със създаването на идеята", "След издаване на документ от Патентно ведомство", "След 10 години", "След публикуване в медиите"],
+                correct: 1
+            },
+            {
+                q: "Има ли право потребителят да прави резервно копие на законно закупен софтуер?",
+                a: ["Не, никога", "Да, без разрешението на автора", "Само срещу заплащане", "Само ако е Open Source"],
+                correct: 1
+            },
+            {
+                q: "Търговската тайна трябва да бъде:",
+                a: ["Публично известна", "Регистрирана в общината", "Пазена с разумни усилия и тайна", "Безплатна"],
+                correct: 2
+            },
+            {
+                q: "Какво е Плагиатство тип '404 Error'?",
+                a: ["Копиране на код с грешки", "Цитиране на несъществуващи източници", "Хакване на сайт", "Сървърна грешка"],
+                correct: 1
+            },
+            {
+                q: "Използването на чужд текст с малки промени (синоними) се нарича:",
+                a: ["Ctrl+C", "Клониране", "Find and Replace", "Ремиксиране"],
+                correct: 2 // Often Find and replace or Ctrl+C context dependent, from text: "Find and replace" -> замяна на ключови думи
+            }
+        ];
+
+        // --- Component: Learn (Slides) ---
+        const Learn = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+
+            const nextSlide = () => setCurrentSlide(p => Math.min(p + 1, slidesData.length - 1));
+            const prevSlide = () => setCurrentSlide(p => Math.max(p - 1, 0));
+
+            const SlideIcon = slidesData[currentSlide].icon;
+
+            return (
+                <div class="max-w-4xl mx-auto h-full flex flex-col justify-center p-4">
+                    <div class="glass-panel p-8 rounded-2xl min-h-[500px] flex flex-col relative slide-enter">
+                        <div class="flex items-center gap-3 mb-6 border-b pb-4 border-slate-200">
+                            <div class="p-3 bg-blue-100 rounded-full text-legal-blue">
+                                <SlideIcon size={32} />
+                            </div>
+                            <h2 class="text-3xl font-bold text-slate-800">{slidesData[currentSlide].title}</h2>
+                        </div>
+                        
+                        <div class="flex-grow text-slate-700 text-lg leading-relaxed">
+                            {slidesData[currentSlide].content}
+                        </div>
+
+                        <div class="flex justifying-between items-center mt-8 pt-4 border-t border-slate-100">
+                            <button 
+                                onClick={prevSlide} 
+                                disabled={currentSlide === 0}
+                                class={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold transition ${currentSlide === 0 ? 'opacity-30 cursor-not-allowed text-slate-400' : 'bg-white border border-slate-300 hover:bg-slate-50 text-slate-700'}`}
+                            >
+                                <ArrowLeft size={18} /> Назад
+                            </button>
+                            
+                            <div class="flex gap-2">
+                                {slidesData.map((_, idx) => (
+                                    <div key={idx} class={`h-2 w-2 rounded-full transition-all ${idx === currentSlide ? 'bg-legal-blue w-6' : 'bg-slate-300'}`}></div>
+                                ))}
+                            </div>
+
+                            <button 
+                                onClick={nextSlide} 
+                                disabled={currentSlide === slidesData.length - 1}
+                                class={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold transition ${currentSlide === slidesData.length - 1 ? 'opacity-30 cursor-not-allowed text-slate-400' : 'bg-legal-blue text-white hover:bg-blue-800 shadow-lg shadow-blue-200'}`}
+                            >
+                                Напред <ArrowRight size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Laboratory (Drag & Drop Mockup) ---
+        const Laboratory = () => {
+            const [items, setItems] = useState(labItems);
+            const [results, setResults] = useState({}); // { itemId: 'correct' | 'wrong' }
+            
+            // Simplified "Click to Classify" interaction instead of complex Drag'n'Drop logic for single file stability
+            const [selectedItem, setSelectedItem] = useState(null);
+
+            const categories = [
+                { id: "trademark", label: "Търговска марка", icon: "®", color: "bg-blue-100 border-blue-300" },
+                { id: "patent", label: "Патент", icon: "📜", color: "bg-amber-100 border-amber-300" },
+                { id: "copyright", label: "Авторско право", icon: "©", color: "bg-purple-100 border-purple-300" },
+                { id: "secret", label: "Търговска тайна", icon: "🔒", color: "bg-emerald-100 border-emerald-300" }
+            ];
+
+            const handleClassify = (catId) => {
+                if (!selectedItem) return;
+                
+                const isCorrect = selectedItem.category === catId;
+                setResults(prev => ({...prev, [selectedItem.id]: isCorrect ? 'correct' : 'wrong'}));
+                
+                if (isCorrect) {
+                     // Remove from list after delay
+                     setTimeout(() => {
+                        setItems(prev => prev.filter(i => i.id !== selectedItem.id));
+                        setSelectedItem(null);
+                     }, 500);
+                }
+            };
+
+            return (
+                <div class="max-w-5xl mx-auto p-6 h-full flex flex-col slide-enter">
+                    <div class="text-center mb-6">
+                        <h2 class="text-3xl font-bold text-legal-dark mb-2">Правна Лаборатория</h2>
+                        <p class="text-slate-600">Избери обект от списъка и кликни върху правилната правна кутия.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+                        {/* Source Area */}
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-500 mb-4 uppercase text-sm tracking-wider">Обекти за класификация</h3>
+                            <div class="flex flex-wrap gap-3">
+                                {items.length === 0 ? (
+                                    <div class="text-green-600 flex items-center gap-2 font-bold w-full justify-center py-10">
+                                        <CheckCircle /> Всички обекти са класифицирани успешно!
+                                    </div>
+                                ) : (
+                                    items.map(item => (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => setSelectedItem(item)}
+                                            class={`px-4 py-3 rounded-lg border-2 text-left transition-all ${
+                                                selectedItem?.id === item.id 
+                                                ? 'border-legal-blue bg-blue-50 ring-2 ring-blue-200' 
+                                                : 'border-slate-200 hover:border-blue-300 bg-slate-50'
+                                            } ${results[item.id] === 'wrong' ? 'animate-pulse border-red-400 bg-red-50' : ''}`}
+                                        >
+                                            <span class="font-medium text-slate-800">{item.text}</span>
+                                        </button>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Target Areas */}
+                        <div class="grid grid-cols-2 gap-4">
+                            {categories.map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => handleClassify(cat.id)}
+                                    disabled={!selectedItem}
+                                    class={`h-32 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${cat.color} ${selectedItem ? 'hover:scale-105 cursor-pointer opacity-100' : 'opacity-60 cursor-default'}`}
+                                >
+                                    <span class="text-4xl">{cat.icon}</span>
+                                    <span class="font-bold text-slate-700">{cat.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Detective (Game) ---
+        const Detective = () => {
+            const cases = [
+                {
+                    id: 1,
+                    original: "С настъпването на пролетта прелетните птици се завръщат по родните места.",
+                    plagiarised: "С настъпването на пролетта птиците, които зимуват на юг, се завръщат по родните места.",
+                    type: "copy", // Ctrl+C / Substitution mix, based on text: "Copying but with small changes" -> Ctrl+C
+                    options: ["Клониране", "Ctrl+C / Копиране", "404 Грешка"],
+                    correct: "Ctrl+C / Копиране",
+                    explanation: "Текстът е почти идентичен, с минимални промени."
+                },
+                {
+                    id: 2,
+                    original: "Авторското право защитава произведения на литературата, изкуството и науката.",
+                    plagiarised: "Авторското право защитава произведения на литературата, изкуството и науката.",
+                    type: "clone",
+                    options: ["Клониране", "Ремиксиране", "Смесено"],
+                    correct: "Клониране",
+                    explanation: "Текстът е 100% идентичен, дума по дума."
+                },
+                {
+                    id: 3,
+                    original: "Патентът е изключително право върху изобретение.",
+                    plagiarised: "Патентът е право върху изобретение, за което говори проф. Иванов в своята книга (която не съществува).",
+                    type: "404",
+                    options: ["Клониране", "Грешка 404", "Ремиксиране"],
+                    correct: "Грешка 404",
+                    explanation: "Цитиран е несъществуващ източник."
+                }
+            ];
+
+            const [currentCase, setCurrentCase] = useState(0);
+            const [feedback, setFeedback] = useState(null);
+
+            const handleGuess = (option) => {
+                if (option === cases[currentCase].correct) {
+                    setFeedback({ type: 'success', msg: "Правилно! " + cases[currentCase].explanation });
+                } else {
+                    setFeedback({ type: 'error', msg: "Грешка. Опитай пак." });
+                }
+            };
+
+            const nextCase = () => {
+                setFeedback(null);
+                setCurrentCase(p => (p + 1) % cases.length);
+            };
+
+            return (
+                <div class="max-w-3xl mx-auto p-6 h-full flex flex-col justify-center slide-enter">
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                        <div class="bg-slate-800 p-4 flex items-center justify-between text-white">
+                            <div class="flex items-center gap-2">
+                                <Search size={20} className="text-legal-gold" />
+                                <span class="font-bold tracking-wider">DETECTIVE MODE: CASE #{currentCase + 1}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                    <h4 class="text-xs font-bold text-blue-800 uppercase mb-2">Оригинал</h4>
+                                    <p class="font-serif italic text-slate-700">"{cases[currentCase].original}"</p>
+                                </div>
+                                <div class="bg-red-50 p-4 rounded-lg border border-red-100">
+                                    <h4 class="text-xs font-bold text-red-800 uppercase mb-2">Подозрителен текст</h4>
+                                    <p class="font-serif italic text-slate-700">"{cases[currentCase].plagiarised}"</p>
+                                </div>
+                            </div>
+
+                            {!feedback ? (
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    {cases[currentCase].options.map(opt => (
+                                        <button 
+                                            key={opt}
+                                            onClick={() => handleGuess(opt)}
+                                            class="py-3 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 transition"
+                                        >
+                                            {opt}
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div class={`p-4 rounded-lg text-center mb-4 ${feedback.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                    <p class="font-bold mb-2">{feedback.msg}</p>
+                                    {feedback.type === 'success' && (
+                                        <button onClick={nextCase} class="mt-2 bg-green-600 text-white px-4 py-1 rounded-full text-sm">
+                                            Следващ случай
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Judge (Legal Cases) ---
+        const Judge = () => {
+            const judgeCases = [
+                {
+                    title: "Казус 1: Патентът срещу „завареното положение“",
+                    situation: "Ситуация: Фирма А използва иновативна технология за гравиране, с която обработва по 100 детайла на ден. По-късно Фирма Б патентова същата технология.",
+                    question: "Въпрос: Може ли Фирма Б да забрани на Фирма А да ползва технологията?",
+                    answer: "Не, но Фирма А може да продължи да я ползва само в същия обем (до 100 детайла на ден), както преди патента."
+                },
+                {
+                    title: "Казус 2: Кодът – чий е той?",
+                    situation: "Ситуация: Програмист в софтуерна фирма създава иновативно приложение в рамките на работното си време, като задачите му са описани в трудовия договор. След напускане той решава да продаде кода на друга компания.",
+                    question: "Въпрос: Има ли право програмистът да направи това?",
+                    answer: "Не, според Директива 2009/24/ЕО авторското право принадлежи на работодателя, когато софтуерът е създаден в рамките на трудово правоотношение."
+                },
+                {
+                    title: "Казус 3: Свобода на потребителя",
+                    situation: "Ситуация: Потребител законно купува софтуер и решава да направи три неща: 1. Да го инсталира на хард диска си; 2. Да направи резервно копие; 3. Да преведе програмния код, за да го направи съвместим с друга своя програма.",
+                    question: "Въпрос: Кое от тези действия е законно без съгласието на автора?",
+                    answer: "Изготвянето на резервно копие и превеждането на кода за постигане на съвместимост са законни. Инсталирането на хард диска, ако софтуерът е предназначен само за външен носител, може да се счита за вид пиратство."
+                },
+                {
+                    title: "Казус 4: Енигмата на Търговската тайна",
+                    situation: "Ситуация: Сладкарница „Мечта“ има уникална рецепта за торта, която им носи големи печалби. Те държат рецептата в сейф и само главният сладкар я знае. Служител я открадва и я публикува в интернет.",
+                    question: "Въпрос: Счита ли се това за нарушение на търговска тайна?",
+                    answer: "Да, защото са изпълнени трите критерия: информацията не е публично известна, доставя икономическа изгода и са положени разумни усилия за запазването ѝ."
+                },
+                {
+                    title: "Казус 5: Детектив по плагиатство",
+                    situation: "Ситуация: Ученик предава есе. Текстът е почти същият като оригинална статия, но думите „прелетните птици се завръщат“ са заменени с „птиците, които зимуват на юг, се завръщат“.",
+                    question: "Въпрос: Какъв вид плагиатство е извършено?",
+                    answer: "Копиращо плагиатство (Ctrl+C), тъй като са направени само малки промени в оригиналния текст."
+                }
+            ];
+
+            const [activeCase, setActiveCase] = useState(null);
+
+            return (
+                <div class="max-w-4xl mx-auto p-6 slide-enter pb-20">
+                    <div class="text-center mb-10">
+                         <h2 class="text-3xl font-bold text-legal-dark mb-2 flex items-center justify-center gap-3">
+                            <Gavel className="text-legal-gold" size={36} /> Правни казуси – Ти си съдията
+                        </h2>
+                        <p class="text-slate-600">Разгледай случаите и прецени какво е правилното решение.</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        {judgeCases.map((c, idx) => (
+                            <div key={idx} class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all hover:shadow-md">
+                                <button 
+                                    onClick={() => setActiveCase(activeCase === idx ? null : idx)}
+                                    class="w-full text-left p-6 flex justify-between items-center bg-slate-50 hover:bg-slate-100 transition-colors"
+                                >
+                                    <h3 class="font-bold text-lg text-legal-blue">{c.title}</h3>
+                                    <div class={`transition-transform duration-300 ${activeCase === idx ? 'rotate-180' : ''}`}>
+                                        <ArrowRight className="rotate-90" size={20} />
+                                    </div>
+                                </button>
+                                
+                                <div class={`overflow-hidden transition-all duration-300 ${activeCase === idx ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <div class="p-6 border-t border-slate-200 space-y-4">
+                                        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-legal-blue">
+                                            <p class="text-slate-800">{c.situation}</p>
+                                        </div>
+                                        
+                                        <div class="font-bold text-lg text-slate-900 py-2">
+                                            {c.question}
+                                        </div>
+
+                                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                            <h4 class="font-bold text-legal-gold text-sm uppercase mb-1 flex items-center gap-2">
+                                                <CheckCircle size={16}/> Правилно решение
+                                            </h4>
+                                            <p class="text-slate-800 font-medium">{c.answer}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Quiz ---
+        const Quiz = () => {
+            const [answers, setAnswers] = useState({});
+            const [submitted, setSubmitted] = useState(false);
+
+            const score = Object.keys(answers).reduce((acc, qIdx) => {
+                return acc + (answers[qIdx] === quizQuestions[qIdx].correct ? 1 : 0);
+            }, 0);
+
+            const handleSelect = (qIdx, aIdx) => {
+                if(submitted) return;
+                setAnswers(prev => ({...prev, [qIdx]: aIdx}));
+            };
+
+            return (
+                <div class="max-w-3xl mx-auto p-6 pb-20 slide-enter">
+                    <h2 class="text-3xl font-bold text-legal-dark mb-6 text-center">Правен Тест</h2>
+                    
+                    <div class="space-y-6">
+                        {quizQuestions.map((q, idx) => {
+                            const isCorrect = answers[idx] === q.correct;
+                            const isSelected = answers[idx] !== undefined;
+                            
+                            let borderClass = "border-slate-200";
+                            if (submitted) {
+                                borderClass = isCorrect ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50";
+                            }
+
+                            return (
+                                <div key={idx} class={`bg-white p-6 rounded-xl border-2 shadow-sm ${borderClass}`}>
+                                    <h3 class="font-bold text-lg mb-4 text-slate-800">{idx + 1}. {q.q}</h3>
+                                    <div class="space-y-2">
+                                        {q.a.map((ans, aIdx) => (
+                                            <button
+                                                key={aIdx}
+                                                onClick={() => handleSelect(idx, aIdx)}
+                                                class={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between
+                                                    ${answers[idx] === aIdx 
+                                                        ? 'bg-legal-blue text-white' 
+                                                        : 'bg-slate-50 hover:bg-slate-100 text-slate-700'
+                                                    }
+                                                    ${submitted && q.correct === aIdx ? '!bg-green-600 !text-white' : ''}
+                                                    ${submitted && answers[idx] === aIdx && answers[idx] !== q.correct ? '!bg-red-500 !text-white' : ''}
+                                                `}
+                                            >
+                                                <span>{ans}</span>
+                                                {submitted && q.correct === aIdx && <CheckCircle size={18} />}
+                                                {submitted && answers[idx] === aIdx && answers[idx] !== q.correct && <XCircle size={18} />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div class="mt-8 text-center bg-white/80 p-4 rounded-xl backdrop-blur sticky bottom-4 shadow-lg border border-slate-200">
+                        {!submitted ? (
+                            <button 
+                                onClick={() => setSubmitted(true)}
+                                disabled={Object.keys(answers).length < quizQuestions.length}
+                                class="bg-legal-gold text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed shadow"
+                            >
+                                Предай теста
+                            </button>
+                        ) : (
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-800 mb-2">Резултат: {score} / {quizQuestions.length}</h3>
+                                <button onClick={() => {setSubmitted(false); setAnswers({});}} class="text-legal-blue hover:underline">
+                                    Опитай отново
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Component: Summary ---
+        const Summary = () => (
+            <div class="max-w-4xl mx-auto p-6 slide-enter">
+                <div class="glass-panel p-8 rounded-2xl">
+                    <h2 class="text-3xl font-bold text-legal-dark mb-6 flex items-center gap-3">
+                        <Info className="text-legal-gold" /> Обобщение & Любопитни Факти
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-lg text-legal-blue border-b border-blue-100 pb-2">Ключови понятия</h3>
+                            <ul class="space-y-3">
+                                {[
+                                    { term: "Търговска марка", def: "Идентификатор на продукта (лого, име). 10г. срок." },
+                                    { term: "Патент", def: "Защита на изобретение (технология). Изисква новост." },
+                                    { term: "Авторско право", def: "Възниква автоматично. Пази код, но не и идеи." },
+                                    { term: "EULA", def: "Договорът, с който се съгласявате при инсталация." }
+                                ].map((item, i) => (
+                                    <li key={i} class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                        <span class="font-bold text-slate-900">{item.term}:</span> <span class="text-slate-600 text-sm">{item.def}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-lg text-legal-gold border-b border-yellow-100 pb-2">Знаете ли, че?</h3>
+                            <div class="bg-slate-900 text-slate-300 p-5 rounded-xl space-y-4 text-sm relative overflow-hidden">
+                                <div class="absolute top-0 right-0 p-4 opacity-10"><Scale size={100} /></div>
+                                <p>📸 <strong class="text-white">Айфеловата кула:</strong> Правата за нощните снимки се държат от дружеството, което я управлява (светлинното шоу е изкуство!).</p>
+                                <p>⚡ <strong class="text-white">Юсейн Болт:</strong> Е запазил като марка специфичния си победен жест.</p>
+                                <p>🌌 <strong class="text-white">Дарт Вейдър:</strong> Звукът от дишането му е запазена звукова марка.</p>
+                                <p>🧊 <strong class="text-white">"Сух лед":</strong> Е било търговска марка до 1989г., сега е нарицателно.</p>
+                            </div>
+                            
+                            <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-red-800 text-sm">
+                                <strong class="block mb-1 flex items-center gap-2"><AlertTriangle size={16}/> Внимание: 404 Error Plagiarism</strong>
+                                Това е техника на плагиатство, при която се цитират източници, които не съществуват или линковете не работят, за да се скрие следата на кражбата.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- Main App Component ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('learn');
+
+            const renderContent = () => {
+                switch(activeTab) {
+                    case 'learn': return <Learn />;
+                    case 'lab': return <Laboratory />;
+                    case 'detective': return <Detective />;
+                    case 'judge': return <Judge />;
+                    case 'quiz': return <Quiz />;
+                    case 'summary': return <Summary />;
+                    default: return <Learn />;
+                }
+            };
+
+            return (
+                <>
+                    {/* Navigation */}
+                    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+                        <div class="max-w-6xl mx-auto px-4">
+                            <div class="flex items-center justify-between h-16">
+                                <div class="flex items-center gap-2">
+                                    <div class="bg-legal-blue text-white p-2 rounded-lg">
+                                        <Gavel size={20} />
+                                    </div>
+                                    <span class="font-bold text-xl text-slate-800 hidden sm:block">IT Law <span class="text-legal-gold">Edu</span></span>
+                                </div>
+                                <div class="flex space-x-1 overflow-x-auto pb-1 sm:pb-0">
+                                    {navigationItems.map(item => {
+                                        const isActive = activeTab === item.id;
+                                        const ItemIcon = item.icon;
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => setActiveTab(item.id)}
+                                                class={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm font-medium whitespace-nowrap
+                                                    ${isActive 
+                                                        ? 'bg-blue-50 text-legal-blue ring-1 ring-blue-200' 
+                                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                                    }`}
+                                            >
+                                                <ItemIcon size={16} />
+                                                <span class="hidden md:inline">{item.label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Main Content Area */}
+                    <main class="flex-grow overflow-y-auto pt-4 relative">
+                        {renderContent()}
+                    </main>
+
+                    {/* Footer */}
+                    <footer class="bg-slate-900 text-slate-400 py-6 mt-auto relative z-20">
+                        <div class="max-w-6xl mx-auto px-4 text-center text-sm">
+                            <p>© 2026 Образователен модул "Интелектуална Собственост". Със съдействието на React & Tailwind.</p>
+                        </div>
+                    </footer>
+                </>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

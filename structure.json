@@ -10,6 +10,36 @@
     "path": "Lessons/IT/"
   },
   {
+    "name": "8 клас",
+    "type": "folder",
+    "path": "Lessons/IT/8 клас/"
+  },
+  {
+    "name": "data-guardian",
+    "type": "file",
+    "path": "Lessons/IT/8 клас/data-guardian.html"
+  },
+  {
+    "name": "IT Modul3",
+    "type": "folder",
+    "path": "Lessons/IT/IT Modul3/"
+  },
+  {
+    "name": "cms-architect",
+    "type": "file",
+    "path": "Lessons/IT/IT Modul3/cms-architect.html"
+  },
+  {
+    "name": "IT Modul4",
+    "type": "folder",
+    "path": "Lessons/IT/IT Modul4/"
+  },
+  {
+    "name": "LawAndProperty",
+    "type": "file",
+    "path": "Lessons/IT/IT Modul4/LawAndProperty.html"
+  },
+  {
     "name": "Примерни уроци",
     "type": "folder",
     "path": "Lessons/IT/Примерни уроци/"
@@ -23,6 +53,31 @@
     "name": "Увод в HTML",
     "type": "file",
     "path": "Lessons/IT/Примерни уроци/Увод в HTML.html"
+  },
+  {
+    "name": "Other",
+    "type": "folder",
+    "path": "Lessons/Other/"
+  },
+  {
+    "name": "Malta",
+    "type": "folder",
+    "path": "Lessons/Other/Malta/"
+  },
+  {
+    "name": "img",
+    "type": "folder",
+    "path": "Lessons/Other/Malta/img/"
+  },
+  {
+    "name": "presentationBulgaria",
+    "type": "file",
+    "path": "Lessons/Other/Malta/presentationBulgaria.html"
+  },
+  {
+    "name": "video",
+    "type": "folder",
+    "path": "Lessons/Other/Malta/video/"
   },
   {
     "name": "Информатика",
@@ -45,9 +100,19 @@
     "path": "Lessons/Информатика/Modul2/01arrays.html"
   },
   {
-    "name": "list-basics-interactive",
+    "name": "02list-basics-interactive",
     "type": "file",
-    "path": "Lessons/Информатика/Modul2/list-basics-interactive.html"
+    "path": "Lessons/Информатика/Modul2/02list-basics-interactive.html"
+  },
+  {
+    "name": "03stack-and-queue",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/03stack-and-queue.html"
+  },
+  {
+    "name": "04multidimensional-arrays",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/04multidimensional-arrays.html"
   },
   {
     "name": "Modul3",

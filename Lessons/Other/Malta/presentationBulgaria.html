@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erasmus+ Presentation: Atanas Ninkolov - Malta 2026</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-in-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { margin: 0; overflow: hidden; background-color: black; color: white; }
+        /* High-quality text shadow for readability */
+        .text-shadow-lg {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+        }
+        .text-shadow-sm {
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
+
+        // Slide Data Configuration
+        const slides = [
+            {
+                id: 1,
+                image: "img/1.png",
+                title: "Erasmus+ Journey: Malta 2026",
+                subtitle: "Atanas Ninkolov\nHigh School of Natural Sciences and Mathematics \"Acad. Nikola Obreshkov\"\n Burgas, Bulgaria",
+                isTitleSlide: true,
+                align: "left"
+            },
+            {
+                id: 2,
+                image: "img/2.png",
+                title: "Bulgaria and its emblem",
+                text: "Bulgaria is a hidden gem in Southeast Europe, bridging East and West. A land of ancient civilizations, rich culture, and breathtaking landscapes, it is a proud member of the European Union with a history spanning over 13 centuries."
+            },
+            {
+                id: 3,
+                image: "img/3.png",
+                title: "Historical and Natural Wonders",
+                text: "From the golden treasures of Thracian kings to the pristine beaches of the Black Sea. Our country is unique because you can touch millennia-old history while surrounded by untouched nature."
+            },
+            {
+                id: 4,
+                image: "img/4.png",
+                title: "Tsarevets & Veliko Tarnovo",
+                text: "The majestic fortress of Tsarevets in Veliko Tarnovo stands as a symbol of the Second Bulgarian Empire. Walking its walls, one can feel the power and glory of the medieval king who once ruled here."
+            },
+            {
+                id: 5,
+                image: "img/5.png",
+                title: "Valley of Roses",
+                text: "Bulgaria is the land of roses, producing the world's finest rose oil. The fragrant valleys are not just an economic asset but a symbol of beauty, tradition, and Bulgarian identity."
+            },
+            {
+                id: 6,
+                image: "img/6.png",
+                title: "Nature & History Intertwined",
+                text: "Majestic mountains, cascading waterfalls, and ancient fortresses coexist in harmony. Here, the spirit of modern ambition meets the wisdom of the past, creating an inspiring environment for growth."
+            },
+            {
+                id: 7,
+                image: "img/7.png",
+                title: "Rila Monastery",
+                text: "Deep in the Rila Mountains lies our spiritual heart - the Rila Monastery. Founded in the 10th century, it is a UNESCO World Heritage site and a masterpiece of Bulgarian National Revival architecture."
+            },
+            {
+                id: 8,
+                image: "img/8.png",
+                title: "My School - 55 Years of History",
+                text: "High School of Natural Sciences and Mathematics \"Acad. Nikola Obreshkov\" has been a beacon of knowledge for over half a century. We nurture critical thinking and excellence in mathematics and natural sciences."
+            },
+            {
+                id: 9,
+                image: "img/9.png",
+                title: "Modern Facilities",
+                text: "Tradition meets innovation. Our campus features both historic architecture and modern amenities, including a swimming pool and advanced laboratories, supporting a holistic education.",
+                align: "left"
+            },
+            {
+                id: 10,
+                image: "img/10.png",
+                title: "New Horizons",
+                text: "Our new building represents our commitment to the future. It is a space designed for creativity, collaboration, and the pursuit of scientific discovery for the next generation."
+            },
+            {
+                id: 11,
+                image: "img/11.jpg",
+                title: "Some statistics:",
+                text: "- Students: 1027 in 39 classes\n- Age: 11-19\n- Teachers: 75\n- In 8th grade /age 13-14/,  after a rigorous selection students choose their Profiles:"
+            }
+            ,
+            {
+                id: 12,
+                image: "img/12.png",
+                title: "Profiles:",
+                text: "- Mathematics and English – 4 classes\n- IT and English – 1 class\n- Biology, Chemistry and English – 1 class\n - In 11 and 12 grade our students focus on software development - Object-Oriented Programming (OOP), Data Structures and Algorithms, Databases and SQL,Information Systems"
+            }
+             ,
+            {
+                id: 13,
+                image: "img/13.png",
+                title: "About Me",
+                subtitle: "Professional Background\n\n- Informatics & IT Teacher for Seniors (Grades 11-12)\n- Mentoring the next generation of IT Olympiad champions\n- Robotics Club Lead: Where coding meets hardware",
+                isTitleSlide: true
+            },
+            {
+                id: 14,
+                image: "img/14.png",
+                title: "About Me",
+                subtitle: "Interests & Passions\n\n- Advocating for Free and Open Source Software (FOSS)\n- Exploring the frontiers of Artificial Intelligence\n- Nature lover, sun seeker, and sea enthusiast",
+                isTitleSlide: true
+            },
+            {
+                id: 15,
+                image: "img/15.png",
+                title: "Why Erasmus & Malta?",
+                subtitle: "This mobility is more than a trip; it's a bridge to the future using English language. Malta's rich history and technological advancement offer the perfect setting to expand my horizons and bring new ideas back home."
+            },
+            {
+                id: 16,
+                video: "video/Summertime in Burgas, Bulgaria.mp4",
+                title: "Discover Burgas",
+                text: ""
+            }
+        ];
+
+        const Presentation = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [direction, setDirection] = useState(0); 
+
+            const nextSlide = useCallback(() => {
+                if (currentSlide < slides.length - 1) {
+                    setDirection(1);
+                    setCurrentSlide(prev => prev + 1);
+                }
+            }, [currentSlide]);
+
+            const prevSlide = useCallback(() => {
+                if (currentSlide > 0) {
+                    setDirection(-1);
+                    setCurrentSlide(prev => prev - 1);
+                }
+            }, [currentSlide]);
+
+            // Keyboard Navigation
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
+                        nextSlide();
+                    } else if (e.key === "ArrowLeft") {
+                        prevSlide();
+                    }
+                };
+
+                window.addEventListener("keydown", handleKeyDown);
+                return () => window.removeEventListener("keydown", handleKeyDown);
+            }, [nextSlide, prevSlide]);
+
+            const slide = slides[currentSlide];
+
+            return (
+                <div className="relative w-full h-screen overflow-hidden bg-gray-900 text-white font-sans selection:bg-yellow-400 selection:text-black">
+                    
+                    {/* Background Image with Key-based animation for transition */}
+                    <div key={slide.id} className="absolute inset-0 w-full h-full animate-fade-in">
+                        {/* Video Layer */}
+                        {slide.video ? (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black">
+                                <video 
+                                    src={slide.video} 
+                                    className="w-full h-full object-contain" 
+                                    controls 
+                                    autoPlay 
+                                >
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        ) : (
+                            /* Image Layer */
+                            <div 
+                                className="absolute inset-0 bg-cover bg-center transition-transform duration-[10000ms] ease-linear transform scale-100 hover:scale-105"
+                                style={{ backgroundImage: `url('${slide.image}')` }}
+                            >
+                                {/* Gradient Overlay for better text readability */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30"></div>
+                            </div>
+                        )}
+
+                        {/* Content Layer (Only if not video or if title exists on video) */}
+                        {(!slide.video || slide.title) && (
+                            <div className={`absolute inset-0 flex flex-col justify-end ${slide.align === 'left' ? 'items-start' : 'items-end'} p-6 md:p-16 pb-24 md:pb-28 ${slide.video ? 'pointer-events-none' : ''}`}>
+                                <div className={`max-w-3xl w-full md:w-auto bg-black/40 backdrop-blur-md ${slide.align === 'left' ? 'border-r-4 rounded-l-xl rounded-br-xl' : 'border-l-4 rounded-r-xl rounded-bl-xl'} border-yellow-400 p-6 md:p-10 shadow-2xl animate-slide-up transform translate-y-0 opacity-100 transition-all`}>
+                                    <h1 className="text-3xl md:text-5xl font-extrabold mb-4 text-white text-shadow-lg tracking-tight">
+                                        {slide.title}
+                                    </h1>
+                                    {slide.subtitle ? (
+                                        <h2 className="text-xl md:text-2xl font-light whitespace-pre-line text-yellow-100 text-shadow-sm border-t border-white/20 pt-4 mt-4">
+                                            {slide.subtitle}
+                                        </h2>
+                                    ) : (
+                                        slide.text && (
+                                            <p className="text-lg md:text-xl leading-relaxed text-gray-100 text-shadow-sm font-light whitespace-pre-line">
+                                                {slide.text}
+                                            </p>
+                                        )
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Navigation Arrows (Large clickable areas) */}
+                    <div className="absolute inset-y-0 left-0 w-24 flex items-center justify-center z-20 group cursor-pointer" onClick={prevSlide}>
+                        <button 
+                            disabled={currentSlide === 0}
+                            className={`p-4 rounded-full bg-white/10 group-hover:bg-white/20 backdrop-blur-sm transition-all transform group-hover:scale-110 ${currentSlide === 0 ? 'opacity-0 cursor-default' : 'opacity-0 group-hover:opacity-100'}`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-10 h-10">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-center z-20 group cursor-pointer" onClick={nextSlide}>
+                        <button 
+                            disabled={currentSlide === slides.length - 1}
+                            className={`p-4 rounded-full bg-white/10 group-hover:bg-white/20 backdrop-blur-sm transition-all transform group-hover:scale-110 ${currentSlide === slides.length - 1 ? 'opacity-0 cursor-default' : 'opacity-0 group-hover:opacity-100'}`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-10 h-10">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* Progress Bar & Counter */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col items-center z-30 bg-gradient-to-t from-black/90 to-transparent">
+                        <div className="flex space-x-3 mb-2">
+                            {slides.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentSlide(index)}
+                                    className={`h-1.5 rounded-full transition-all duration-500 ease-in-out ${
+                                        index === currentSlide ? 'bg-yellow-400 w-12' : 'bg-gray-600 w-4 hover:bg-gray-400'
+                                    }`}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                />
+                            ))}
+                        </div>
+                        <div className="text-xs text-gray-400 font-mono tracking-widest uppercase">
+                            Slide {currentSlide + 1} of {slides.length}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Presentation />);
+    </script>
+</body>
+</html>

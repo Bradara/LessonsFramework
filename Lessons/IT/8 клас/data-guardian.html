@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Guardian: Архивиране и Системен Бакъп</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0b1021;
+      --card-dark: rgba(19, 25, 46, 0.8);
+      --matrix-green: #4ade80;
+      --accent-orange: #fb923c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg-dark);
+      color: #e5e7eb;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.35;
+      z-index: -2;
+      filter: saturate(1.2);
+    }
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(74, 222, 128, 0.12), transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(251, 146, 60, 0.12), transparent 35%),
+                  linear-gradient(135deg, rgba(12, 16, 35, 0.7), rgba(12, 16, 35, 0.9));
+      z-index: -1;
+    }
+    .glass {
+      background: var(--card-dark);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+    .nav-active {
+      background: rgba(74, 222, 128, 0.15);
+      border-color: rgba(74, 222, 128, 0.4);
+      color: var(--matrix-green);
+    }
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .table-dark th, .table-dark td {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { motion, AnimatePresence } = window.Motion;
+
+    const backgrounds = [
+      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80', // cyber security
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80', // server racks
+      'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=1920&q=80', // code matrix
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&q=80', // dark dev desk
+      'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=1920&q=80', // abstract code
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80'  // server repeat for randomness
+    ];
+
+    const lessonAnimations = [
+      { label: 'Архивиране', color: 'bg-emerald-500', scale: 0.92 },
+      { label: 'Компресиране', color: 'bg-orange-400', scale: 0.75 },
+    ];
+
+    const archiveFiles = [
+      { id: 1, name: 'Снимка-ваканция.jpg', size: 24 },
+      { id: 2, name: 'Доклад-история.docx', size: 12 },
+      { id: 3, name: 'Видео-проект.mp4', size: 38 },
+      { id: 4, name: 'Презентация.pptx', size: 18 },
+      { id: 5, name: 'Код-проект.zip', size: 8 }
+    ];
+
+    const restoreArchives = [
+      { id: 'A', name: 'Backup-Home-2026-02-01.zip', status: 'OK', contains: ['Документи', 'Снимки'] },
+      { id: 'B', name: 'Class-Projects-Archive.7z', status: 'OK', contains: ['Проекти', 'Код'] },
+      { id: 'C', name: 'System-Image-2026-01-15.zip', status: 'Corrupted', contains: ['Система', 'Драйвери'] }
+    ];
+
+    const quizData = [
+      { q: 'Кое разширение е на архивиран файл?', options: ['.txt', '.zip', '.exe', '.mp3'], correct: 1 },
+      { q: 'Какво прави компресията?', options: ['Добавя вируси', 'Намалява обема', 'Изтрива файлове', 'Не прави нищо'], correct: 1 },
+      { q: 'Защо правим системен бакъп?', options: ['За украса', 'За възстановяване при срив', 'За да забави компютъра', 'За да изключи интернет'], correct: 1 },
+      { q: 'Може ли архивът да има парола?', options: ['Не', 'Да', 'Само .txt', 'Само на Mac'], correct: 1 },
+      { q: 'Кой измисля .zip формата?', options: ['Линус Торвалдс', 'Фил Кац', 'Бил Гейтс', 'Ада Лъвлейс'], correct: 1 },
+      { q: 'Какво е lossless компресия?', options: ['С загуба', 'Без загуба на данни', 'Изтриване на файлове', 'Шифроване'], correct: 1 },
+      { q: 'Златното правило 3-2-1 казва:', options: ['3 пароли', '3 копия, 2 носителя, 1 извън дома', '3 лаптопа', '3 дни без ток'], correct: 1 },
+      { q: 'Пример за формат с висока компресия:', options: ['.wav', '.7z', '.bmp', '.iso без компресия'], correct: 1 },
+      { q: 'Какво прави „Restore“?', options: ['Компресира още', 'Възстановява файловете', 'Изтрива архивите', 'Оцветява екрана'], correct: 1 },
+      { q: 'Къде е разумно да държим едно копие от бакъпа?', options: ['До монитора', 'На отделен диск/облак', 'Под клавиатурата', 'В кошчето'], correct: 1 },
+    ];
+
+    const formatTable = [
+      { format: '.zip', ratio: 'Добро', speed: 'Бърза', encrypt: 'Да (AES-256)', tools: '7-Zip, WinZip' },
+      { format: '.rar', ratio: 'Много добро', speed: 'Средна', encrypt: 'Да', tools: 'WinRAR' },
+      { format: '.7z', ratio: 'Отлично', speed: 'По-бавна', encrypt: 'Да (AES-256)', tools: '7-Zip' },
+    ];
+
+    const glossary = [
+      { term: 'Архив', desc: 'Пакет от файлове, събрани заедно (може и без компресия).' },
+      { term: 'Компресия', desc: 'Намаляване на обема чрез намиране и премахване на излишни битове.' },
+      { term: 'Декомпресиране', desc: 'Възстановяване на оригиналните файлове от архива.' },
+      { term: 'Резервно копие (Backup)', desc: 'Допълнително копие на важни данни за аварийно възстановяване.' },
+      { term: 'Облачно съхранение', desc: 'Данни, пазени на отдалечени сървъри, достъпни през интернет.' },
+    ];
+
+    const LessonSection = () => (
+      <div className="space-y-6">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="glass p-4 rounded-xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-emerald-300">Архивиране vs Компресиране</h3>
+              <span className="text-sm text-orange-300">Анимация</span>
+            </div>
+            <div className="flex items-center gap-3 mt-4">
+              {lessonAnimations.map((item, idx) => (
+                <motion.div
+                  key={item.label}
+                  initial={{ scale: 1 }}
+                  animate={{ scale: idx === 0 ? 1.05 : 0.82, rotate: idx === 0 ? -1.5 : 2 }}
+                  transition={{ repeat: Infinity, repeatType: 'reverse', duration: 2, delay: idx * 0.3 }}
+                  className={`flex-1 glass p-4 rounded-lg border border-emerald-500/30`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className={`w-10 h-10 rounded-lg ${idx === 0 ? 'bg-emerald-500' : 'bg-orange-400'}`}></div>
+                    <span className="text-sm text-gray-300">{item.label}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-gray-300">
+                    {idx === 0
+                      ? 'Събира файлове заедно в един контейнер.'
+                      : 'Намалява размера чрез алгоритъм (например LZMA).'}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass p-4 rounded-xl">
+            <h3 className="text-xl font-semibold text-emerald-300 mb-3">Системен Бакъп</h3>
+            <p className="text-gray-200 text-sm leading-relaxed">
+              Бакъпът е пълно или частично копие на системата и важните данни. При срив или вирус можете да
+              възстановите предишно стабилно състояние. Образът на системата (system image) включва ОС,
+              драйвери и програми, докато потребителският бакъп пази документи, снимки и настройки.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {['Full image', 'Incremental', 'Cloud copy', 'Password'].map(tag => (
+                <span key={tag} className="chip text-xs px-3 py-1 rounded-full text-emerald-200">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="glass p-4 rounded-xl">
+          <h3 className="text-xl font-semibold text-emerald-300 mb-3">Формати и инструменти</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm table-dark">
+              <thead className="bg-white/5">
+                <tr>
+                  <th className="px-3 py-2 text-left">Формат</th>
+                  <th className="px-3 py-2 text-left">Компресия</th>
+                  <th className="px-3 py-2 text-left">Скорост</th>
+                  <th className="px-3 py-2 text-left">Криптиране</th>
+                  <th className="px-3 py-2 text-left">Инструменти</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formatTable.map(row => (
+                  <tr key={row.format} className="border-t border-white/10">
+                    <td className="px-3 py-2 font-semibold text-emerald-200">{row.format}</td>
+                    <td className="px-3 py-2">{row.ratio}</td>
+                    <td className="px-3 py-2">{row.speed}</td>
+                    <td className="px-3 py-2">{row.encrypt}</td>
+                    <td className="px-3 py-2 text-orange-200">{row.tools}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    const LabSection = () => {
+      const [available, setAvailable] = useState(archiveFiles);
+      const [archived, setArchived] = useState([]);
+      const [compressedSize, setCompressedSize] = useState(0);
+      const [restoreMsg, setRestoreMsg] = useState('Изберете архив за възстановяване.');
+
+      useEffect(() => {
+        const original = archived.reduce((acc, f) => acc + f.size, 0);
+        const compressed = Math.round(original * 0.6);
+        setCompressedSize(compressed);
+      }, [archived]);
+
+      const moveToArchive = (id) => {
+        const file = available.find(f => f.id === id);
+        if (!file) return;
+        setAvailable(prev => prev.filter(f => f.id !== id));
+        setArchived(prev => [...prev, file]);
+      };
+
+      const restore = (id) => {
+        const arc = restoreArchives.find(a => a.id === id);
+        if (!arc) return;
+        if (arc.status === 'Corrupted') {
+          setRestoreMsg('Архивът е повреден. Опитайте друг или използвайте резервно копие 3-2-1.');
+        } else {
+          setRestoreMsg(`Успешно възстановяване от ${arc.name}: ${arc.contains.join(', ')}.`);
+        }
+      };
+
+      const originalSize = archived.reduce((acc, f) => acc + f.size, 0);
+
+      return (
+        <div className="grid lg:grid-cols-2 gap-4">
+          <div className="glass p-4 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-emerald-300">Симулатор на архиватор</h3>
+              <span className="text-xs text-gray-400">Drag/Click to archive</span>
+            </div>
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <h4 className="text-sm text-gray-300 mb-2">Налични файлове</h4>
+                <div className="space-y-2">
+                  {available.map(file => (
+                    <motion.div
+                      key={file.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => moveToArchive(file.id)}
+                      className="glass border border-white/10 p-3 rounded-lg cursor-pointer flex items-center justify-between"
+                    >
+                      <div>
+                        <p className="font-semibold text-emerald-200">{file.name}</p>
+                        <p className="text-xs text-gray-400">{file.size} MB</p>
+                      </div>
+                      <span className="text-xs text-orange-300">Добави →</span>
+                    </motion.div>
+                  ))}
+                  {available.length === 0 && <p className="text-sm text-gray-400">Всички файлове са архивирани.</p>}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-sm text-gray-300 mb-2">Архив</h4>
+                <div className="space-y-2">
+                  {archived.map(file => (
+                    <motion.div key={file.id} layout className="glass border border-emerald-500/30 p-3 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-orange-200">{file.name}</p>
+                        <span className="text-xs text-gray-300">{file.size} MB</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                  {archived.length === 0 && <p className="text-sm text-gray-400">Добави файл, за да създадеш архив.</p>}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="glass p-3 rounded-lg border border-emerald-500/30">
+                <p className="text-gray-300">Оригинален размер</p>
+                <p className="text-2xl font-bold text-emerald-300">{originalSize} MB</p>
+              </div>
+              <div className="glass p-3 rounded-lg border border-orange-400/30">
+                <p className="text-gray-300">След компресия (~40%)</p>
+                <p className="text-2xl font-bold text-orange-300">{compressedSize} MB</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass p-4 rounded-xl space-y-3">
+            <h3 className="text-xl font-semibold text-emerald-300">Възстановяване (Restore)</h3>
+            <p className="text-sm text-gray-300">Избери архив. Повредените дават предупреждение.</p>
+            <div className="grid sm:grid-cols-3 gap-3">
+              {restoreArchives.map(arc => (
+                <motion.button
+                  key={arc.id}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => restore(arc.id)}
+                  className={`glass p-3 rounded-lg border text-left ${arc.status === 'Corrupted' ? 'border-red-500/40' : 'border-emerald-500/30'}`}
+                >
+                  <p className="font-semibold text-orange-200">{arc.name}</p>
+                  <p className="text-xs text-gray-400">Съдържа: {arc.contains.join(', ')}</p>
+                  <p className={`text-xs mt-1 ${arc.status === 'Corrupted' ? 'text-red-300' : 'text-emerald-300'}`}>
+                    Статус: {arc.status}
+                  </p>
+                </motion.button>
+              ))}
+            </div>
+            <div className="glass p-3 rounded-lg border border-white/10 text-sm text-gray-200">
+              {restoreMsg}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const FactsSection = () => (
+      <div className="grid-cards">
+        <div className="glass p-4 rounded-xl">
+          <h3 className="text-lg font-semibold text-emerald-300">История</h3>
+          <p className="text-sm text-gray-200 mt-2">.zip форматът е създаден от Фил Кац (PKZIP) през 1989 г., заменяйки ARC и ставайки де-факто стандарт.</p>
+        </div>
+        <div className="glass p-4 rounded-xl">
+          <h3 className="text-lg font-semibold text-emerald-300">Алгоритми</h3>
+          <p className="text-sm text-gray-200 mt-2">Lossless компресия премахва повторенията (например LZ77/LZMA). Няма загуба на информация — битовете се подреждат по-ефективно.</p>
+        </div>
+        <div className="glass p-4 rounded-xl">
+          <h3 className="text-lg font-semibold text-emerald-300">Най-големите бакъпи</h3>
+          <p className="text-sm text-gray-200 mt-2">Големи компании като Google съхраняват екзабайти данни в разпределени центрове и използват многократни копия за надеждност.</p>
+        </div>
+      </div>
+    );
+
+    const ConceptsSection = () => (
+      <div className="space-y-4">
+        <div className="grid-cards">
+          {glossary.map(item => (
+            <div key={item.term} className="glass p-4 rounded-xl border border-white/10">
+              <h4 className="font-semibold text-emerald-200">{item.term}</h4>
+              <p className="text-sm text-gray-300 mt-1">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="glass p-4 rounded-xl border border-emerald-500/30">
+          <h3 className="text-xl font-semibold text-emerald-300">Златното правило 3-2-1</h3>
+          <ul className="list-disc list-inside text-sm text-gray-200 mt-2 space-y-1">
+            <li>3 копия на данните</li>
+            <li>2 различни носителя (например диск + облак)</li>
+            <li>1 копие извън дома/офиса</li>
+          </ul>
+        </div>
+      </div>
+    );
+
+    const QuizSection = () => {
+      const [answers, setAnswers] = useState({});
+      const [submitted, setSubmitted] = useState(false);
+      const correct = quizData.filter((q, idx) => answers[idx] === q.correct).length;
+      const score = Math.round((correct / quizData.length) * 100);
+      const grade = score >= 90 ? '6.00 – System Admin' : score >= 70 ? '5.00 – Power User' : score >= 50 ? '4.00 – Apprentice' : '3.00 – Keep Learning';
+
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-emerald-300">The Backup Master Quiz</h3>
+            <p className="text-sm text-gray-400">{Object.keys(answers).length} / {quizData.length} отговорени</p>
+          </div>
+          <div className="space-y-3">
+            {quizData.map((item, idx) => (
+              <div key={idx} className="glass p-4 rounded-xl border border-white/10">
+                <p className="font-semibold text-emerald-200">Въпрос {idx + 1}: {item.q}</p>
+                <div className="grid sm:grid-cols-2 gap-2 mt-2">
+                  {item.options.map((opt, oIdx) => {
+                    const isSelected = answers[idx] === oIdx;
+                    const isCorrect = submitted && oIdx === item.correct;
+                    const isWrong = submitted && isSelected && oIdx !== item.correct;
+                    return (
+                      <button
+                        key={oIdx}
+                        disabled={submitted}
+                        onClick={() => setAnswers({ ...answers, [idx]: oIdx })}
+                        className={`text-left px-3 py-2 rounded-lg border transition ${
+                          isCorrect ? 'border-emerald-400 bg-emerald-500/20'
+                            : isWrong ? 'border-red-400 bg-red-500/10'
+                            : isSelected ? 'border-orange-400 bg-orange-500/10'
+                            : 'border-white/10 bg-white/5'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+          {!submitted ? (
+            <button
+              onClick={() => setSubmitted(true)}
+              className="px-4 py-2 rounded-lg bg-emerald-500 text-black font-semibold hover:bg-emerald-400"
+              disabled={Object.keys(answers).length !== quizData.length}
+              style={{ opacity: Object.keys(answers).length !== quizData.length ? 0.6 : 1 }}
+            >
+              Предай отговорите
+            </button>
+          ) : (
+            <div className="glass p-4 rounded-xl border border-emerald-500/40">
+              <p className="text-2xl font-bold text-emerald-300">Резултат: {correct} / {quizData.length} ({score}%)</p>
+              <p className="text-lg text-orange-200 mt-1">Оценка: {grade}</p>
+              <button
+                className="mt-3 px-4 py-2 rounded-lg bg-orange-400 text-black font-semibold hover:bg-orange-300"
+                onClick={() => { setAnswers({}); setSubmitted(false); }}
+              >
+                Опитай отново
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const sections = [
+      { id: 'lesson', label: 'Knowledge Base' },
+      { id: 'lab', label: 'Hands-on Lab' },
+      { id: 'facts', label: 'Did you know?' },
+      { id: 'concepts', label: 'Core Concepts' },
+      { id: 'quiz', label: 'Backup Master Quiz' },
+    ];
+
+    const App = () => {
+      const [section, setSection] = useState('lesson');
+      const [bg, setBg] = useState(backgrounds[0]);
+
+      useEffect(() => {
+        const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+        setBg(pick);
+      }, []);
+
+      const renderSection = () => {
+        switch (section) {
+          case 'lesson': return <LessonSection />;
+          case 'lab': return <LabSection />;
+          case 'facts': return <FactsSection />;
+          case 'concepts': return <ConceptsSection />;
+          case 'quiz': return <QuizSection />;
+          default: return <LessonSection />;
+        }
+      };
+
+      return (
+        <div className="min-h-screen">
+          <img src={bg} alt="background" className="bg-image" />
+          <div className="bg-overlay"></div>
+
+          <header className="sticky top-0 z-10 bg-black/40 backdrop-blur border-b border-white/10">
+            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300">Data Guardian</p>
+                <h1 className="text-2xl font-bold text-white">Архивиране и Системен Бакъп</h1>
+              </div>
+              <div className="hidden md:flex items-center gap-2">
+                {sections.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSection(s.id)}
+                    className={`px-3 py-2 rounded-lg border text-sm font-semibold transition ${section === s.id ? 'nav-active border-emerald-400/60' : 'border-white/10 hover:border-emerald-400/40'}`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+              <div className="md:hidden">
+                <select
+                  value={section}
+                  onChange={(e) => setSection(e.target.value)}
+                  className="bg-black/60 border border-white/20 text-sm rounded-lg px-2 py-1"
+                >
+                  {sections.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                </select>
+              </div>
+            </div>
+          </header>
+
+          <main className="max-w-6xl mx-auto px-4 py-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={section}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-4"
+              >
+                {renderSection()}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

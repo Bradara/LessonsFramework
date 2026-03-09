@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMS Architect: Пътят на уеб съдържанието</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b1021;
+      --card: rgba(20, 24, 46, 0.8);
+      --primary: #7c3aed; /* лилаво */
+      --secondary: #38bdf8; /* електриково синьо */
+    }
+    body {
+      background: var(--bg);
+      color: #e5e7eb;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.28;
+      z-index: -2;
+      filter: saturate(1.1) contrast(1.05);
+    }
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.2), transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.2), transparent 35%),
+                  linear-gradient(135deg, rgba(11, 16, 33, 0.75), rgba(11, 16, 33, 0.95));
+      z-index: -1;
+    }
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+    .nav-active { border-color: rgba(124, 58, 237, 0.7); color: #e9d5ff; background: rgba(124, 58, 237, 0.15); }
+    .chip { border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); }
+    .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .table-dark th, .table-dark td { border-color: rgba(255, 255, 255, 0.08); }
+    .icon { width: 22px; height: 22px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Simple lucide-like icons (inline SVG)
+    const DatabaseIcon = () => (
+      <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+        <path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"></path>
+        <path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3"></path>
+      </svg>
+    );
+    const LayoutIcon = () => (
+      <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+        <path d="M3 9h18"></path>
+        <path d="M9 21V9"></path>
+      </svg>
+    );
+    const UserIcon = () => (
+      <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    );
+
+    const backgrounds = [
+      'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=1920&q=80', // code matrix
+      'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=1920&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80', // server racks
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&q=80', // dev desk
+      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80', // abstract network
+      'https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=1920&q=80'  // database network
+    ];
+
+    const blueprintCards = [
+      {
+        title: 'Същност и предназначение',
+        desc: 'CMS разделя съдържанието от дизайна: редактирате текст/медия без да променяте HTML/CSS кода.',
+        icon: <LayoutIcon />, color: 'from-purple-500/30 to-blue-500/20'
+      },
+      {
+        title: 'Трислойна архитектура',
+        desc: 'Клиент (браузър) ↔ Сървър (PHP/Python/JS) ↔ База данни (SQL). Всеки слой има ясна роля.',
+        icon: <DatabaseIcon />, color: 'from-cyan-400/30 to-purple-500/20'
+      },
+      {
+        title: 'Компоненти: CMA & CDA',
+        desc: 'CMA: интерфейс за редактора. CDA: сглобява финалната страница с шаблон + данни.',
+        icon: <UserIcon />, color: 'from-blue-500/30 to-purple-500/20'
+      }
+    ];
+
+    const facts = [
+      { title: 'WordPress доминация', text: 'Над 40% от уеб сайтовете ползват WordPress (w3techs, 2025).' },
+      { title: 'Headless CMS', text: '„Безглави“ CMS доставят съдържание чрез API (JSON), фронтендът е отделен (React, Vue).' },
+      { title: 'Сигурност', text: 'Редовни актуализации затварят уязвимости в ядро, теми и плъгини.' },
+    ];
+
+    const glossary = [
+      { term: 'CMS', desc: 'Система за управление на съдържание (Content Management System).' },
+      { term: 'Текст-базирано съдържание', desc: 'Статии/страници, съхранени в база данни.' },
+      { term: 'Шаблони (Templates)', desc: 'Файлове, които описват визуалното представяне.' },
+      { term: 'Плъгини', desc: 'Разширения за нови функции (SEO, форми, кеширане).' },
+      { term: 'Динамично съдържание', desc: 'Страници се сглобяват при заявка, базирано на данни.' },
+    ];
+
+    const pros = [
+      'Бърз старт и готови теми',
+      'Екипна работа (роли, права)',
+      'Разширяемост чрез плъгини',
+      'Администрация през браузър'
+    ];
+    const cons = [
+      'Зависимост от платформата',
+      'Нужда от редовни ъпдейти',
+      'Понякога по-бавна производителност',
+      'Възможни конфликти между плъгини'
+    ];
+
+    const quiz = [
+      { q: 'Кой компонент съхранява статиите?', options: ['CMA', 'CDA', 'Базата данни', 'CSS'], correct: 2 },
+      { q: 'Основно предимство на CMS?', options: ['По-скъп хостинг', 'Без код за редакции', 'По-малко съдържание', 'По-малко сигурност'], correct: 1 },
+      { q: 'Роля на CDA?', options: ['Редактира статии', 'Сглобява страници от данни и шаблон', 'Настройва DNS', 'Компресира изображения'], correct: 1 },
+      { q: 'Какво разделя CMS?', options: ['Данни от шрифтове', 'Съдържание от дизайн', 'JS от CSS', 'Хостинг от домейн'], correct: 1 },
+      { q: 'Какво е Headless CMS?', options: ['CMS без база', 'API-first CMS без вграден фронтенд', 'Статична страница', 'CMS само за блогове'], correct: 1 },
+      { q: 'Кой слой говори с базата?', options: ['Клиент', 'Сървърна логика (PHP/Python/JS)', 'CDN', 'DNS'], correct: 1 },
+      { q: 'Защо ъпдейти са критични?', options: ['За нови теми', 'За сигурност и фиксове', 'За по-голям CSS', 'За повече реклами'], correct: 1 },
+      { q: 'Какво прави CMA?', options: ['Рендерира HTML', 'Осигурява UI за редакторите', 'Хоства база', 'Изпраща имейли'], correct: 1 },
+      { q: 'Пример за динамично съдържание?', options: ['Статичен PNG', 'Страница, генерирана от база', 'CSS файл', 'Шрифт'], correct: 1 },
+      { q: 'Кой е правилният ред в модела?', options: ['DB → Клиент → Сървър', 'Клиент → Сървър → База', 'Сървър → Клиент → База', 'DNS → Клиент → Сървър'], correct: 1 },
+    ];
+
+    const SectionWrapper = ({ children }) => (
+      <div className="glass p-4 md:p-5 rounded-xl border border-white/10">{children}</div>
+    );
+
+    const Blueprint = () => (
+      <div className="space-y-4">
+        <div className="grid-cards">
+          {blueprintCards.map(card => (
+            <div key={card.title} className="glass p-4 rounded-xl border border-white/10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-secondary-200">
+                  <span className="text-secondary-200">{card.icon}</span>
+                  <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                </div>
+                <span className="text-xs text-gray-400">Blueprint</span>
+              </div>
+              <p className="mt-2 text-sm text-gray-200">{card.desc}</p>
+              <div className={`mt-3 h-1.5 rounded-full bg-gradient-to-r ${card.color}`}></div>
+            </div>
+          ))}
+        </div>
+        <SectionWrapper>
+          <h3 className="text-xl font-semibold text-white mb-2">Трислойна архитектура</h3>
+          <div className="grid md:grid-cols-3 gap-3 text-sm text-gray-200">
+            <div className="glass border border-blue-400/30 p-3 rounded-lg">
+              <p className="text-secondary-100 font-semibold">Клиент (Browser)</p>
+              <p className="text-xs text-gray-300 mt-1">Изпраща HTTP заявки, визуализира HTML/CSS/JS.</p>
+            </div>
+            <div className="glass border border-purple-400/30 p-3 rounded-lg">
+              <p className="text-purple-100 font-semibold">Сървър (PHP/Python/JS)</p>
+              <p className="text-xs text-gray-300 mt-1">Бизнес логика, заявки към база, подготовка на изгледи.</p>
+            </div>
+            <div className="glass border border-blue-300/30 p-3 rounded-lg">
+              <p className="text-blue-100 font-semibold">База данни (SQL)</p>
+              <p className="text-xs text-gray-300 mt-1">Съхранява структурирано съдържание: статии, потребители, настройки.</p>
+            </div>
+          </div>
+        </SectionWrapper>
+      </div>
+    );
+
+    const CMSSimulator = () => {
+      const [content, setContent] = useState({ title: 'Заглавие на статия', body: 'Това е примерен текст от базата данни (CMS). Редактирай ме!' });
+      const [template, setTemplate] = useState('clean');
+      const templates = {
+        clean: { name: 'Clean', bg: 'bg-white text-gray-900', accent: 'text-blue-600' },
+        dark: { name: 'Dark Glass', bg: 'bg-gray-900 text-gray-50', accent: 'text-purple-300' },
+        card: { name: 'Carded', bg: 'bg-gradient-to-br from-blue-50 to-purple-50 text-gray-900', accent: 'text-purple-600' },
+      };
+
+      return (
+        <div className="grid lg:grid-cols-2 gap-4">
+          <SectionWrapper>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white">Визуален конфигуратор</h3>
+              <div className="flex gap-2 text-sm">
+                <label className="text-gray-300">Шаблон:</label>
+                <select
+                  value={template}
+                  onChange={(e) => setTemplate(e.target.value)}
+                  className="bg-black/60 border border-white/20 rounded-lg px-2 py-1 text-sm"
+                >
+                  {Object.entries(templates).map(([key, tpl]) => (
+                    <option key={key} value={key}>{tpl.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <label className="block text-sm text-gray-300 mb-1">База данни: Заглавие</label>
+            <input
+              className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm mb-3"
+              value={content.title}
+              onChange={(e) => setContent({ ...content, title: e.target.value })}
+            />
+            <label className="block text-sm text-gray-300 mb-1">База данни: Основен текст</label>
+            <textarea
+              className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm min-h-[120px]"
+              value={content.body}
+              onChange={(e) => setContent({ ...content, body: e.target.value })}
+            />
+            <p className="text-xs text-gray-400 mt-2">CDA ще използва шаблона и данните, за да рендерира страницата.</p>
+          </SectionWrapper>
+
+          <SectionWrapper>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white">Резултат (CDA Render)</h3>
+              <span className="text-xs text-gray-400">Реално време</span>
+            </div>
+            <div className={`rounded-xl p-5 shadow-lg ${templates[template].bg}`}>
+              <p className={`text-sm uppercase tracking-wide font-semibold ${templates[template].accent}`}>CMS Template</p>
+              <h2 className="text-2xl font-bold mt-2">{content.title || 'Без заглавие'}</h2>
+              <p className="mt-3 leading-relaxed text-base">{content.body || 'Добавете съдържание...'}</p>
+              <button className={`mt-4 px-4 py-2 rounded-lg text-sm font-semibold ${template === 'dark' ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'}`}>
+                Прочети още
+              </button>
+            </div>
+          </SectionWrapper>
+        </div>
+      );
+    };
+
+    const Facts = () => (
+      <SectionWrapper>
+        <h3 className="text-lg font-semibold text-white mb-3">Любопитни факти</h3>
+        <div className="grid-cards">
+          {facts.map(f => (
+            <div key={f.title} className="glass p-4 rounded-lg border border-white/10">
+              <h4 className="font-semibold text-secondary-100 text-blue-100">{f.title}</h4>
+              <p className="text-sm text-gray-200 mt-2">{f.text}</p>
+            </div>
+          ))}
+        </div>
+      </SectionWrapper>
+    );
+
+    const Summary = () => (
+      <div className="space-y-4">
+        <SectionWrapper>
+          <h3 className="text-lg font-semibold text-white mb-2">Интерактивен речник</h3>
+          <div className="grid-cards">
+            {glossary.map(item => (
+              <div key={item.term} className="glass p-4 rounded-lg border border-white/10">
+                <h4 className="font-semibold text-purple-100">{item.term}</h4>
+                <p className="text-sm text-gray-200 mt-1">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </SectionWrapper>
+        <SectionWrapper>
+          <h3 className="text-lg font-semibold text-white mb-2">Предимства vs Недостатъци</h3>
+          <div className="grid md:grid-cols-2 gap-3 text-sm">
+            <div className="glass p-3 rounded-lg border border-blue-400/30">
+              <p className="font-semibold text-blue-100 mb-1">Предимства</p>
+              <ul className="list-disc list-inside text-gray-200 space-y-1">
+                {pros.map((p, i) => <li key={i}>{p}</li>)}
+              </ul>
+            </div>
+            <div className="glass p-3 rounded-lg border border-purple-400/30">
+              <p className="font-semibold text-purple-100 mb-1">Недостатъци</p>
+              <ul className="list-disc list-inside text-gray-200 space-y-1">
+                {cons.map((c, i) => <li key={i}>{c}</li>)}
+              </ul>
+            </div>
+          </div>
+        </SectionWrapper>
+      </div>
+    );
+
+    const Quiz = () => {
+      const [answers, setAnswers] = useState({});
+      const [submitted, setSubmitted] = useState(false);
+      const correct = quiz.filter((q, idx) => answers[idx] === q.correct).length;
+      const score = Math.round((correct / quiz.length) * 100);
+      const rank = score >= 85 ? 'Full-Stack Architect' : score >= 65 ? 'Web Designer' : 'Content Editor';
+
+      return (
+        <SectionWrapper>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold text-white">The CMS Expert Quiz</h3>
+            <p className="text-xs text-gray-400">{Object.keys(answers).length} / {quiz.length} отговорени</p>
+          </div>
+          <div className="space-y-3">
+            {quiz.map((item, idx) => (
+              <div key={idx} className="glass p-4 rounded-lg border border-white/10">
+                <p className="font-semibold text-gray-100">Въпрос {idx + 1}: {item.q}</p>
+                <div className="grid sm:grid-cols-2 gap-2 mt-2">
+                  {item.options.map((opt, oIdx) => {
+                    const sel = answers[idx] === oIdx;
+                    const isCorrect = submitted && oIdx === item.correct;
+                    const isWrong = submitted && sel && oIdx !== item.correct;
+                    return (
+                      <button
+                        key={oIdx}
+                        disabled={submitted}
+                        onClick={() => setAnswers({ ...answers, [idx]: oIdx })}
+                        className={`text-left px-3 py-2 rounded-lg border transition ${
+                          isCorrect ? 'border-green-400 bg-green-500/15'
+                          : isWrong ? 'border-red-400 bg-red-500/10'
+                          : sel ? 'border-blue-400 bg-blue-500/10'
+                          : 'border-white/10 bg-white/5'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+          {!submitted ? (
+            <button
+              onClick={() => setSubmitted(true)}
+              className="mt-3 px-4 py-2 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-400"
+              disabled={Object.keys(answers).length !== quiz.length}
+              style={{ opacity: Object.keys(answers).length !== quiz.length ? 0.6 : 1 }}
+            >
+              Предай отговорите
+            </button>
+          ) : (
+            <div className="glass p-4 rounded-lg border border-purple-400/40 mt-3">
+              <p className="text-xl font-bold text-white">Резултат: {correct} / {quiz.length} ({score}%)</p>
+              <p className="text-lg text-blue-200 mt-1">Ранг: {rank}</p>
+              <button
+                className="mt-3 px-4 py-2 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-400"
+                onClick={() => { setAnswers({}); setSubmitted(false); }}
+              >
+                Опитай отново
+              </button>
+            </div>
+          )}
+        </SectionWrapper>
+      );
+    };
+
+    const sections = [
+      { id: 'blueprint', label: 'Blueprint', icon: <LayoutIcon /> },
+      { id: 'lab', label: 'CMS Simulator', icon: <DatabaseIcon /> },
+      { id: 'facts', label: 'Facts', icon: <UserIcon /> },
+      { id: 'summary', label: 'Mastering CMS', icon: <LayoutIcon /> },
+      { id: 'quiz', label: 'CMS Expert Quiz', icon: <DatabaseIcon /> },
+    ];
+
+    const App = () => {
+      const [section, setSection] = useState('blueprint');
+      const [bg, setBg] = useState(backgrounds[0]);
+
+      useEffect(() => {
+        const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+        setBg(pick);
+      }, []);
+
+      const render = () => {
+        switch (section) {
+          case 'blueprint': return <Blueprint />;
+          case 'lab': return <CMSSimulator />;
+          case 'facts': return <Facts />;
+          case 'summary': return <Summary />;
+          case 'quiz': return <Quiz />;
+          default: return <Blueprint />;
+        }
+      };
+
+      return (
+        <div className="min-h-screen">
+          <img src={bg} alt="background" className="bg-image" />
+          <div className="bg-overlay"></div>
+
+          <header className="sticky top-0 z-10 bg-black/50 backdrop-blur border-b border-white/10">
+            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-blue-200">CMS Architect</p>
+                <h1 className="text-2xl font-bold text-white">Пътят на уеб съдържанието</h1>
+              </div>
+              <div className="hidden md:flex items-center gap-2">
+                {sections.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSection(s.id)}
+                    className={`px-3 py-2 rounded-lg border text-sm font-semibold flex items-center gap-1 transition ${section === s.id ? 'nav-active' : 'border-white/10 hover:border-purple-400/40 text-gray-200'}`}
+                  >
+                    {s.icon} {s.label}
+                  </button>
+                ))}
+              </div>
+              <div className="md:hidden">
+                <select
+                  value={section}
+                  onChange={(e) => setSection(e.target.value)}
+                  className="bg-black/60 border border-white/20 text-sm rounded-lg px-2 py-1"
+                >
+                  {sections.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                </select>
+              </div>
+            </div>
+          </header>
+
+          <main className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+            {render()}
+          </main>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
