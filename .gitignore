@@ -28,7 +28,6 @@ desktop.ini
 *.temp
 
 # Background images (може да са големи)
-backgrounds/*.jpg
 backgrounds/*.jpeg
 backgrounds/*.png
 backgrounds/*.webp
