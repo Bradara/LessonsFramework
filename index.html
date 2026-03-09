@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Образователен Портал</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background 0.6s ease-in-out;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Образователен Портал</h1>
+                    <p class="text-gray-500 text-sm mt-1">Интерактивни уроци и материали</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div id="app"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 pb-8 text-center text-gray-400 text-sm">
+        <p>© 2026 Образователен Портал. Всички права запазени.</p>
+    </footer>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel Standalone for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Main App Script -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Списък с образователни икони за случаен избор
+        const educationIcons = [
+            'fa-book',
+            'fa-graduation-cap',
+            'fa-chalkboard',
+            'fa-lightbulb',
+            'fa-book-open',
+            'fa-brain',
+            'fa-flask',
+            'fa-microscope',
+            'fa-pencil',
+            'fa-laptop-code'
+        ];
+
+        // Функция за избор на случайна икона
+        const getRandomIcon = () => {
+            return educationIcons[Math.floor(Math.random() * educationIcons.length)];
+        };
+
+        // Тематични градиенти за папки (винаги работят, бързи, красиви)
+        const themedBackgrounds = {
+            // Начална страница - образование (син-лилав)
+            'Начало': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            
+            // Математика - сини тонове (логика, точност)
+            'Математика': 'linear-gradient(135deg, #2E3192 0%, #1BFFFF 100%)',
+            'Алгебра': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'Геометрия': 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+            
+            // Програмиране и информатика - тъмни технологични цветове
+            'Програмиране': 'linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%)',
+            'Информатика': 'linear-gradient(135deg, #232526 0%, #414345 100%)',
+            'JavaScript': 'linear-gradient(135deg, #F7971E 0%, #FFD200 100%)',
+            'Python': 'linear-gradient(135deg, #134E5E 0%, #71B280 100%)',
+            'HTML & CSS': 'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',
+            'Lessons': 'linear-gradient(135deg, #4568DC 0%, #B06AB3 100%)',
+            
+            // Физика - енергични цветове (енергия, движение)
+            'Физика': 'linear-gradient(135deg, #f77062 0%, #fe5196 100%)',
+            
+            // Химия - зелени тонове (експеримент, природа)
+            'Химия': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            
+            // Биология - природни зелени
+            'Биология': 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)',
+            
+            // История - топли, класически цветове
+            'История': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+            
+            // Литература - романтични тонове
+            'Литература': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            
+            // География - земни цветове
+            'География': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            
+            // Изкуство - живи, творчески цветове
+            'Изкуство': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            
+            // Музика - музикални, ритмични цветове
+            'Музика': 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'
+        };
+
+        // Градиенти за папки (винаги работят, бързи, красиви)
+        const backgroundGradients = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',  // сине-лилаво
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',  // розово-червено
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',  // синьо
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',  // зелено
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',  // розово-жълто
+            'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',  // тюркоаз-тъмно синьо
+            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',  // пастелно
+            'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',  // нежно розово
+            'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',  // портокалово
+            'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',  // червено-синьо
+            'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',  // лилаво-синьо
+            'linear-gradient(135deg, #f77062 0%, #fe5196 100%)'   // огнено
+        ];
+
+        // Фонови изображения от интернет (без нужда от локални файлове)
+        const imageBackgrounds = {
+            'Начало': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1600&q=80',
+            'Lessons': 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80',
+            'Modul2': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
+            'Modul4': 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1600&q=80',
+            'Modul1': 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&w=1600&q=80',
+            'Modul3': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
+            'Информатика': 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=1600&q=80',
+            'IT': 'https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=1600&q=80',
+            'Алгебра': 'https://images.unsplash.com/photo-1453733190371-0a9bedd82893?auto=format&fit=crop&w=1600&q=80',
+            'Геометрия': 'https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=1600&q=80',
+            'Физика': 'https://images.unsplash.com/photo-1508387024700-9fe5c0b39cc7?auto=format&fit=crop&w=1600&q=80',
+            'Химия': 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80',
+            'Биология': 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=1600&q=80',
+            'История': 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1600&q=80',
+            'Литература': 'https://images.unsplash.com/photo-1455884981818-54cb785db6fc?auto=format&fit=crop&w=1600&q=80',
+            'География': 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+            'Изкуство': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1600&q=80',
+            'Музика': 'https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?auto=format&fit=crop&w=1600&q=80',
+            'default': 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80'
+        };
+
+        // Функция за генериране на фон за папка
+        const getFolderBackground = (folderName) => {
+            // Първо опитваме с готово изображение
+            if (imageBackgrounds[folderName]) {
+                return { type: 'image', value: imageBackgrounds[folderName] };
+            }
+
+            // После проверка за тематичен градиент
+            if (themedBackgrounds[folderName]) {
+                return { type: 'gradient', value: themedBackgrounds[folderName] };
+            }
+            
+            // Използваме hash от името за консистентност (за непознати папки)
+            const hash = folderName.split('').reduce((acc, char) => {
+                return char.charCodeAt(0) + ((acc << 5) - acc);
+            }, 0);
+            const index = Math.abs(hash) % backgroundGradients.length;
+            
+            // Връщаме градиент (fallback за непознати папки)
+            return { type: 'gradient', value: backgroundGradients[index] };
+        };
+
+        // Компонент за Breadcrumb навигация
+        function Breadcrumb({ currentPath, onNavigate }) {
+            const pathParts = currentPath === '' ? [] : currentPath.split('/').filter(p => p);
+            
+            return (
+                <div className="mb-6 flex items-center space-x-2 text-sm">
+                    <button
+                        onClick={() => onNavigate('')}
+                        className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors"
+                    >
+                        <i className="fas fa-home"></i>
+                        <span>Начало</span>
+                    </button>
+                    
+                    {pathParts.map((part, index) => {
+                        const path = pathParts.slice(0, index + 1).join('/');
+                        const isLast = index === pathParts.length - 1;
+                        
+                        return (
+                            <React.Fragment key={index}>
+                                <i className="fas fa-chevron-right text-gray-400 text-xs"></i>
+                                <button
+                                    onClick={() => !isLast && onNavigate(path)}
+                                    className={`${
+                                        isLast 
+                                            ? 'text-blue-600 font-semibold' 
+                                            : 'text-gray-600 hover:text-blue-600'
+                                    } transition-colors`}
+                                    disabled={isLast}
+                                >
+                                    {part}
+                                </button>
+                            </React.Fragment>
+                        );
+                    })}
+                </div>
+            );
+        }
+
+        // Компонент за карта (папка или урок)
+        function Card({ item, onFolderClick }) {
+            const isFolder = item.type === 'folder';
+            const [icon] = useState(isFolder ? 'fa-folder' : getRandomIcon());
+            
+            const handleClick = () => {
+                if (isFolder) {
+                    onFolderClick(item.path);
+                } else {
+                    // За файлове - отваря урока
+                    window.location.href = item.path;
+                }
+            };
+
+            return (
+                <div 
+                    onClick={handleClick}
+                    className="card-hover bg-white/90 backdrop-blur-md rounded-2xl overflow-hidden shadow-md cursor-pointer border border-gray-200 fade-in"
+                >
+                    
+                    <div className="p-8">
+                        <div className="flex flex-col items-center text-center space-y-4">
+                            {/* Икона */}
+                            <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
+                                isFolder 
+                                    ? 'bg-gradient-to-br from-yellow-400 to-orange-500' 
+                                    : 'bg-gradient-to-br from-blue-400 to-indigo-600'
+                            }`}>
+                                <i className={`fas ${icon} text-white text-2xl`}></i>
+                            </div>
+                            
+                            {/* Име */}
+                            <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">
+                                {item.name}
+                            </h3>
+                            
+                            {/* Тип */}
+                            <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+                                isFolder 
+                                    ? 'bg-yellow-100 text-yellow-700' 
+                                    : 'bg-blue-100 text-blue-700'
+                            }`}>
+                                {isFolder ? 'Папка' : 'Урок'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Основен App компонент
+        function App() {
+            const [allItems, setAllItems] = useState([]);
+            const [currentPath, setCurrentPath] = useState('');
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+
+            useEffect(() => {
+                // Зареждане на structure.json
+                fetch('structure.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Не може да се зареди structure.json');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        setAllItems(data);
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        setError(err.message);
+                        setLoading(false);
+                    });
+            }, []);
+
+            // Динамичен фон на страницата според текущата папка
+            useEffect(() => {
+                const currentFolderName = currentPath === '' 
+                    ? 'Начало' 
+                    : currentPath.split('/').filter(p => p).pop();
+                
+                const background = getFolderBackground(currentFolderName);
+                
+                console.log('🎨 Смяна на фон:', {
+                    папка: currentFolderName,
+                    път: currentPath,
+                    фон: background
+                });
+                
+                // Приложи изображение или градиент
+                if (background.type === 'image') {
+                    document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('${background.value}')`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    document.body.style.backgroundColor = '#0f172a';
+                } else {
+                    document.body.style.backgroundImage = '';
+                    document.body.style.background = background.value;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                }
+            }, [currentPath]);
+
+            // Филтриране на елементи според текущата директория
+            const getCurrentItems = () => {
+                if (currentPath === '') {
+                    // Корен - показва само елементи на първо ниво
+                    return allItems.filter(item => {
+                        const pathParts = item.path.split('/').filter(p => p);
+                        return pathParts.length === 1 || 
+                               (item.type === 'file' && !item.path.includes('/'));
+                    });
+                } else {
+                    // В подпапка - показва само елементи в тази папка
+                    const currentDir = currentPath.endsWith('/') ? currentPath : currentPath + '/';
+                    return allItems.filter(item => {
+                        if (!item.path.startsWith(currentDir)) return false;
+                        
+                        const relativePath = item.path.substring(currentDir.length);
+                        const parts = relativePath.split('/').filter(p => p);
+                        
+                        // Показва само директни деца (не внучета)
+                        return parts.length === 1 || (item.type === 'folder' && parts.length === 1);
+                    }).map(item => {
+                        // Адаптираме пътя и името за текущата директория
+                        const relativePath = item.path.substring(currentDir.length);
+                        const parts = relativePath.split('/').filter(p => p);
+                        
+                        return {
+                            ...item,
+                            name: parts[0],
+                            path: item.path
+                        };
+                    });
+                }
+            };
+
+            const handleFolderClick = (folderPath) => {
+                // Премахваме крайния slash ако има
+                const cleanPath = folderPath.endsWith('/') 
+                    ? folderPath.slice(0, -1) 
+                    : folderPath;
+                setCurrentPath(cleanPath);
+            };
+
+            const handleNavigate = (path) => {
+                setCurrentPath(path);
+            };
+
+            if (loading) {
+                return (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+                        <p className="mt-4 text-gray-600">Зареждане...</p>
+                    </div>
+                );
+            }
+
+            if (error) {
+                return (
+                    <div className="bg-red-50/90 backdrop-blur-md border border-red-200 rounded-xl p-8 text-center">
+                        <i className="fas fa-exclamation-circle text-red-500 text-4xl mb-4"></i>
+                        <h3 className="text-xl font-semibold text-red-800 mb-2">Грешка при зареждане</h3>
+                        <p className="text-red-600">{error}</p>
+                        <p className="text-sm text-red-500 mt-4">
+                            Моля, уверете се, че файлът structure.json съществува и е валиден.
+                        </p>
+                        <p className="text-sm text-red-500 mt-2">
+                            Стартирайте: <code className="bg-red-100 px-2 py-1 rounded">python scanner.py -r</code>
+                        </p>
+                    </div>
+                );
+            }
+
+            const items = getCurrentItems();
+            
+            // Сортиране: папки първи, после файлове
+            const sortedItems = [...items].sort((a, b) => {
+                if (a.type === 'folder' && b.type !== 'folder') return -1;
+                if (a.type !== 'folder' && b.type === 'folder') return 1;
+                return a.name.localeCompare(b.name, 'bg');
+            });
+
+            // Премахваме дубликати по име
+            const uniqueItems = sortedItems.filter((item, index, self) => 
+                index === self.findIndex(t => t.name === item.name && t.type === item.type)
+            );
+
+            if (uniqueItems.length === 0) {
+                return (
+                    <div>
+                        <Breadcrumb currentPath={currentPath} onNavigate={handleNavigate} />
+                        <div className="bg-gray-50/90 backdrop-blur-md border border-gray-200 rounded-xl p-12 text-center">
+                            <i className="fas fa-folder-open text-gray-400 text-5xl mb-4"></i>
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">Празна папка</h3>
+                            <p className="text-gray-500">Няма налично съдържание в тази директория</p>
+                            {currentPath !== '' && (
+                                <button
+                                    onClick={() => handleNavigate('')}
+                                    className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                >
+                                    <i className="fas fa-arrow-left mr-2"></i>
+                                    Назад към началото
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    {/* Breadcrumb навигация */}
+                    <Breadcrumb currentPath={currentPath} onNavigate={handleNavigate} />
+
+                    {/* Информация */}
+                    <div className="mb-8">
+                        <p className="text-gray-600">
+                            {currentPath === '' ? 'Основна директория' : `Папка: ${currentPath.split('/').pop()}`}
+                            {' • '}
+                            <span className="font-semibold text-gray-900">{uniqueItems.length}</span> елемента
+                        </p>
+                    </div>
+
+                    {/* Grid с карти */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {uniqueItems.map((item, index) => (
+                            <Card key={`${item.type}-${item.name}-${index}`} item={item} onFolderClick={handleFolderClick} />
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Рендериране на приложението
+        const root = ReactDOM.createRoot(document.getElementById('app'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

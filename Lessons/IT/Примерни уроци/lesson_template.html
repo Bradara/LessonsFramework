@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок - Образователен Портал</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 3rem 2.5rem;
+        }
+
+        .content h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .content h2:first-child {
+            margin-top: 0;
+        }
+
+        .content h3 {
+            color: #764ba2;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem;
+        }
+
+        .content p {
+            margin-bottom: 1.2rem;
+            font-size: 1.05rem;
+            color: #555;
+        }
+
+        .content ul, .content ol {
+            margin: 1rem 0 1.5rem 2rem;
+            color: #555;
+        }
+
+        .content li {
+            margin-bottom: 0.6rem;
+            font-size: 1.05rem;
+        }
+
+        .content code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e91e63;
+            font-size: 0.95rem;
+        }
+
+        .content pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+
+        .content pre code {
+            background: transparent;
+            color: #f8f8f2;
+            padding: 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+            color: #333;
+        }
+
+        .highlight-box .icon {
+            color: #667eea;
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            margin-top: 2rem;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .content h2 {
+                font-size: 1.5rem;
+            }
+
+            .content h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>✨ Заглавие на урока</h1>
+                <p>Кратко описание на урока или темата</p>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Въведение</h2>
+            <p>
+                Това е примерен шаблон за урок. Тук можете да поставите уводен текст, който обяснява целта и контекста на урока. 
+                Използвайте ясен и разбираем език, за да улесните ученето.
+            </p>
+
+            <div class="highlight-box">
+                <p>
+                    <i class="fas fa-lightbulb icon"></i>
+                    <strong>Важно:</strong> Това е информационна кутия, която можете да използвате за важни бележки, съвети или наблягане на ключови концепции.
+                </p>
+            </div>
+
+            <h2>Основна част</h2>
+            <p>
+                Разделете съдържанието на логични секции, използвайки заглавия от второ и трето ниво. Това помага на учениците да следят структурата на урока.
+            </p>
+
+            <h3>Пример за списък</h3>
+            <p>Ето няколко предимства на добрата структура:</p>
+            <ul>
+                <li>Подобрява разбирането на материала</li>
+                <li>Помага за запомнянето на информацията</li>
+                <li>Улеснява навигацията в урока</li>
+                <li>Прави ученето по-приятно</li>
+            </ul>
+
+            <h3>Пример за код</h3>
+            <p>За технически уроци, можете да включите код:</p>
+            <pre><code>functionприветствие(име) {
+    console.log("Здравей, " + име + "!");
+}
+
+приветствие("Ученик");
+// Извежда: Здравей, Ученик!</code></pre>
+
+            <p>
+                За кратки парчета код вътре в текста, използвайте <code>inline code</code> форматиране.
+            </p>
+
+            <h3>Подточки</h3>
+            <p>Стъпки за изпълнение на задача:</p>
+            <ol>
+                <li>Отворете текстовия редактор</li>
+                <li>Създайте нов файл с разширение <code>.html</code></li>
+                <li>Напишете вашия код</li>
+                <li>Запазете файла и го отворете в браузър</li>
+            </ol>
+
+            <h2>Заключение</h2>
+            <p>
+                Завършете урока с обобщение на научените концепции. Можете също да добавите препратки към следващи уроци или допълнителни ресурси за задълбочено изучаване.
+            </p>
+
+            <div class="highlight-box">
+                <p>
+                    <i class="fas fa-rocket icon"></i>
+                    <strong>Предизвикателство:</strong> Опитайте да приложите наученото в практически проект. Експериментирайте и не се страхувайте да правите грешки!
+                </p>
+            </div>
+
+            <!-- Back Button -->
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Назад към уроците
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Array Mastery: Интерактивен визуализатор на структури от данни</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .cell-highlight {
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Icon Components
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const ref = useRef(null);
+            
+            useEffect(() => {
+                if (ref.current && window.lucide) {
+                    const iconElement = window.lucide.createElement(window.lucide[name]);
+                    if (iconElement) {
+                        iconElement.setAttribute('width', size);
+                        iconElement.setAttribute('height', size);
+                        iconElement.setAttribute('class', className);
+                        ref.current.innerHTML = '';
+                        ref.current.appendChild(iconElement);
+                    }
+                }
+            }, [name, size, className]);
+            
+            return <span ref={ref}></span>;
+        };
+        
+        // Main App Component
+        const ArrayMasteryApp = () => {
+            const [activeTab, setActiveTab] = useState('constructor');
+            
+            const tabs = [
+                { id: 'constructor', name: 'Визуален конструктор', icon: 'Grid3x3' },
+                { id: 'days', name: 'Дни от седмицата', icon: 'Calendar' },
+                { id: 'algorithms', name: 'Лаборатория', icon: 'FlaskConical' },
+                { id: 'loops', name: 'Цикли', icon: 'RepeatIcon' },
+                { id: 'bugHunter', name: 'Bug Hunter', icon: 'Bug' }
+            ];
+            
+            return (
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <header className="text-center mb-8 fade-in">
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                            <Icon name="Code2" size={40} className="text-blue-400" />
+                            <h1 className="text-4xl md:text-5xl font-bold text-white">
+                                Array Mastery
+                            </h1>
+                        </div>
+                        <p className="text-gray-400 text-lg">
+                            Интерактивен визуализатор на структури от данни
+                        </p>
+                        <div className="mt-4 inline-block px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                            <span className="text-blue-300 code-font text-sm">
+                                12. клас • Информатика • C# Arrays
+                            </span>
+                        </div>
+                    </header>
+                    
+                    {/* Tab Navigation */}
+                    <nav className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-2 mb-6 border border-slate-700/50">
+                        <div className="flex flex-wrap gap-2">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${
+                                        activeTab === tab.id
+                                            ? 'bg-blue-600 text-white glow-effect'
+                                            : 'bg-slate-700/50 text-gray-300 hover:bg-slate-700'
+                                    }`}
+                                >
+                                    <Icon name={tab.icon} size={20} />
+                                    <span className="hidden md:inline">{tab.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+                    
+                    {/* Content Area */}
+                    <div className="fade-in">
+                        {activeTab === 'constructor' && <ArrayConstructor />}
+                        {activeTab === 'days' && <DaysOfWeek />}
+                        {activeTab === 'algorithms' && <AlgorithmsLab />}
+                        {activeTab === 'loops' && <LoopsVisualizer />}
+                        {activeTab === 'bugHunter' && <BugHunter />}
+                    </div>
+                </div>
+            );
+        };
+        
+        // Array Constructor Component
+        const ArrayConstructor = () => {
+            const [arrayLength, setArrayLength] = useState(5);
+            const [arrayValues, setArrayValues] = useState(Array(5).fill(0));
+            const [selectedIndex, setSelectedIndex] = useState(null);
+            const [inputValue, setInputValue] = useState('');
+            
+            const handleLengthChange = (newLength) => {
+                const length = Math.max(1, Math.min(20, parseInt(newLength) || 1));
+                setArrayLength(length);
+                setArrayValues(Array(length).fill(0));
+                setSelectedIndex(null);
+            };
+            
+            const handleCellClick = (index) => {
+                setSelectedIndex(index);
+                setInputValue(arrayValues[index].toString());
+            };
+            
+            const handleValueUpdate = () => {
+                if (selectedIndex !== null) {
+                    const newValues = [...arrayValues];
+                    newValues[selectedIndex] = parseFloat(inputValue) || 0;
+                    setArrayValues(newValues);
+                }
+            };
+            
+            const handleRandomFill = () => {
+                setArrayValues(arrayValues.map(() => Math.floor(Math.random() * 100)));
+            };
+            
+            return (
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Icon name="Grid3x3" size={28} className="text-blue-400" />
+                        <h2 className="text-2xl font-bold text-white">Визуален конструктор на масиви</h2>
+                    </div>
+                    
+                    {/* Controls */}
+                    <div className="grid md:grid-cols-3 gap-4 mb-6">
+                        <div className="bg-slate-700/30 p-4 rounded-lg">
+                            <label className="block text-sm text-gray-300 mb-2">
+                                Дължина на масива (Array.Length):
+                            </label>
+                            <input
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={arrayLength}
+                                onChange={(e) => handleLengthChange(e.target.value)}
+                                className="w-full px-3 py-2 bg-slate-900 text-white rounded-lg border border-slate-600 focus:border-blue-500 outline-none code-font"
+                            />
+                        </div>
+                        
+                        {selectedIndex !== null && (
+                            <div className="bg-slate-700/30 p-4 rounded-lg">
+                                <label className="block text-sm text-gray-300 mb-2">
+                                    Стойност за arr[{selectedIndex}]:
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="number"
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(e.target.value)}
+                                        className="flex-1 px-3 py-2 bg-slate-900 text-white rounded-lg border border-slate-600 focus:border-blue-500 outline-none code-font"
+                                    />
+                                    <button
+                                        onClick={handleValueUpdate}
+                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                                    >
+                                        OK
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        
+                        <div className="bg-slate-700/30 p-4 rounded-lg">
+                            <label className="block text-sm text-gray-300 mb-2">
+                                Бързи действия:
+                            </label>
+                            <button
+                                onClick={handleRandomFill}
+                                className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Icon name="Shuffle" size={18} />
+                                Случайни числа
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {/* Array Visualization */}
+                    <div className="bg-slate-900/50 p-6 rounded-lg mb-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="text-gray-400 code-font text-sm">Memory Map:</span>
+                            <span className="text-blue-400 code-font text-sm">
+                                int[] arr = new int[{arrayLength}];
+                            </span>
+                        </div>
+                        
+                        <div className="overflow-x-auto pb-4">
+                            <div className="flex gap-2 min-w-max">
+                                {arrayValues.map((value, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => handleCellClick(index)}
+                                        className={`cursor-pointer transition-all ${
+                                            selectedIndex === index
+                                                ? 'transform scale-105 cell-highlight'
+                                                : ''
+                                        }`}
+                                    >
+                                        {/* Index Label */}
+                                        <div className="text-center mb-2">
+                                            <span className="text-xs text-gray-500 code-font">
+                                                Index
+                                            </span>
+                                        </div>
+                                        <div
+                                            className={`w-20 h-20 rounded-lg border-2 flex items-center justify-center transition-all ${
+                                                selectedIndex === index
+                                                    ? 'border-blue-500 bg-blue-500/20 glow-effect'
+                                                    : 'border-slate-600 bg-slate-800 hover:border-slate-500'
+                                            }`}
+                                        >
+                                            <span className="text-xl font-bold text-white code-font">
+                                                {value}
+                                            </span>
+                                        </div>
+                                        {/* Value Label */}
+                                        <div className="text-center mt-2">
+                                            <span className="text-sm text-blue-400 code-font">
+                                                [{index}]
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Info Panel */}
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                            <Icon name="Info" size={20} className="text-blue-400 mt-0.5" />
+                            <div className="text-sm text-gray-300">
+                                <p className="mb-2">
+                                    <strong className="text-blue-400">Индексите започват от 0!</strong>
+                                </p>
+                                <p>
+                                    Масивът с дължина {arrayLength} има индекси от 0 до {arrayLength - 1}.
+                                    Кликнете върху клетка, за да промените стойността ѝ.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Days of Week Component
+        const DaysOfWeek = () => {
+            const [inputDay, setInputDay] = useState('');
+            const [result, setResult] = useState(null);
+            const [highlightIndex, setHighlightIndex] = useState(null);
+            
+            const days = ["Понеделник", "Вторник", "Сряда", "Четвъртък", "Петък", "Събота", "Неделя"];
+            
+            const handleSubmit = () => {
+                const dayNum = parseInt(inputDay);
+                if (dayNum >= 1 && dayNum <= 7) {
+                    const index = dayNum - 1;
+                    setHighlightIndex(index);
+                    setResult({
+                        success: true,
+                        dayName: days[index],
+                        dayNumber: dayNum,
+                        index: index
+                    });
+                } else {
+                    setResult({
+                        success: false,
+                        message: 'Въведете число от 1 до 7!'
+                    });
+                    setHighlightIndex(null);
+                }
+            };
+            
+            return (
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Icon name="Calendar" size={28} className="text-blue-400" />
+                        <h2 className="text-2xl font-bold text-white">Модул: Дни от седмицата</h2>
+                    </div>
+                    
+                    {/* Code Display */}
+                    <div className="bg-slate-900 rounded-lg p-4 mb-6 border border-slate-700">
+                        <pre className="code-font text-sm text-gray-300">
+{`string[] days = {
+    "Понеделник",  // index 0
+    "Вторник",     // index 1
+    "Сряда",       // index 2
+    "Четвъртък",   // index 3
+    "Петък",       // index 4
+    "Събота",      // index 5
+    "Неделя"       // index 6
+};`}
+                        </pre>
+                    </div>
+                    
+                    {/* Input Section */}
+                    <div className="bg-slate-700/30 p-6 rounded-lg mb-6">
+                        <label className="block text-gray-300 mb-3 text-lg">
+                            Въведете номер на ден (1-7):
+                        </label>
+                        <div className="flex gap-3">
+                            <input
+                                type="number"
+                                min="1"
+                                max="7"
+                                value={inputDay}
+                                onChange={(e) => setInputDay(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+                                placeholder="Например: 1"
+                                className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-lg border border-slate-600 focus:border-blue-500 outline-none code-font text-lg"
+                            />
+                            <button
+                                onClick={handleSubmit}
+                                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                            >
+                                Провери
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {/* Array Visualization */}
+                    <div className="bg-slate-900/50 p-6 rounded-lg mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
+                            {days.map((day, index) => (
+                                <div
+                                    key={index}
+                                    className={`p-4 rounded-lg border-2 transition-all ${
+                                        highlightIndex === index
+                                            ? 'border-green-500 bg-green-500/20 glow-effect transform scale-105'
+                                            : 'border-slate-600 bg-slate-800'
+                                    }`}
+                                >
+                                    <div className="text-center">
+                                        <div className="text-xs text-gray-500 mb-1">index [{index}]</div>
+                                        <div className="text-lg font-semibold text-white">{day}</div>
+                                        <div className="text-xs text-blue-400 mt-1">ден {index + 1}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Result Display */}
+                    {result && (
+                        <div className={`p-4 rounded-lg border-2 ${
+                            result.success
+                                ? 'bg-green-500/10 border-green-500/30'
+                                : 'bg-red-500/10 border-red-500/30'
+                        }`}>
+                            <div className="flex items-start gap-3">
+                                <Icon
+                                    name={result.success ? "CheckCircle2" : "XCircle"}
+                                    size={24}
+                                    className={result.success ? "text-green-400" : "text-red-400"}
+                                />
+                                <div>
+                                    {result.success ? (
+                                        <div className="text-gray-200">
+                                            <p className="font-semibold mb-2">Резултат:</p>
+                                            <p className="code-font text-sm mb-1">
+                                                days[{result.index}] = "{result.dayName}"
+                                            </p>
+                                            <p className="text-sm text-gray-400 mt-2">
+                                                Ден {result.dayNumber} съответства на индекс {result.index}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-red-300">{result.message}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Info Panel */}
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mt-6">
+                        <div className="flex items-start gap-3">
+                            <Icon name="Lightbulb" size={20} className="text-yellow-400 mt-0.5" />
+                            <div className="text-sm text-gray-300">
+                                <p className="font-semibold text-blue-400 mb-2">Важно!</p>
+                                <p>
+                                    Индексацията в масивите започва от 0. Затова ден 1 (Понеделник) 
+                                    е на индекс 0, ден 2 (Вторник) е на индекс 1, и т.н.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Algorithms Lab Component
+        const AlgorithmsLab = () => {
+            const [activeAlgo, setActiveAlgo] = useState('reverse');
+            const [reverseArray, setReverseArray] = useState([1, 2, 3, 4, 5]);
+            const [reverseStep, setReverseStep] = useState(0);
+            const [reverseHistory, setReverseHistory] = useState([]);
+            const [isAnimating, setIsAnimating] = useState(false);
+            
+            const [roundArray, setRoundArray] = useState([1.4, 2.6, 3.5, 4.3, 5.8]);
+            const [roundStep, setRoundStep] = useState(0);
+            const [roundResults, setRoundResults] = useState([]);
+            
+            // Reverse Array Logic
+            const reverseArrayAlgo = () => {
+                const arr = [...reverseArray];
+                const history = [{ array: [...arr], step: 0, description: 'Начален масив' }];
+                
+                for (let i = 0; i < arr.length / 2; i++) {
+                    const oldElement = arr[i];
+                    arr[i] = arr[arr.length - 1 - i];
+                    arr[arr.length - 1 - i] = oldElement;
+                    
+                    history.push({
+                        array: [...arr],
+                        step: i + 1,
+                        description: `Размяна: arr[${i}] ↔ arr[${arr.length - 1 - i}]`,
+                        swapIndices: [i, arr.length - 1 - i],
+                        oldElement: oldElement
+                    });
+                }
+                
+                history.push({ array: [...arr], step: history.length, description: 'Обърнат масив!' });
+                return history;
+            };
+            
+            const startReverseAnimation = () => {
+                setIsAnimating(true);
+                const history = reverseArrayAlgo();
+                setReverseHistory(history);
+                setReverseStep(0);
+                
+                let step = 0;
+                const interval = setInterval(() => {
+                    step++;
+                    if (step >= history.length) {
+                        clearInterval(interval);
+                        setIsAnimating(false);
+                    } else {
+                        setReverseStep(step);
+                    }
+                }, 1000);
+            };
+            
+            const resetReverse = () => {
+                setReverseArray([1, 2, 3, 4, 5]);
+                setReverseStep(0);
+                setReverseHistory([]);
+                setIsAnimating(false);
+            };
+            
+            // Round Array Logic
+            const startRoundAnimation = () => {
+                setIsAnimating(true);
+                const results = [];
+                
+                roundArray.forEach((num, index) => {
+                    setTimeout(() => {
+                        const rounded = Math.round(num);
+                        results.push({ original: num, rounded: rounded, index: index });
+                        setRoundResults([...results]);
+                        setRoundStep(index + 1);
+                        
+                        if (index === roundArray.length - 1) {
+                            setIsAnimating(false);
+                        }
+                    }, index * 800);
+                });
+            };
+            
+            const resetRound = () => {
+                setRoundArray([1.4, 2.6, 3.5, 4.3, 5.8]);
+                setRoundStep(0);
+                setRoundResults([]);
+                setIsAnimating(false);
+            };
+            
+            return (
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Icon name="FlaskConical" size={28} className="text-blue-400" />
+                        <h2 className="text-2xl font-bold text-white">Лаборатория за алгоритми</h2>
+                    </div>
+                    
+                    {/* Algorithm Selector */}
+                    <div className="flex gap-3 mb-6">
+                        <button
+                            onClick={() => setActiveAlgo('reverse')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+                                activeAlgo === 'reverse'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                            }`}
+                        >
+                            Обръщане на масив
+                        </button>
+                        <button
+                            onClick={() => setActiveAlgo('round')}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+                                activeAlgo === 'round'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                            }`}
+                        >
+                            Закръгляне
+                        </button>
+                    </div>
+                    
+                    {/* Reverse Algorithm */}
+                    {activeAlgo === 'reverse' && (
+                        <div>
+                            <div className="bg-slate-900 rounded-lg p-4 mb-4 border border-slate-700">
+                                <pre className="code-font text-sm text-gray-300">
+{`for (int i = 0; i < arr.Length / 2; i++)
+{
+    int oldElement = arr[i];
+    arr[i] = arr[arr.Length - 1 - i];
+    arr[arr.Length - 1 - i] = oldElement;
+}`}
+                                </pre>
+                            </div>
+                            
+                            <div className="bg-slate-900/50 p-6 rounded-lg mb-4">
+                                <div className="flex gap-2 justify-center mb-6">
+                                    {(reverseHistory[reverseStep]?.array || reverseArray).map((value, index) => {
+                                        const currentStep = reverseHistory[reverseStep];
+                                        const isSwapping = currentStep?.swapIndices?.includes(index);
+                                        
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center transition-all ${
+                                                    isSwapping
+                                                        ? 'border-yellow-500 bg-yellow-500/20 transform scale-110'
+                                                        : 'border-slate-600 bg-slate-800'
+                                                }`}
+                                            >
+                                                <span className="text-xl font-bold text-white code-font">
+                                                    {value}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                
+                                {reverseHistory[reverseStep] && (
+                                    <div className="text-center">
+                                        <p className="text-blue-400 font-medium mb-2">
+                                            Стъпка {reverseHistory[reverseStep].step}
+                                        </p>
+                                        <p className="text-gray-300">
+                                            {reverseHistory[reverseStep].description}
+                                        </p>
+                                        {reverseHistory[reverseStep].oldElement !== undefined && (
+                                            <p className="text-yellow-400 text-sm mt-2 code-font">
+                                                oldElement = {reverseHistory[reverseStep].oldElement}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={startReverseAnimation}
+                                    disabled={isAnimating}
+                                    className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="Play" size={20} />
+                                    Стартирай анимация
+                                </button>
+                                <button
+                                    onClick={resetReverse}
+                                    className="py-3 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="RotateCcw" size={20} />
+                                    Нулирай
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Round Algorithm */}
+                    {activeAlgo === 'round' && (
+                        <div>
+                            <div className="bg-slate-900 rounded-lg p-4 mb-4 border border-slate-700">
+                                <pre className="code-font text-sm text-gray-300">
+{`for (int i = 0; i < arr.Length; i++)
+{
+    arr[i] = Math.Round(arr[i], 
+        MidpointRounding.AwayFromZero);
+}`}
+                                </pre>
+                            </div>
+                            
+                            <div className="bg-slate-900/50 p-6 rounded-lg mb-4">
+                                <div className="space-y-3">
+                                    {roundArray.map((value, index) => {
+                                        const result = roundResults.find(r => r.index === index);
+                                        const isActive = index === roundStep - 1;
+                                        
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-all ${
+                                                    isActive
+                                                        ? 'border-yellow-500 bg-yellow-500/10'
+                                                        : result
+                                                        ? 'border-green-500 bg-green-500/10'
+                                                        : 'border-slate-600 bg-slate-800'
+                                                }`}
+                                            >
+                                                <div className="flex-1 flex items-center gap-4">
+                                                    <span className="text-gray-400 code-font">arr[{index}]</span>
+                                                    <span className="text-xl text-white code-font">{value}</span>
+                                                    {result && (
+                                                        <>
+                                                            <Icon name="ArrowRight" size={20} className="text-blue-400" />
+                                                            <span className="text-xl text-green-400 code-font font-bold">
+                                                                {result.rounded}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                {result && (
+                                                    <Icon name="CheckCircle2" size={24} className="text-green-400" />
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={startRoundAnimation}
+                                    disabled={isAnimating}
+                                    className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="Play" size={20} />
+                                    Стартирай анимация
+                                </button>
+                                <button
+                                    onClick={resetRound}
+                                    className="py-3 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="RotateCcw" size={20} />
+                                    Нулирай
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        // Loops Visualizer Component
+        const LoopsVisualizer = () => {
+            const [array] = useState([10, 20, 30, 40, 50]);
+            const [loopType, setLoopType] = useState('for');
+            const [currentIndex, setCurrentIndex] = useState(-1);
+            const [isRunning, setIsRunning] = useState(false);
+            const [output, setOutput] = useState([]);
+            
+            const startLoop = () => {
+                setIsRunning(true);
+                setOutput([]);
+                setCurrentIndex(-1);
+                
+                let index = 0;
+                const interval = setInterval(() => {
+                    if (index < array.length) {
+                        setCurrentIndex(index);
+                        setOutput(prev => [...prev, {
+                            index: loopType === 'for' ? index : null,
+                            value: array[index]
+                        }]);
+                        index++;
+                    } else {
+                        clearInterval(interval);
+                        setIsRunning(false);
+                        setCurrentIndex(-1);
+                    }
+                }, 1000);
+            };
+            
+            const reset = () => {
+                setCurrentIndex(-1);
+                setOutput([]);
+                setIsRunning(false);
+            };
+            
+            return (
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Icon name="RepeatIcon" size={28} className="text-blue-400" />
+                        <h2 className="text-2xl font-bold text-white">Визуализатор на цикли</h2>
+                    </div>
+                    
+                    {/* Loop Type Selector */}
+                    <div className="flex gap-3 mb-6">
+                        <button
+                            onClick={() => { setLoopType('for'); reset(); }}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+                                loopType === 'for'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                            }`}
+                        >
+                            for цикъл
+                        </button>
+                        <button
+                            onClick={() => { setLoopType('foreach'); reset(); }}
+                            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
+                                loopType === 'foreach'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                            }`}
+                        >
+                            foreach цикъл
+                        </button>
+                    </div>
+                    
+                    {/* Code Display */}
+                    <div className="bg-slate-900 rounded-lg p-4 mb-6 border border-slate-700">
+                        <pre className="code-font text-sm text-gray-300">
+                            {loopType === 'for' ? (
+`int[] arr = {10, 20, 30, 40, 50};
+
+for (int i = 0; i < arr.Length; i++)
+{
+    Console.WriteLine($"arr[{i}] = {arr[i]}");
+}`
+                            ) : (
+`int[] arr = {10, 20, 30, 40, 50};
+
+foreach (int element in arr)
+{
+    Console.WriteLine($"element = {element}");
+}`
+                            )}
+                        </pre>
+                    </div>
+                    
+                    {/* Array Visualization */}
+                    <div className="bg-slate-900/50 p-6 rounded-lg mb-6">
+                        <div className="flex gap-2 justify-center mb-6">
+                            {array.map((value, index) => (
+                                <div
+                                    key={index}
+                                    className={`transition-all ${
+                                        currentIndex === index ? 'transform scale-110' : ''
+                                    }`}
+                                >
+                                    <div className="text-center mb-2">
+                                        <span className="text-xs text-gray-500 code-font">
+                                            {loopType === 'for' ? `i = ${index}` : 'element'}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={`w-20 h-20 rounded-lg border-2 flex items-center justify-center transition-all ${
+                                            currentIndex === index
+                                                ? 'border-green-500 bg-green-500/20 glow-effect'
+                                                : 'border-slate-600 bg-slate-800'
+                                        }`}
+                                    >
+                                        <span className="text-xl font-bold text-white code-font">
+                                            {value}
+                                        </span>
+                                    </div>
+                                    <div className="text-center mt-2">
+                                        <span className="text-sm text-blue-400 code-font">
+                                            [{index}]
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        {/* Output Console */}
+                        <div className="bg-slate-950 rounded-lg p-4 border border-slate-700">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Icon name="Terminal" size={16} className="text-gray-400" />
+                                <span className="text-gray-400 text-sm code-font">Console Output:</span>
+                            </div>
+                            <div className="space-y-1 min-h-[100px]">
+                                {output.map((item, idx) => (
+                                    <div key={idx} className="text-green-400 code-font text-sm fade-in">
+                                        {loopType === 'for'
+                                            ? `arr[${item.index}] = ${item.value}`
+                                            : `element = ${item.value}`
+                                        }
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Controls */}
+                    <div className="flex gap-3 mb-6">
+                        <button
+                            onClick={startLoop}
+                            disabled={isRunning}
+                            className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                        >
+                            <Icon name="Play" size={20} />
+                            Стартирай
+                        </button>
+                        <button
+                            onClick={reset}
+                            className="py-3 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                        >
+                            <Icon name="RotateCcw" size={20} />
+                            Нулирай
+                        </button>
+                    </div>
+                    
+                    {/* Comparison Info */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                            <h3 className="font-semibold text-blue-400 mb-2 flex items-center gap-2">
+                                <Icon name="CheckCircle2" size={18} />
+                                for цикъл
+                            </h3>
+                            <ul className="text-sm text-gray-300 space-y-1">
+                                <li>✓ Достъп до индекса</li>
+                                <li>✓ Може да променя елементи</li>
+                                <li>✓ Пълен контрол</li>
+                            </ul>
+                        </div>
+                        <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                            <h3 className="font-semibold text-purple-400 mb-2 flex items-center gap-2">
+                                <Icon name="Info" size={18} />
+                                foreach цикъл
+                            </h3>
+                            <ul className="text-sm text-gray-300 space-y-1">
+                                <li>✓ По-прост синтаксис</li>
+                                <li>✓ Read-only режим</li>
+                                <li>⚠ Няма достъп до индекс</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Bug Hunter Component
+        const BugHunter = () => {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [score, setScore] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showResult, setShowResult] = useState(false);
+            const [gameOver, setGameOver] = useState(false);
+            const [simulationArray] = useState([10, 20, 30, 40, 50]);
+            const [errorDemo, setErrorDemo] = useState(null);
+            
+            const questions = [
+                {
+                    question: "Какъв е валидният диапазон на индекси за масив с дължина 5?",
+                    options: ["1-5", "0-5", "0-4", "1-4"],
+                    correct: 2,
+                    explanation: "Индексите винаги започват от 0, до Length-1. За масив с дължина 5 това е 0-4."
+                },
+                {
+                    question: "Какво ще се случи при arr[10], ако arr.Length = 5?",
+                    options: [
+                        "Връща 0",
+                        "IndexOutOfRangeException",
+                        "Създава нов елемент",
+                        "Връща последния елемент"
+                    ],
+                    correct: 1,
+                    explanation: "Достъпът до индекс извън границите на масива хвърля IndexOutOfRangeException."
+                },
+                {
+                    question: "Ако имаме int[] arr = new int[3], каква е стойността на arr[0]?",
+                    options: ["undefined", "null", "0", "random"],
+                    correct: 2,
+                    explanation: "Масивите от числа се инициализират автоматично с 0 за всички елементи."
+                },
+                {
+                    question: "Каква е разликата между for и foreach?",
+                    options: [
+                        "Няма разлика",
+                        "foreach е по-бърз",
+                        "for дава достъп до индекс, foreach не",
+                        "for не може да променя елементи"
+                    ],
+                    correct: 2,
+                    explanation: "for цикълът дава достъп до индекса и позволява промяна на елементи, докато foreach е read-only."
+                },
+                {
+                    question: "Колко елемента може да съдържа int[] arr = new int[0]?",
+                    options: ["Един елемент с стойност 0", "Безкрайно много", "Нула елемента", "Грешка при компилация"],
+                    correct: 2,
+                    explanation: "Масив с дължина 0 е валиден, но не съдържа никакви елементи."
+                }
+            ];
+            
+            const handleAnswer = (index) => {
+                setSelectedAnswer(index);
+                setShowResult(true);
+                
+                if (index === questions[currentQuestion].correct) {
+                    setScore(score + 1);
+                }
+                
+                // Demonstrate IndexOutOfRangeException for question 2
+                if (currentQuestion === 1 && index === questions[currentQuestion].correct) {
+                    setTimeout(() => {
+                        setErrorDemo({ index: 10, arrayLength: 5 });
+                    }, 500);
+                }
+            };
+            
+            const nextQuestion = () => {
+                if (currentQuestion < questions.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                    setSelectedAnswer(null);
+                    setShowResult(false);
+                    setErrorDemo(null);
+                } else {
+                    setGameOver(true);
+                }
+            };
+            
+            const restart = () => {
+                setCurrentQuestion(0);
+                setScore(0);
+                setSelectedAnswer(null);
+                setShowResult(false);
+                setGameOver(false);
+                setErrorDemo(null);
+            };
+            
+            if (gameOver) {
+                const percentage = (score / questions.length) * 100;
+                return (
+                    <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                        <div className="text-center">
+                            <div className="mb-6">
+                                <Icon name="Trophy" size={64} className="text-yellow-400 mx-auto mb-4" />
+                                <h2 className="text-3xl font-bold text-white mb-2">Игра завършена!</h2>
+                            </div>
+                            
+                            <div className="bg-slate-900 rounded-lg p-8 mb-6">
+                                <div className="text-6xl font-bold text-blue-400 mb-4">
+                                    {score}/{questions.length}
+                                </div>
+                                <div className="text-2xl text-gray-300 mb-2">
+                                    {percentage}% успеваемост
+                                </div>
+                                <div className="text-gray-400">
+                                    {percentage >= 80 ? '🎉 Отлично!' : percentage >= 60 ? '👍 Добра работа!' : '📚 Продължавай да учиш!'}
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={restart}
+                                className="py-3 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2 mx-auto"
+                            >
+                                <Icon name="RotateCcw" size={20} />
+                                Нова игра
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+            
+            const q = questions[currentQuestion];
+            
+            return (
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Icon name="Bug" size={28} className="text-blue-400" />
+                        <h2 className="text-2xl font-bold text-white">Bug Hunter</h2>
+                    </div>
+                    
+                    {/* Progress */}
+                    <div className="mb-6">
+                        <div className="flex justify-between text-sm text-gray-400 mb-2">
+                            <span>Въпрос {currentQuestion + 1} от {questions.length}</span>
+                            <span>Резултат: {score}/{questions.length}</span>
+                        </div>
+                        <div className="w-full bg-slate-700 rounded-full h-2">
+                            <div
+                                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                    
+                    {/* Question */}
+                    <div className="bg-slate-900/50 p-6 rounded-lg mb-6">
+                        <h3 className="text-xl text-white font-medium mb-6">{q.question}</h3>
+                        
+                        <div className="space-y-3">
+                            {q.options.map((option, index) => {
+                                let buttonClass = "w-full text-left p-4 rounded-lg border-2 transition-all ";
+                                
+                                if (showResult) {
+                                    if (index === q.correct) {
+                                        buttonClass += "border-green-500 bg-green-500/20 text-white";
+                                    } else if (index === selectedAnswer) {
+                                        buttonClass += "border-red-500 bg-red-500/20 text-white";
+                                    } else {
+                                        buttonClass += "border-slate-600 bg-slate-800 text-gray-400";
+                                    }
+                                } else {
+                                    buttonClass += "border-slate-600 bg-slate-800 text-white hover:border-blue-500 hover:bg-blue-500/10 cursor-pointer";
+                                }
+                                
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => !showResult && handleAnswer(index)}
+                                        disabled={showResult}
+                                        className={buttonClass}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full border-2 border-current flex items-center justify-center font-bold">
+                                                {String.fromCharCode(65 + index)}
+                                            </div>
+                                            <span>{option}</span>
+                                            {showResult && index === q.correct && (
+                                                <Icon name="CheckCircle2" size={20} className="ml-auto text-green-400" />
+                                            )}
+                                            {showResult && index === selectedAnswer && index !== q.correct && (
+                                                <Icon name="XCircle" size={20} className="ml-auto text-red-400" />
+                                            )}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    
+                    {/* Explanation */}
+                    {showResult && (
+                        <div className={`p-4 rounded-lg border-2 mb-6 fade-in ${
+                            selectedAnswer === q.correct
+                                ? 'bg-green-500/10 border-green-500/30'
+                                : 'bg-red-500/10 border-red-500/30'
+                        }`}>
+                            <div className="flex items-start gap-3">
+                                <Icon
+                                    name={selectedAnswer === q.correct ? "CheckCircle2" : "XCircle"}
+                                    size={24}
+                                    className={selectedAnswer === q.correct ? "text-green-400" : "text-red-400"}
+                                />
+                                <div>
+                                    <p className="font-semibold text-white mb-2">
+                                        {selectedAnswer === q.correct ? "Правилно!" : "Грешно!"}
+                                    </p>
+                                    <p className="text-gray-300 text-sm">{q.explanation}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Error Demo */}
+                    {errorDemo && (
+                        <div className="bg-red-500/10 border-2 border-red-500/30 rounded-lg p-4 mb-6 fade-in">
+                            <div className="flex items-start gap-3 mb-4">
+                                <Icon name="AlertTriangle" size={24} className="text-red-400" />
+                                <div>
+                                    <p className="font-semibold text-red-400 mb-2">IndexOutOfRangeException</p>
+                                    <p className="text-sm text-gray-300">
+                                        Опитваме се да достъпим arr[{errorDemo.index}], но масивът има само {errorDemo.arrayLength} елемента (индекси 0-{errorDemo.arrayLength - 1})
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-slate-900 rounded p-3 code-font text-sm">
+                                <div className="text-red-400">
+                                    Unhandled exception: System.IndexOutOfRangeException
+                                </div>
+                                <div className="text-gray-400 mt-1">
+                                    Index was outside the bounds of the array.
+                                </div>
+                            </div>
+                            
+                            {/* Visual representation */}
+                            <div className="mt-4 flex gap-2 justify-center">
+                                {simulationArray.map((value, index) => (
+                                    <div
+                                        key={index}
+                                        className="w-12 h-12 rounded border-2 border-slate-600 bg-slate-800 flex items-center justify-center"
+                                    >
+                                        <span className="text-sm text-white">{value}</span>
+                                    </div>
+                                ))}
+                                <div className="w-12 h-12 rounded border-2 border-red-500 border-dashed bg-red-500/10 flex items-center justify-center">
+                                    <Icon name="X" size={20} className="text-red-400" />
+                                </div>
+                            </div>
+                            <div className="flex gap-2 justify-center mt-2">
+                                {simulationArray.map((_, index) => (
+                                    <div key={index} className="w-12 text-center text-xs text-gray-500">
+                                        [{index}]
+                                    </div>
+                                ))}
+                                <div className="w-12 text-center text-xs text-red-400 font-bold">
+                                    [{errorDemo.index}]
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Next Button */}
+                    {showResult && (
+                        <button
+                            onClick={nextQuestion}
+                            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                        >
+                            {currentQuestion < questions.length - 1 ? (
+                                <>
+                                    Следващ въпрос
+                                    <Icon name="ArrowRight" size={20} />
+                                </>
+                            ) : (
+                                <>
+                                    Виж резултата
+                                    <Icon name="Trophy" size={20} />
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
+            );
+        };
+        
+        // Render App
+        ReactDOM.render(<ArrayMasteryApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

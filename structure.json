@@ -1,0 +1,67 @@
+[
+  {
+    "name": "Lessons",
+    "type": "folder",
+    "path": "Lessons/"
+  },
+  {
+    "name": "IT",
+    "type": "folder",
+    "path": "Lessons/IT/"
+  },
+  {
+    "name": "Примерни уроци",
+    "type": "folder",
+    "path": "Lessons/IT/Примерни уроци/"
+  },
+  {
+    "name": "lesson_template",
+    "type": "file",
+    "path": "Lessons/IT/Примерни уроци/lesson_template.html"
+  },
+  {
+    "name": "Увод в HTML",
+    "type": "file",
+    "path": "Lessons/IT/Примерни уроци/Увод в HTML.html"
+  },
+  {
+    "name": "Информатика",
+    "type": "folder",
+    "path": "Lessons/Информатика/"
+  },
+  {
+    "name": "Modul1",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul1/"
+  },
+  {
+    "name": "Modul2",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul2/"
+  },
+  {
+    "name": "01arrays",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/01arrays.html"
+  },
+  {
+    "name": "list-basics-interactive",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/list-basics-interactive.html"
+  },
+  {
+    "name": "Modul3",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul3/"
+  },
+  {
+    "name": "Modul4",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul4/"
+  },
+  {
+    "name": "Procedure",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul4/Procedure.html"
+  }
+]

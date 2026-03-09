@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Увод в HTML - Образователен Портал</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 3rem 2.5rem;
+        }
+
+        .content h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .content h2:first-child {
+            margin-top: 0;
+        }
+
+        .content h3 {
+            color: #764ba2;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem;
+        }
+
+        .content p {
+            margin-bottom: 1.2rem;
+            font-size: 1.05rem;
+            color: #555;
+        }
+
+        .content ul, .content ol {
+            margin: 1rem 0 1.5rem 2rem;
+            color: #555;
+        }
+
+        .content li {
+            margin-bottom: 0.6rem;
+            font-size: 1.05rem;
+        }
+
+        .content code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e91e63;
+            font-size: 0.95rem;
+        }
+
+        .content pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+
+        .content pre code {
+            background: transparent;
+            color: #f8f8f2;
+            padding: 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+            color: #333;
+        }
+
+        .highlight-box .icon {
+            color: #667eea;
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            margin-top: 2rem;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .content h2 {
+                font-size: 1.5rem;
+            }
+
+            .content h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>🌐 Увод в HTML</h1>
+                <p>Основите на HyperText Markup Language</p>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Какво е HTML?</h2>
+            <p>
+                HTML (HyperText Markup Language) е стандартният език за създаване на уеб страници. 
+                Това е markup език, който казва на браузъра как да структурира съдържанието на страницата.
+            </p>
+
+            <div class="highlight-box">
+                <p>
+                    <i class="fas fa-lightbulb icon"></i>
+                    <strong>Важно:</strong> HTML не е програмен език - той е markup език, който използва тагове за структуриране на съдържание.
+                </p>
+            </div>
+
+            <h2>Основна структура</h2>
+            <p>
+                Всяка HTML страница има основна структура, която включва:
+            </p>
+
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="bg"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Заглавие на страницата&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Здравей, свят!&lt;/h1&gt;
+    &lt;p&gt;Това е моята първа HTML страница.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <h3>Обяснение на елементите</h3>
+            <ul>
+                <li><code>&lt;!DOCTYPE html&gt;</code> - декларира, че документът е HTML5</li>
+                <li><code>&lt;html&gt;</code> - коренният елемент на страницата</li>
+                <li><code>&lt;head&gt;</code> - съдържа мета информация</li>
+                <li><code>&lt;body&gt;</code> - съдържа видимото съдържание</li>
+            </ul>
+
+            <h2>Основни тагове</h2>
+            
+            <h3>Заглавия</h3>
+            <p>HTML предлага 6 нива на заглавия от <code>&lt;h1&gt;</code> до <code>&lt;h6&gt;</code>:</p>
+            <pre><code>&lt;h1&gt;Най-важно заглавие&lt;/h1&gt;
+&lt;h2&gt;Подзаглавие&lt;/h2&gt;
+&lt;h3&gt;По-малко важно&lt;/h3&gt;</code></pre>
+
+            <h3>Параграфи и текст</h3>
+            <pre><code>&lt;p&gt;Това е параграф.&lt;/p&gt;
+&lt;strong&gt;Удебелен текст&lt;/strong&gt;
+&lt;em&gt;Курсив текст&lt;/em&gt;
+&lt;br&gt; &lt;!-- Нов ред --&gt;</code></pre>
+
+            <h3>Списъци</h3>
+            <p>Неподреден списък (с bullets):</p>
+            <pre><code>&lt;ul&gt;
+    &lt;li&gt;Първи елемент&lt;/li&gt;
+    &lt;li&gt;Втори елемент&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+            <p>Подреден списък (с номера):</p>
+            <pre><code>&lt;ol&gt;
+    &lt;li&gt;Първа стъпка&lt;/li&gt;
+    &lt;li&gt;Втора стъпка&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+
+            <h3>Връзки и изображения</h3>
+            <pre><code>&lt;!-- Връзка --&gt;
+&lt;a href="https://example.com"&gt;Кликни тук&lt;/a&gt;
+
+&lt;!-- Изображение --&gt;
+&lt;img src="image.jpg" alt="Описание"&gt;</code></pre>
+
+            <h2>Семантични тагове</h2>
+            <p>
+                HTML5 въведе семантични тагове, които правят кода по-четим:
+            </p>
+            <ul>
+                <li><code>&lt;header&gt;</code> - горна част на страницата</li>
+                <li><code>&lt;nav&gt;</code> - навигационно меню</li>
+                <li><code>&lt;main&gt;</code> - основно съдържание</li>
+                <li><code>&lt;article&gt;</code> - статия или самостоятелно съдържание</li>
+                <li><code>&lt;section&gt;</code> - секция от съдържание</li>
+                <li><code>&lt;footer&gt;</code> - долна част на страницата</li>
+            </ul>
+
+            <div class="highlight-box">
+                <p>
+                    <i class="fas fa-rocket icon"></i>
+                    <strong>Предизвикателство:</strong> Опитайте да създадете проста HTML страница с всички елементи, които научихте! 
+                    Използвайте заглавия, параграфи, списък и връзка.
+                </p>
+            </div>
+
+            <h2>Заключение</h2>
+            <p>
+                HTML е основата на всяка уеб страница. След като овладеете основите, можете да продължите с CSS за стилизиране 
+                и JavaScript за интерактивност. Практиката е ключова - колкото повече експериментирате, толкова по-добре ще разберете!
+            </p>
+
+            <h3>Следващи стъпки</h3>
+            <ol>
+                <li>Създайте собствена HTML страница</li>
+                <li>Експериментирайте с различни тагове</li>
+                <li>Научете за HTML атрибути</li>
+                <li>Запознайте се с CSS за стилизиране</li>
+            </ol>
+
+            <!-- Back Button -->
+            <a href="../index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Назад към уроците
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+        </div>
+    </div>
+</body>
+</html>
