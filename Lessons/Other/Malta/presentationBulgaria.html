@@ -21,8 +21,8 @@
             theme: {
                 extend: {
                     animation: {
-                        'fade-in': 'fadeIn 1s ease-in-out',
-                        'slide-up': 'slideUp 0.8s ease-out',
+                        'fade-in': 'fadeIn 2s ease-in-out',
+                        'slide-up': 'slideUp 1.2s ease-out',
                     },
                     keyframes: {
                         fadeIn: {
@@ -58,63 +58,72 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useCallback } = React;
+        const { useState, useEffect, useCallback, useRef } = React;
 
         // Slide Data Configuration
         const slides = [
             {
                 id: 1,
-                image: "img/1.png",
-                title: "Erasmus+ Journey: Malta 2026",
-                subtitle: "Atanas Ninkolov\nHigh School of Natural Sciences and Mathematics \"Acad. Nikola Obreshkov\"\n Burgas, Bulgaria",
+                image: "img/1.jpg",
+                title: "Erasmus+ Journey:\n\nMalta 2026",
+                subtitle: "Atanas Ninkolov\nHigh School of Natural Sciences and Mathematics \"Acad. Nikola Obreshkov\" - Burgas, Bulgaria",
                 isTitleSlide: true,
-                align: "left"
+                align: "left",
+                qr: "img/qr.svg"
             },
             {
                 id: 2,
                 image: "img/2.png",
+                audio: "audio/2.mp3",
                 title: "Bulgaria and its emblem",
                 text: "Bulgaria is a hidden gem in Southeast Europe, bridging East and West. A land of ancient civilizations, rich culture, and breathtaking landscapes, it is a proud member of the European Union with a history spanning over 13 centuries."
             },
             {
                 id: 3,
                 image: "img/3.png",
+                audio: "audio/3.mp3",
                 title: "Historical and Natural Wonders",
                 text: "From the golden treasures of Thracian kings to the pristine beaches of the Black Sea. Our country is unique because you can touch millennia-old history while surrounded by untouched nature."
             },
             {
                 id: 4,
                 image: "img/4.png",
+                audio: "audio/4.mp3",
                 title: "Tsarevets & Veliko Tarnovo",
                 text: "The majestic fortress of Tsarevets in Veliko Tarnovo stands as a symbol of the Second Bulgarian Empire. Walking its walls, one can feel the power and glory of the medieval king who once ruled here."
             },
             {
                 id: 5,
                 image: "img/5.png",
+                audio: "audio/5.mp3",
                 title: "Valley of Roses",
                 text: "Bulgaria is the land of roses, producing the world's finest rose oil. The fragrant valleys are not just an economic asset but a symbol of beauty, tradition, and Bulgarian identity."
             },
             {
                 id: 6,
                 image: "img/6.png",
+                audio: "audio/6.mp3",
                 title: "Nature & History Intertwined",
                 text: "Majestic mountains, cascading waterfalls, and ancient fortresses coexist in harmony. Here, the spirit of modern ambition meets the wisdom of the past, creating an inspiring environment for growth."
             },
             {
                 id: 7,
                 image: "img/7.png",
+                audio: "audio/7.mp3",
                 title: "Rila Monastery",
                 text: "Deep in the Rila Mountains lies our spiritual heart - the Rila Monastery. Founded in the 10th century, it is a UNESCO World Heritage site and a masterpiece of Bulgarian National Revival architecture."
             },
             {
                 id: 8,
                 image: "img/8.png",
+                audio: "audio/8.mp3",
                 title: "My School - 55 Years of History",
                 text: "High School of Natural Sciences and Mathematics \"Acad. Nikola Obreshkov\" has been a beacon of knowledge for over half a century. We nurture critical thinking and excellence in mathematics and natural sciences."
             },
             {
                 id: 9,
                 image: "img/9.png",
+                audio: "audio/9.mp3",
                 title: "Modern Facilities",
                 text: "Tradition meets innovation. Our campus features both historic architecture and modern amenities, including a swimming pool and advanced laboratories, supporting a holistic education.",
                 align: "left"
@@ -122,12 +131,14 @@
             {
                 id: 10,
                 image: "img/10.png",
+                audio: "audio/10.mp3",
                 title: "New Horizons",
                 text: "Our new building represents our commitment to the future. It is a space designed for creativity, collaboration, and the pursuit of scientific discovery for the next generation."
             },
             {
                 id: 11,
                 image: "img/11.jpg",
+                audio: "audio/11.mp3",
                 title: "Some statistics:",
                 text: "- Students: 1027 in 39 classes\n- Age: 11-19\n- Teachers: 75\n- In 8th grade /age 13-14/,  after a rigorous selection students choose their Profiles:"
             }
@@ -135,6 +146,7 @@
             {
                 id: 12,
                 image: "img/12.png",
+                audio: "audio/12.mp3",
                 title: "Profiles:",
                 text: "- Mathematics and English – 4 classes\n- IT and English – 1 class\n- Biology, Chemistry and English – 1 class\n - In 11 and 12 grade our students focus on software development - Object-Oriented Programming (OOP), Data Structures and Algorithms, Databases and SQL,Information Systems"
             }
@@ -170,6 +182,32 @@
         const Presentation = () => {
             const [currentSlide, setCurrentSlide] = useState(0);
             const [direction, setDirection] = useState(0); 
+
+            // Audio Management
+            const audioRef = useRef(null);
+
+            useEffect(() => {
+                // Stop any previous audio
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current.currentTime = 0;
+                }
+
+                const slide = slides[currentSlide];
+                if (slide.audio) {
+                    const audio = new Audio(slide.audio);
+                    audio.volume = 0.5;
+                    audioRef.current = audio;
+                    audio.play().catch(e => console.log("Audio play failed:", e));
+                }
+
+                // Cleanup function to ensure audio stops when component unmounts or updates
+                return () => {
+                    if (audioRef.current) {
+                        audioRef.current.pause();
+                    }
+                };
+            }, [currentSlide]);
 
             const nextSlide = useCallback(() => {
                 if (currentSlide < slides.length - 1) {
@@ -226,6 +264,13 @@
                             >
                                 {/* Gradient Overlay for better text readability */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30"></div>
+                            </div>
+                        )}
+
+                        {/* Top-Right QR Code specific for slides that have it */}
+                        {slide.qr && (
+                            <div className="absolute top-10 right-10 z-40 bg-white/10 backdrop-blur-md p-2 rounded-xl animate-fade-in shadow-xl border border-white/20">
+                                <img src={slide.qr} alt="QR Code" className="w-32 h-32 md:w-48 md:h-48" />
                             </div>
                         )}
 
