@@ -29,7 +29,7 @@ desktop.ini
 
 # Background images (може да са големи)
 backgrounds/*.jpeg
-backgrounds/*.png
+
 backgrounds/*.webp
 backgrounds/*.gif
 !backgrounds/README.md
