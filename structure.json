@@ -65,6 +65,11 @@
     "path": "Lessons/Other/Malta/"
   },
   {
+    "name": "audio",
+    "type": "folder",
+    "path": "Lessons/Other/Malta/audio/"
+  },
+  {
     "name": "img",
     "type": "folder",
     "path": "Lessons/Other/Malta/img/"
@@ -83,11 +88,6 @@
     "name": "Информатика",
     "type": "folder",
     "path": "Lessons/Информатика/"
-  },
-  {
-    "name": "Modul1",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul1/"
   },
   {
     "name": "Modul2",
@@ -115,9 +115,9 @@
     "path": "Lessons/Информатика/Modul2/04multidimensional-arrays.html"
   },
   {
-    "name": "Modul3",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul3/"
+    "name": "05sets",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/05sets.html"
   },
   {
     "name": "Modul4",
