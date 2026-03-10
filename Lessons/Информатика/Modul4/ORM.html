@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORM & Entity Framework — 12. клас</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      --bg: #060b18;
+      --card: rgba(13, 18, 40, 0.85);
+      --ms-blue: #0078d4;
+      --cs-purple: #9b59d0;
+      --accent-green: #00d4aa;
+      --accent-amber: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background ── */
+    .bg-fixed-img {
+      position: fixed; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.12;
+      z-index: -2;
+    }
+    .bg-overlay {
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(0,120,212,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 90% 100%, rgba(155,89,208,0.25) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(6,11,24,0.7) 0%, rgba(6,11,24,0.97) 100%);
+      z-index: -1;
+    }
+
+    /* ── Glass card ── */
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    }
+
+    /* ── Nav tabs ── */
+    .nav-tab {
+      transition: all 0.25s ease;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      padding: 0.55rem 1.1rem;
+      white-space: nowrap;
+    }
+    .nav-tab:hover { color: #e2e8f0; background: rgba(255,255,255,0.04); }
+    .nav-tab.active {
+      border-bottom-color: var(--ms-blue);
+      color: #60a5fa;
+      background: rgba(0,120,212,0.1);
+    }
+
+    /* ── Slide transitions ── */
+    .slide-enter { animation: slideIn 0.35s cubic-bezier(.4,0,.2,1) both; }
+    .slide-exit  { animation: slideOut 0.25s cubic-bezier(.4,0,.2,1) both; }
+    @keyframes slideIn  { from { opacity:0; transform: translateX(32px); } to { opacity:1; transform: none; } }
+    @keyframes slideOut { from { opacity:1; transform: none; } to { opacity:0; transform: translateX(-32px); } }
+
+    /* ── Pulse badge ── */
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(0,212,170,.6); } 50% { box-shadow: 0 0 0 7px rgba(0,212,170,0); } }
+
+    /* ── Code block ── */
+    .code-block {
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(0,120,212,0.25);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      overflow-x: auto;
+    }
+    .kw  { color: #569cd6; }
+    .ty  { color: #4ec9b0; }
+    .st  { color: #ce9178; }
+    .cm  { color: #6a9955; }
+    .nm  { color: #dcdcaa; }
+    .id  { color: #9cdcfe; }
+    .op  { color: #d4d4d4; }
+    .pu  { color: #c586c0; }
+
+    /* ── Mapper game ── */
+    .mapper-item {
+      cursor: grab;
+      transition: all 0.2s ease;
+      border: 2px solid rgba(255,255,255,0.1);
+      user-select: none;
+    }
+    .mapper-item:hover { border-color: rgba(0,120,212,0.6); transform: scale(1.02); }
+    .mapper-item.dragging { opacity: 0.5; transform: scale(0.97); }
+    .mapper-item.matched-correct { border-color: #22c55e; background: rgba(34,197,94,0.12); }
+    .mapper-item.matched-wrong   { border-color: #ef4444; background: rgba(239,68,68,0.12); animation: shake 0.4s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+    .drop-zone {
+      min-height: 54px;
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    .drop-zone.over { border-color: var(--ms-blue); background: rgba(0,120,212,0.08); }
+    .drop-zone.filled-correct { border-color: #22c55e; border-style: solid; background: rgba(34,197,94,0.08); }
+    .drop-zone.filled-wrong   { border-color: #ef4444; border-style: solid; }
+
+    /* ── Quiz ── */
+    .quiz-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+    }
+    .quiz-btn:hover:not(.answered) { border-color: rgba(0,120,212,0.6); background: rgba(0,120,212,0.1); }
+    .quiz-btn.correct  { border-color: #22c55e; background: rgba(34,197,94,0.12); color: #86efac; }
+    .quiz-btn.wrong    { border-color: #ef4444; background: rgba(239,68,68,0.1);  color: #fca5a5; }
+    .quiz-btn.reveal   { border-color: #22c55e; background: rgba(34,197,94,0.07); color: #86efac; }
+
+    /* ── Progress bar ── */
+    .progress-track {
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--ms-blue), var(--cs-purple));
+      transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Glossary ── */
+    .glossary-card {
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .glossary-card:hover { border-color: rgba(155,89,208,0.5); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+    /* ── Badge ── */
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+    .badge-blue   { background: rgba(0,120,212,0.2);  color: #60a5fa; border: 1px solid rgba(0,120,212,0.4); }
+    .badge-purple { background: rgba(155,89,208,0.2); color: #c084fc; border: 1px solid rgba(155,89,208,0.4); }
+    .badge-green  { background: rgba(0,212,170,0.15); color: #34d399; border: 1px solid rgba(0,212,170,0.35); }
+    .badge-amber  { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.35); }
+
+    /* ── Fade in ── */
+    .fade-in { animation: fadeIn 0.5s ease both; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: none; } }
+
+    /* ── Icon circle ── */
+    .icon-circle {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Step card ── */
+    .step-card {
+      border-left: 3px solid var(--ms-blue);
+      background: rgba(0,120,212,0.05);
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+    }
+
+    /* ── Table comparison ── */
+    .compare-col {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .compare-header {
+      padding: 0.7rem 1rem;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .nav-tab { padding: 0.45rem 0.65rem; font-size: 0.74rem; }
+      .code-block { font-size: 0.73rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-fixed-img"></div>
+  <div class="bg-overlay"></div>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* ═══════════════════════════════ DATA ═══════════════════════════════ */
+
+    const SLIDES = [
+      {
+        id: 'intro',
+        icon: '🔗',
+        badge: 'Урок 5',
+        badgeClass: 'badge-blue',
+        title: 'От ADO.NET към ORM',
+        subtitle: 'Въведение в обектно-релационното съответствие',
+        body: () => (
+          <div className="space-y-6 fade-in">
+            <p className="text-slate-300 leading-relaxed text-sm md:text-base">
+              Вие вече знаете как да създавате графични приложения във <span className="text-blue-400 font-semibold">Visual Studio</span> и 
+              можете да пишете заявки за работа с данните на сървъра, като използвате технологията <span className="text-blue-400 font-semibold">ADO.NET</span>. 
+              Приложението директно комуникира <em>директно</em> със сървъра.
+            </p>
+
+            <div className="glass rounded-xl p-5">
+              <p className="text-amber-400 font-semibold mb-3 flex items-center gap-2">
+                <span>⚠️</span> Недостатъци на директния подход (ADO.NET)
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { icon: '📝', title: 'Много код', desc: 'Пише се прекалено много повтарящ се SQL и C# код за всяка операция.' },
+                  { icon: '🔓', title: 'Сигурност', desc: 'Опасности от злонамерено достъпване на данните (SQL Injection и др.).' },
+                  { icon: '🔧', title: 'Поддръжка', desc: 'Трудно поддържане — промяна в таблица налага промяна в много места от кода.' },
+                ].map(c => (
+                  <div key={c.title} className="rounded-lg p-4" style={{background:'rgba(245,158,11,0.06)', border:'1px solid rgba(245,158,11,0.2)'}}>
+                    <div className="text-2xl mb-2">{c.icon}</div>
+                    <p className="font-semibold text-amber-300 text-sm mb-1">{c.title}</p>
+                    <p className="text-slate-400 text-xs leading-relaxed">{c.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass rounded-xl p-5" style={{borderColor:'rgba(0,120,212,0.3)'}}>
+              <p className="text-blue-400 font-semibold mb-2 flex items-center gap-2">
+                <span>💡</span> Решението: ORM технология
+              </p>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Предстои ви да научите, че има и по-лесен начин за достъпване до данните в базата — чрез използване на 
+                <span className="text-purple-400 font-semibold"> обектно ориентиран модел</span>. В този случай се използва 
+                технологията <span className="text-blue-400 font-semibold">ORM (Object-Relational Mapping)</span> — обектно-релационно съответствие. 
+                Има много библиотеки, използващи тази технология. <span className="text-purple-400 font-semibold">Entity Framework</span> е 
+                една от най-популярните — с отворен код (open source), с най-пълни възможности, 
+                които непрекъснато се допълват и разширяват.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4 rounded-xl p-4" style={{background:'rgba(0,212,170,0.06)', border:'1px solid rgba(0,212,170,0.2)'}}>
+              <div className="icon-circle" style={{background:'rgba(0,212,170,0.12)'}}>🗺️</div>
+              <div>
+                <p className="font-semibold text-emerald-400">Обектно-релационно съответствие</p>
+                <p className="text-slate-400 text-xs mt-1">ADO.NET → ORM → Entity Framework → Работа с обекти вместо SQL</p>
+              </div>
+            </div>
+          </div>
+        ),
+      },
+      {
+        id: 'orm',
+        icon: '🔄',
+        badge: 'Концепция',
+        badgeClass: 'badge-purple',
+        title: 'Какво е ORM?',
+        subtitle: 'Object-Relational Mapping — обектно-релационно съответствие',
+        body: () => (
+          <div className="space-y-5 fade-in">
+            <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+              <span className="text-purple-400 font-semibold">Обектно-ориентираният модел</span> свежда работата с бази от данни до 
+              обектно-ориентирано програмиране (ООП). На всяка таблица от базата от данни съответства <em>клас</em>, 
+              който има същите атрибути, каквито атрибути има таблицата.
+            </p>
+
+            {/* Mapping diagram */}
+            <div className="glass rounded-xl p-5">
+              <p className="text-center text-slate-400 text-xs mb-4 uppercase tracking-widest">Принцип на съответствие</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                <div className="compare-col">
+                  <div className="compare-header" style={{background:'rgba(0,120,212,0.2)', color:'#60a5fa'}}>
+                    🗄️ Релационен модел
+                  </div>
+                  {[
+                    ['Таблица (Table)', 'text-blue-300'],
+                    ['Ред (Row)', 'text-blue-300'],
+                    ['Атрибут/Колона', 'text-blue-300'],
+                    ['Първичен ключ (PK)', 'text-blue-300'],
+                    ['Чужд ключ (FK)', 'text-blue-300'],
+                  ].map(([l, c]) => (
+                    <div key={l} className={`px-4 py-2 text-sm ${c} border-b`} style={{borderColor:'rgba(255,255,255,0.06)'}}>{l}</div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col items-center gap-2 py-4">
+                  {[0,1,2,3,4].map(i => (
+                    <div key={i} className="flex items-center gap-1" style={{color:'rgba(0,212,170,0.8)'}}>
+                      <div style={{width:40, height:1, background:'rgba(0,212,170,0.5)'}}/>
+                      <span className="text-xs">⇔</span>
+                      <div style={{width:40, height:1, background:'rgba(0,212,170,0.5)'}}/>
+                    </div>
+                  ))}
+                  <p className="text-emerald-400 font-bold text-xs mt-2">ORM</p>
+                </div>
+
+                <div className="compare-col">
+                  <div className="compare-header" style={{background:'rgba(155,89,208,0.2)', color:'#c084fc'}}>
+                    ⚙️ ООП модел
+                  </div>
+                  {[
+                    ['Клас (Class)', 'text-purple-300'],
+                    ['Обект (Object)', 'text-purple-300'],
+                    ['Свойство (Property)', 'text-purple-300'],
+                    ['ID свойство', 'text-purple-300'],
+                    ['Навигационно свойство', 'text-purple-300'],
+                  ].map(([l, c]) => (
+                    <div key={l} className={`px-4 py-2 text-sm ${c} border-b`} style={{borderColor:'rgba(255,255,255,0.06)'}}>{l}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="glass rounded-xl p-4" style={{borderColor:'rgba(155,89,208,0.3)'}}>
+                <p className="text-purple-400 font-semibold text-sm mb-2">🧩 Ключова концепция</p>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  Преобразуването на данните от релационния модел в обектно-ориентиран модел и обратно се извършва 
+                  посредством технологията <strong className="text-purple-300">Object-Relational Mapping (ORM)</strong>. 
+                  Тя позволява работата с бази от данни да се сведе до работа с класове и обекти.
+                </p>
+              </div>
+              <div className="glass rounded-xl p-4" style={{borderColor:'rgba(0,212,170,0.3)'}}>
+                <p className="text-emerald-400 font-semibold text-sm mb-2">🔍 Терминът "entity"</p>
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  Терминът <strong className="text-emerald-300">„entity"</strong> се отнася до обект от клас, 
+                  който съответства на <em>запис</em> в таблица от базата от данни. 
+                  Всеки клас съдържа свойства, отговарящи по <em>име и тип</em> на полетата в дадена таблица.
+                </p>
+              </div>
+            </div>
+          </div>
+        ),
+      },
+      {
+        id: 'ef',
+        icon: '⚙️',
+        badge: 'Технология',
+        badgeClass: 'badge-blue',
+        title: 'Entity Framework',
+        subtitle: 'Най-популярната ORM рамка на Microsoft',
+        body: () => (
+          <div className="space-y-5 fade-in">
+            <div className="flex gap-4 items-start glass rounded-xl p-5" style={{borderColor:'rgba(0,120,212,0.3)'}}>
+              <div className="icon-circle" style={{background:'rgba(0,120,212,0.15)'}}>🏗️</div>
+              <div>
+                <p className="font-bold text-blue-300 mb-1">Entity Framework</p>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Entity Framework е <span className="text-blue-400 font-semibold">най-популярната технологична рамка</span> (колекция от 
+                  библиотеки — инструменти за работа с бази от данни) на <span className="text-blue-400 font-semibold">Microsoft</span>. 
+                  Базирана е на технологията <span className="text-slate-200 font-semibold">ADO.NET</span>, 
+                  която вече използвахте в предишните уроци.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                {
+                  icon: '🔀', color: 'rgba(0,120,212,0.15)', border: 'rgba(0,120,212,0.35)', titleCol: 'text-blue-400',
+                  title: 'ORM подход', desc: 'Entity Framework използва ORM подход за достъп до данните в релационните бази от данни и предоставя по-удобен начин за обработка на данните чрез работа с обекти, вместо директно с SQL заявки.'
+                },
+                {
+                  icon: '🌉', color: 'rgba(155,89,208,0.12)', border: 'rgba(155,89,208,0.35)', titleCol: 'text-purple-400',
+                  title: 'Посредник', desc: 'Entity Framework е посредник между базите от данни и езика за програмиране — прави връзката между данните в базата от данни и представянето им в паметта чрез класове.'
+                },
+                {
+                  icon: '📦', color: 'rgba(0,212,170,0.08)', border: 'rgba(0,212,170,0.3)', titleCol: 'text-emerald-400',
+                  title: 'DbSet колекция', desc: 'Класът на контекста съдържа списък от DbSet колекции на всички таблици в базата от данни. Колекцията зарежда данни при поискване. Промените в паметта се записват с метода SaveChanges().'
+                },
+                {
+                  icon: '🏷️', color: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.3)', titleCol: 'text-amber-400',
+                  title: 'Две платформи', desc: 'За платформата .NET Framework се използва библиотеката Entity Framework, а за платформата .NET Framework Core — библиотеката Entity Framework Core.'
+                },
+              ].map(c => (
+                <div key={c.title} className="rounded-xl p-4" style={{background: c.color, border: `1px solid ${c.border}`}}>
+                  <p className={`font-semibold ${c.titleCol} flex items-center gap-2 mb-2 text-sm`}>
+                    <span>{c.icon}</span>{c.title}
+                  </p>
+                  <p className="text-slate-400 text-xs leading-relaxed">{c.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="glass rounded-xl p-4">
+              <p className="text-slate-400 text-xs font-semibold mb-3 uppercase tracking-widest">Структура на генерирания модел (.edmx файл)</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                {[
+                  { label: 'User.cs', desc: 'Клас за представяне на категория от данни — отговаря на таблица User', color: 'rgba(0,120,212,0.12)' },
+                  { label: 'User.Context.cs', desc: 'Клас DemoConnectEntities — клас на контекста, наследява DbContext', color: 'rgba(155,89,208,0.12)' },
+                  { label: 'App.config', desc: 'Съдържа низ за връзка (connection string) с базата от данни', color: 'rgba(0,212,170,0.08)' },
+                ].map(f => (
+                  <div key={f.label} className="rounded-lg p-3" style={{background:f.color, border:'1px solid rgba(255,255,255,0.07)'}}>
+                    <p className="font-mono font-semibold text-slate-200 mb-1">{f.label}</p>
+                    <p className="text-slate-400">{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ),
+      },
+      {
+        id: 'advantages',
+        icon: '✅',
+        badge: 'Предимства',
+        badgeClass: 'badge-green',
+        title: 'Предимства на ООМ',
+        subtitle: 'Обектно-ориентиран модел на база от данни vs. директен SQL',
+        body: () => (
+          <div className="space-y-5 fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="glass rounded-xl p-5" style={{borderColor:'rgba(34,197,94,0.3)'}}>
+                <p className="text-emerald-400 font-bold mb-3 flex items-center gap-2">✅ Предимства на ООМ</p>
+                <ul className="space-y-2">
+                  {[
+                    'Автоматизира и улеснява работата с бази от данни',
+                    'Поддържа по-сложни структури, връзки и зависимости на данните',
+                    'Създава съответствие между таблица в базата и клас в приложението',
+                    'Пише се по-малко код',
+                    'Автоматично генерира SQL заявки',
+                    'Връзката се управлява автоматично',
+                    'Данните са по-добре защитени от злонамерени потребители',
+                  ].map(i => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                      <span className="text-emerald-400 mt-0.5 flex-shrink-0">▸</span>
+                      {i}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="glass rounded-xl p-5" style={{borderColor:'rgba(239,68,68,0.3)'}}>
+                <p className="text-red-400 font-bold mb-3 flex items-center gap-2">⚠️ Недостатъци на ООМ</p>
+                <ul className="space-y-2">
+                  {[
+                    'По-сложно управление на данните',
+                    'По-ниска производителност',
+                    'По-малка гъвкавост',
+                    'Липсват някои функционалности (ограниченията на полетата)',
+                    'Възможно е да не може да генерира много сложна заявка',
+                  ].map(i => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                      <span className="text-red-400 mt-0.5 flex-shrink-0">▸</span>
+                      {i}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* LINQ */}
+            <div className="glass rounded-xl p-5" style={{borderColor:'rgba(155,89,208,0.35)'}}>
+              <div className="flex items-start gap-4">
+                <div className="icon-circle" style={{background:'rgba(155,89,208,0.2)'}}>🔍</div>
+                <div>
+                  <p className="font-bold text-purple-300 mb-1">LINQ — Language INtegrated Query</p>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                    Entity Framework предоставя възможност за използването на <span className="text-purple-400 font-semibold">LINQ</span> — 
+                    интегриран език за заявки в програмния код, за <em>извличане, филтриране и сортиране</em>, 
+                    което значително улеснява работата с данните.
+                  </p>
+                  <div className="code-block text-xs">
+                    <span className="cm">// Пример: LINQ заявка с Entity Framework</span>{'\n'}
+                    <span className="kw">var</span> <span className="id">activeUsers</span> <span className="op">=</span> <span className="id">context</span><span className="op">.</span><span className="id">Users</span>{'\n'}
+                    {'    '}<span className="op">.</span><span className="nm">Where</span><span className="op">(</span><span className="id">u</span> <span className="op">=&gt;</span> <span className="id">u</span><span className="op">.</span><span className="id">Role</span> <span className="op">==</span> <span className="st">"Admin"</span><span className="op">)</span>{'\n'}
+                    {'    '}<span className="op">.</span><span className="nm">OrderBy</span><span className="op">(</span><span className="id">u</span> <span className="op">=&gt;</span> <span className="id">u</span><span className="op">.</span><span className="id">FullName</span><span className="op">)</span>{'\n'}
+                    {'    '}<span className="op">.</span><span className="nm">ToList</span><span className="op">();</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Characteristics */}
+            <div className="glass rounded-xl p-5">
+              <p className="text-slate-300 font-semibold mb-3 text-sm">🔑 Характерни особености на ООМ на база от данни</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  { n: '1', t: 'Имена в единствено число', d: 'Имената на класовете се записват в единствено число, тъй като описват свойствата на един обект.' },
+                  { n: '2', t: 'DbSet в множествено число', d: 'DbSet колекциите са в множествено число, защото съдържат списък от обекти.' },
+                  { n: '3', t: 'Автоматични свойства', d: 'Свойствата в класа са автоматични — Entity Framework разпознава ID и го прави Primary Key автоматично.' },
+                  { n: '4', t: 'Разширяем клас', d: 'Генерираният клас може да се разширява — може да се добави конструктор или да се презапише методът ToString().' },
+                ].map(c => (
+                  <div key={c.n} className="step-card">
+                    <p className="font-semibold text-blue-300 text-sm">{c.n}. {c.t}</p>
+                    <p className="text-slate-400 text-xs mt-1 leading-relaxed">{c.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ),
+      },
+    ];
+
+    const QUIZ_QUESTIONS = [
+      {
+        q: 'Какво означава съкращението ORM?',
+        opts: ['Object-Relational Mapping', 'Open Resource Management', 'Object Reference Model', 'Online Repository Manager'],
+        correct: 0,
+        explain: 'ORM означава Object-Relational Mapping (обектно-релационно съответствие) — технология, която свежда работата с БД до ООП.'
+      },
+      {
+        q: 'На какво съответства таблица в релационна база от данни в обектно-ориентирания модел?',
+        opts: ['Метод', 'Клас', 'Интерфейс', 'Структура'],
+        correct: 1,
+        explain: 'На всяка таблица от базата от данни съответства клас, който има същите атрибути, каквито атрибути има таблицата.'
+      },
+      {
+        q: 'Коя технология стои в основата на Entity Framework?',
+        opts: ['LINQ', 'ADO.NET', 'WPF', 'SignalR'],
+        correct: 1,
+        explain: 'Entity Framework е базиран на технологията ADO.NET, която вече се използваше в предишните уроци.'
+      },
+      {
+        q: 'Какво е LINQ?',
+        opts: [
+          'Библиотека за криптиране на данни',
+          'Специален вид база от данни',
+          'Интегриран език за заявки в програмния код',
+          'Графична среда за разработка'
+        ],
+        correct: 2,
+        explain: 'LINQ (Language INtegrated Query) е интегриран език за заявки в програмния код за извличане, филтриране и сортиране на данни.'
+      },
+      {
+        q: 'Каква е основна причина Entity Framework да е по-сигурен от директния ADO.NET подход?',
+        opts: [
+          'Използва криптирани пароли',
+          'Работи само локално без мрежа',
+          'Автоматично генерира параметризирани SQL заявки, предотвратявайки SQL Injection',
+          'Изисква двуфакторна автентикация'
+        ],
+        correct: 2,
+        explain: 'Entity Framework генерира параметризирани SQL заявки автоматично, което предотвратява злонамерено достъпване (SQL Injection).'
+      },
+      {
+        q: 'Как Entity Framework разпознава автоматично първичния ключ?',
+        opts: [
+          'По анотацията [PrimaryKey]',
+          'По ID в името на свойството',
+          'По реда на дефиниция в класа',
+          'Само ако е от тип GUID'
+        ],
+        correct: 1,
+        explain: 'Entity Framework разпознава идентификатора на запис по името ID и го прави Primary Key, без да е необходимо специално да се указва.'
+      },
+      {
+        q: 'Коя библиотека се използва за платформата .NET Framework Core?',
+        opts: ['Entity Framework', 'Entity Framework Core', 'EntityCore.NET', 'LINQ Framework'],
+        correct: 1,
+        explain: 'За .NET Framework се използва Entity Framework, а за .NET Framework Core — Entity Framework Core.'
+      },
+      {
+        q: 'Какво е DbSet?',
+        opts: [
+          'Тип за съхранение на единична стойност',
+          'Метод за запазване на промени в БД',
+          'Колекция, съответстваща на таблица в базата данни',
+          'Клас за управление на потребители'
+        ],
+        correct: 2,
+        explain: 'DbSet колекцията съответства на таблица в базата от данни и играе ролята на хранилище (repository). Зарежда данни при поискване.'
+      },
+      {
+        q: 'С кой метод се записват промените в базата от данни при работа с Entity Framework?',
+        opts: ['CommitChanges()', 'SaveChanges()', 'UpdateDatabase()', 'PushChanges()'],
+        correct: 1,
+        explain: 'Промените се пазят в паметта, а записването в базата данни се извършва с метода SaveChanges().'
+      },
+      {
+        q: 'Какво представлява „навигационно свойство" в Entity Framework?',
+        opts: [
+          'Свойство за задаване на URL адрес',
+          'Свойство за намиране на физически файл',
+          'Свойство, което осигурява връзка между свързани категории (чужди ключове)',
+          'Свойство за навигация в потребителски интерфейс'
+        ],
+        correct: 2,
+        explain: 'Навигационните свойства осигуряват връзка между свързаните категории и служат за достъп до обекти в свързаните класове (аналог на чужди ключове).'
+      },
+    ];
+
+    const MAPPER_PAIRS = [
+      { relational: 'Таблица (Table)', oop: 'Клас (Class)', id: 0 },
+      { relational: 'Ред (Row / Record)', oop: 'Обект (Object)', id: 1 },
+      { relational: 'Атрибут (Column)', oop: 'Свойство (Property)', id: 2 },
+      { relational: 'Първичен ключ (PK)', oop: 'ID свойство', id: 3 },
+      { relational: 'Чужд ключ (FK)', oop: 'Навигационно свойство', id: 4 },
+    ];
+
+    const GLOSSARY = [
+      {
+        term: 'ORM', full: 'Object-Relational Mapping',
+        def: 'Технология за обектно-релационно съответствие, която преобразува данните от релационния модел в обектно-ориентиран модел и обратно. Позволява работата с бази от данни да се сведе до работа с класове и обекти.',
+        fact: 'ORM може да спести до 50% от времето за писане на боилърплейт код — вместо стотици редове SQL, разработчикът работи директно с C# обекти.',
+        color: 'rgba(0,120,212,0.15)', border: 'rgba(0,120,212,0.35)', badge: 'badge-blue',
+      },
+      {
+        term: 'Entity Framework', full: 'Microsoft ORM Framework',
+        def: 'Най-популярната технологична рамка (колекция от библиотеки) на Microsoft за работа с бази от данни, базирана на ADO.NET. Използва ORM подход — Entity Framework е посредник между базите от данни и езика за програмиране.',
+        fact: 'Entity Framework е с отворен код (open source) и се хоства в GitHub. Entity Framework Core е изцяло пренаписан вариант, поддържащ platfrom-independent разработка.',
+        color: 'rgba(155,89,208,0.12)', border: 'rgba(155,89,208,0.35)', badge: 'badge-purple',
+      },
+      {
+        term: 'LINQ', full: 'Language INtegrated Query',
+        def: 'Интегриран език за заявки директно в програмния код (C#). Позволява извличане, филтриране и сортиране на данни от различни източници, включително бази от данни чрез Entity Framework.',
+        fact: 'LINQ е въведен в C# 3.0 (2007 г.) и промени коренно начина на работа с данни — заявките се пишат на C#, проверяват се при компилиране и подсказките в IDE работят напълно.',
+        color: 'rgba(0,212,170,0.1)', border: 'rgba(0,212,170,0.35)', badge: 'badge-green',
+      },
+      {
+        term: 'DbSet', full: 'DbSet<TEntity> Collection',
+        def: 'Колекция в класа на контекста, която съответства на таблица от базата от данни (хранилище — repository). Зарежда данни при поискване, позволява добавяне и премахване на елементи.',
+        fact: 'DbSet използва „ленива зареждане" (lazy loading) по подразбиране — данните от БД се изтеглят само когато са действително нужни, оптимизирайки производителността.',
+        color: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)', badge: 'badge-amber',
+      },
+      {
+        term: 'Mapping', full: 'Обектно-релационно преобразуване',
+        def: 'Процесът на установяване на съответствие между елементи на релационния модел (таблица, ред, колона, PK, FK) и елементи на ООП модела (клас, обект, свойство, ID, навигационно свойство).',
+        fact: 'Концепцията "mapping" е толкова фундаментална, че повечето езици имат своя ORM: Hibernate (Java), SQLAlchemy (Python), ActiveRecord (Ruby) — всички основани на същия принцип.',
+        color: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.35)', badge: 'badge-purple',
+      },
+    ];
+
+    /* ═══════════════════════════════ Code Demo ═════════════════════════════ */
+    function CodeDemo() {
+      const [activeView, setActiveView] = useState('both');
+
+      const tableSQL = (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="badge badge-blue">SQL Server</span>
+            <span className="text-slate-400 text-xs">Таблица Users</span>
+          </div>
+          <div className="code-block text-xs">
+            <span className="kw">CREATE TABLE</span> <span className="ty">Users</span> <span className="op">(</span>{'\n'}
+            {'    '}<span className="id">ID</span>         <span className="ty">INT</span>           <span className="kw">PRIMARY KEY IDENTITY</span><span className="op">,</span>{'\n'}
+            {'    '}<span className="id">FullName</span>   <span className="ty">NVARCHAR</span><span className="op">(100),</span>{'\n'}
+            {'    '}<span className="id">UserName</span>   <span className="ty">NVARCHAR</span><span className="op">(50),</span>{'\n'}
+            {'    '}<span className="id">Password</span>   <span className="ty">NVARCHAR</span><span className="op">(255),</span>{'\n'}
+            {'    '}<span className="id">Role</span>       <span className="ty">NVARCHAR</span><span className="op">(50)</span>{'\n'}
+            <span className="op">);</span>
+          </div>
+          <div className="mt-3 rounded-lg overflow-hidden text-xs">
+            <table className="w-full" style={{borderCollapse:'collapse'}}>
+              <thead>
+                <tr style={{background:'rgba(0,120,212,0.2)'}}>
+                  {['ID','FullName','UserName','Password','Role'].map(h => (
+                    <th key={h} className="text-blue-300 text-left px-2 py-1.5 font-semibold" style={{borderBottom:'1px solid rgba(255,255,255,0.08)'}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['1','Иван Иванов','ivan_i','***','Admin'],
+                  ['2','Мария Петрова','mpetrova','***','User'],
+                ].map((row, i) => (
+                  <tr key={i} style={{background: i%2===0 ? 'rgba(255,255,255,0.02)' : 'transparent'}}>
+                    {row.map((cell, j) => (
+                      <td key={j} className="text-slate-300 px-2 py-1.5" style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      const classCS = (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="badge badge-purple">C# класове</span>
+            <span className="text-slate-400 text-xs">Auto-generated от EF</span>
+          </div>
+          <div className="code-block text-xs leading-loose">
+            <span className="cm">// Клас за представяне на категория (entity)</span>{'\n'}
+            <span className="kw">public partial class</span> <span className="ty">User</span>{'\n'}
+            <span className="op">{'{'}</span>{'\n'}
+            {'    '}<span className="kw">public</span> <span className="ty">int</span>    <span className="id">ID</span>       <span className="op">{'{ get; set; }'}</span>{'\n'}
+            {'    '}<span className="kw">public</span> <span className="ty">string</span> <span className="id">FullName</span> <span className="op">{'{ get; set; }'}</span>{'\n'}
+            {'    '}<span className="kw">public</span> <span className="ty">string</span> <span className="id">UserName</span> <span className="op">{'{ get; set; }'}</span>{'\n'}
+            {'    '}<span className="kw">public</span> <span className="ty">string</span> <span className="id">Password</span> <span className="op">{'{ get; set; }'}</span>{'\n'}
+            {'    '}<span className="kw">public</span> <span className="ty">string</span> <span className="id">Role</span>     <span className="op">{'{ get; set; }'}</span>{'\n'}
+            <span className="op">{'}'}</span>{'\n\n'}
+            <span className="cm">// Клас на контекста (управление на категории)</span>{'\n'}
+            <span className="kw">public partial class</span> <span className="ty">DemoConnectEntities</span> <span className="op">:</span> <span className="ty">DbContext</span>{'\n'}
+            <span className="op">{'{'}</span>{'\n'}
+            {'    '}<span className="kw">public</span> <span className="ty">DemoConnectEntities</span><span className="op">()</span>{'\n'}
+            {'        '}<span className="op">:</span> <span className="kw">base</span><span className="op">(</span><span className="st">"name=DemoConnectEntities"</span><span className="op">)</span> <span className="op">{'{ }'}</span>{'\n\n'}
+            {'    '}<span className="kw">public virtual</span> <span className="ty">DbSet</span><span className="op">&lt;</span><span className="ty">User</span><span className="op">&gt;</span> <span className="id">Users</span> <span className="op">{'{ get; set; }'}</span>{'\n'}
+            <span className="op">{'}'}</span>
+          </div>
+        </div>
+      );
+
+      return (
+        <section className="fade-in">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="pulse-dot"/>
+            <h2 className="text-xl font-bold text-white">Демонстрация: SQL ↔ C#</h2>
+            <span className="badge badge-green ml-auto">Кодов преглед</span>
+          </div>
+
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {[['both','Двата'], ['sql','SQL таблица'], ['cs','C# класове']].map(([v,l]) => (
+              <button key={v} onClick={() => setActiveView(v)}
+                className={`nav-tab rounded-lg text-sm ${activeView===v ? 'active' : ''}`}>
+                {l}
+              </button>
+            ))}
+          </div>
+
+          <div className={`grid gap-4 ${activeView==='both' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+            {(activeView==='both' || activeView==='sql') && (
+              <div className="glass rounded-xl p-5">{tableSQL}</div>
+            )}
+            {(activeView==='both' || activeView==='cs') && (
+              <div className="glass rounded-xl p-5">{classCS}</div>
+            )}
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { from: 'ID (INT, PK)', to: 'public int ID { get; set; }', note: 'EF разпознава ID автоматично като Primary Key' },
+              { from: 'FullName (NVARCHAR)', to: 'public string FullName { get; set; }', note: 'NVARCHAR → string (единственият низов тип в C#)' },
+              { from: 'Таблица Users', to: 'DbSet<User> Users', note: 'DbSet колекцията — хранилище на категорията' },
+            ].map(m => (
+              <div key={m.from} className="rounded-xl p-3 text-xs" style={{background:'rgba(0,212,170,0.06)', border:'1px solid rgba(0,212,170,0.2)'}}>
+                <p className="font-mono text-blue-300 mb-1">{m.from}</p>
+                <p className="text-slate-400 text-center">↓ mapping ↓</p>
+                <p className="font-mono text-purple-300 mb-1">{m.to}</p>
+                <p className="text-emerald-400/80 mt-1">{m.note}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    /* ═══════════════════════════════ Mapper Game ═══════════════════════════ */
+    function MapperGame() {
+      const [shuffled, setShuffled] = useState(() => [...MAPPER_PAIRS].sort(() => Math.random()-0.5));
+      const [drops, setDrops] = useState({}); // zone id → pair id
+      const [dragging, setDragging] = useState(null);
+      const [checked, setChecked] = useState(false);
+      const [score, setScore] = useState(null);
+
+      const reset = () => {
+        setShuffled([...MAPPER_PAIRS].sort(() => Math.random()-0.5));
+        setDrops({});
+        setDragging(null);
+        setChecked(false);
+        setScore(null);
+      };
+
+      const handleDragStart = (id) => setDragging(id);
+      const handleDragEnd = () => setDragging(null);
+      const handleDrop = (zoneId, e) => {
+        e.preventDefault();
+        if (dragging !== null) {
+          setDrops(prev => {
+            const next = {...prev};
+            // Remove from any existing zone
+            Object.keys(next).forEach(k => { if (next[k] === dragging) delete next[k]; });
+            next[zoneId] = dragging;
+            return next;
+          });
+          setDragging(null);
+        }
+      };
+
+      const check = () => {
+        let s = 0;
+        MAPPER_PAIRS.forEach(p => { if (drops[p.id] === p.id) s++; });
+        setScore(s);
+        setChecked(true);
+      };
+
+      const droppedIds = Object.values(drops);
+      const remaining = shuffled.filter(p => !droppedIds.includes(p.id));
+
+      return (
+        <section className="fade-in">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="pulse-dot" style={{background:'#a78bfa'}}/>
+            <h2 className="text-xl font-bold text-white">Игра: Mapper Matcher</h2>
+            <span className="badge badge-purple ml-auto">Мини-игра</span>
+          </div>
+          <p className="text-slate-400 text-sm mb-5">
+            Провлечи (drag & drop) понятието от ООП модела към правилния термин от релационния модел.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left: Draggable OOP terms */}
+            <div>
+              <p className="text-purple-400 font-semibold text-sm mb-3 flex items-center gap-2">⚙️ ООП термини <span className="text-slate-500 font-normal">(провлечи)</span></p>
+              <div className="space-y-2 min-h-20">
+                {remaining.map(p => (
+                  <div key={p.id}
+                    draggable
+                    onDragStart={() => handleDragStart(p.id)}
+                    onDragEnd={handleDragEnd}
+                    className={`mapper-item glass rounded-xl px-4 py-3 text-sm text-purple-300 font-medium select-none ${dragging===p.id ? 'dragging' : ''}`}
+                  >
+                    {p.oop}
+                  </div>
+                ))}
+                {remaining.length === 0 && (
+                  <div className="text-slate-500 text-sm text-center py-4">Всички термини са поставени ✓</div>
+                )}
+              </div>
+            </div>
+
+            {/* Right: Drop zones */}
+            <div>
+              <p className="text-blue-400 font-semibold text-sm mb-3 flex items-center gap-2">🗄️ Релационни термини <span className="text-slate-500 font-normal">(зони за пускане)</span></p>
+              <div className="space-y-2">
+                {MAPPER_PAIRS.map(p => {
+                  const droppedId = drops[p.id];
+                  const droppedPair = droppedId !== undefined ? MAPPER_PAIRS.find(x => x.id === droppedId) : null;
+                  const isCorrect = checked && droppedId === p.id;
+                  const isWrong   = checked && droppedId !== undefined && droppedId !== p.id;
+                  return (
+                    <div key={p.id}
+                      onDragOver={e => e.preventDefault()}
+                      onDrop={e => handleDrop(p.id, e)}
+                      className={`drop-zone glass rounded-xl px-4 flex items-center gap-3 ${isCorrect ? 'filled-correct' : isWrong ? 'filled-wrong' : ''}`}
+                    >
+                      <span className="text-blue-300 text-sm font-medium flex-1">{p.relational}</span>
+                      <span className="text-slate-600 text-xs">→</span>
+                      <span className={`text-sm font-medium flex-1 text-right ${isCorrect ? 'text-emerald-400' : isWrong ? 'text-red-400' : 'text-slate-500'}`}>
+                        {droppedPair ? droppedPair.oop : <span className="italic">пусни тук...</span>}
+                      </span>
+                      {isCorrect && <span className="text-emerald-400">✓</span>}
+                      {isWrong   && <span className="text-red-400">✗</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-5 flex-wrap">
+            <button onClick={check} disabled={Object.keys(drops).length < MAPPER_PAIRS.length}
+              className="px-5 py-2.5 rounded-xl font-semibold text-sm transition-all"
+              style={{
+                background: Object.keys(drops).length < MAPPER_PAIRS.length ? 'rgba(255,255,255,0.05)' : 'rgba(0,120,212,0.3)',
+                border: '1px solid rgba(0,120,212,0.4)',
+                color: Object.keys(drops).length < MAPPER_PAIRS.length ? '#475569' : '#60a5fa',
+                cursor: Object.keys(drops).length < MAPPER_PAIRS.length ? 'not-allowed' : 'pointer',
+              }}>
+              ✔ Провери
+            </button>
+            <button onClick={reset}
+              className="px-5 py-2.5 rounded-xl font-semibold text-sm transition-all"
+              style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'#94a3b8'}}>
+              🔄 Нова игра
+            </button>
+
+            {checked && score !== null && (
+              <div className={`ml-auto px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 fade-in`}
+                style={{
+                  background: score === MAPPER_PAIRS.length ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.12)',
+                  border: `1px solid ${score === MAPPER_PAIRS.length ? '#22c55e' : '#f59e0b'}`,
+                  color: score === MAPPER_PAIRS.length ? '#4ade80' : '#fbbf24',
+                }}>
+                {score === MAPPER_PAIRS.length ? '🎉' : '📖'} {score}/{MAPPER_PAIRS.length} верни
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    /* ═══════════════════════════════ Quiz ════════════════════════════════ */
+    function Quiz() {
+      const [current, setCurrent] = useState(0);
+      const [answers, setAnswers] = useState({});
+      const [finished, setFinished] = useState(false);
+
+      const q = QUIZ_QUESTIONS[current];
+      const answered = answers[current] !== undefined;
+      const chosen   = answers[current];
+
+      const pick = (idx) => {
+        if (!answered) setAnswers(prev => ({...prev, [current]: idx}));
+      };
+
+      const next = () => {
+        if (current < QUIZ_QUESTIONS.length - 1) setCurrent(c => c+1);
+        else setFinished(true);
+      };
+
+      const restart = () => { setAnswers({}); setCurrent(0); setFinished(false); };
+
+      const score = Object.entries(answers).filter(([qi, ai]) => QUIZ_QUESTIONS[+qi].correct === ai).length;
+      const progress = ((current + (answered ? 1 : 0)) / QUIZ_QUESTIONS.length) * 100;
+
+      if (finished) {
+        const pct = Math.round((score / QUIZ_QUESTIONS.length) * 100);
+        const grade = pct >= 90 ? {l:'Отличен! 🏆', c:'text-yellow-400'} : pct >= 70 ? {l:'Много добър! 🎉', c:'text-emerald-400'} : pct >= 50 ? {l:'Добър 💪', c:'text-blue-400'} : {l:'Нужна е повече практика 📖', c:'text-amber-400'};
+        return (
+          <section className="fade-in text-center py-8">
+            <div className="text-6xl mb-4">{pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '📖'}</div>
+            <h2 className="text-3xl font-bold text-white mb-2">{grade.l}</h2>
+            <p className={`text-5xl font-black mb-1 ${grade.c}`}>{score}<span className="text-2xl text-slate-400">/{QUIZ_QUESTIONS.length}</span></p>
+            <p className="text-slate-400 text-sm mb-6">{pct}% верни отговора</p>
+            <div className="progress-track max-w-xs mx-auto mb-6">
+              <div className="progress-fill" style={{width:`${pct}%`}}/>
+            </div>
+
+            {/* Review */}
+            <div className="text-left space-y-3 mb-6 max-w-2xl mx-auto">
+              {QUIZ_QUESTIONS.map((qq, i) => {
+                const a = answers[i];
+                const ok = a === qq.correct;
+                return (
+                  <div key={i} className="glass rounded-xl p-4" style={{borderColor: ok ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}}>
+                    <p className="font-semibold text-sm text-white mb-1">{i+1}. {qq.q}</p>
+                    <p className="text-xs text-slate-400 mb-1">
+                      Твой отговор: <span className={ok ? 'text-emerald-400' : 'text-red-400'}>{qq.opts[a]}</span>
+                      {!ok && <> | Верен: <span className="text-emerald-400">{qq.opts[qq.correct]}</span></>}
+                    </p>
+                    <p className="text-xs text-slate-500">{qq.explain}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button onClick={restart}
+              className="px-6 py-3 rounded-xl font-semibold text-sm"
+              style={{background:'rgba(0,120,212,0.25)', border:'1px solid rgba(0,120,212,0.5)', color:'#60a5fa'}}>
+              🔄 Опитай отново
+            </button>
+          </section>
+        );
+      }
+
+      return (
+        <section className="fade-in">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="pulse-dot" style={{background:'#f59e0b'}}/>
+            <h2 className="text-xl font-bold text-white">Куиз</h2>
+            <span className="badge badge-amber ml-auto">{current+1} / {QUIZ_QUESTIONS.length}</span>
+          </div>
+
+          <div className="progress-track mb-5">
+            <div className="progress-fill" style={{width:`${progress}%`}}/>
+          </div>
+
+          <div key={current} className="glass rounded-2xl p-6 mb-4">
+            <p className="text-xs text-slate-500 mb-2 uppercase tracking-widest">Въпрос {current+1}</p>
+            <p className="text-base md:text-lg font-semibold text-white mb-5">{q.q}</p>
+
+            <div className="space-y-2">
+              {q.opts.map((opt, idx) => {
+                let cls = 'quiz-btn rounded-xl px-4 py-3 text-sm text-left w-full';
+                if (answered) {
+                  if (idx === q.correct) cls += ' correct';
+                  else if (idx === chosen) cls += ' wrong';
+                  else cls += ' answered opacity-50';
+                }
+                return (
+                  <button key={idx} className={cls} onClick={() => pick(idx)}
+                    style={{background: (!answered) ? 'rgba(255,255,255,0.03)' : undefined, color: (!answered) ? '#cbd5e1' : undefined}}>
+                    <span className="text-slate-500 mr-2">{['A','B','C','D'][idx]}.</span>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+
+            {answered && (
+              <div className="mt-4 p-3 rounded-xl fade-in" style={{background:'rgba(0,212,170,0.08)', border:'1px solid rgba(0,212,170,0.2)'}}>
+                <p className="text-emerald-400 text-xs font-semibold mb-1">💡 Обяснение</p>
+                <p className="text-slate-300 text-xs leading-relaxed">{q.explain}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center">
+            <button onClick={() => setCurrent(c => Math.max(0, c-1))} disabled={current === 0}
+              className="px-4 py-2 rounded-xl text-sm disabled:opacity-30"
+              style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'#94a3b8'}}>
+              ← Назад
+            </button>
+            <button onClick={next}
+              disabled={!answered}
+              className="px-5 py-2.5 rounded-xl font-semibold text-sm disabled:opacity-30 transition-all"
+              style={{background: answered ? 'rgba(0,120,212,0.3)' : 'rgba(255,255,255,0.04)', border:'1px solid rgba(0,120,212,0.5)', color: answered ? '#60a5fa' : '#475569'}}>
+              {current === QUIZ_QUESTIONS.length - 1 ? '🏁 Завърши' : 'Следващ →'}
+            </button>
+          </div>
+        </section>
+      );
+    }
+
+    /* ═══════════════════════════════ Glossary ════════════════════════════ */
+    function Glossary() {
+      const [open, setOpen] = useState(null);
+      return (
+        <section className="fade-in">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="pulse-dot" style={{background:'#c084fc'}}/>
+            <h2 className="text-xl font-bold text-white">Речник на програмиста</h2>
+            <span className="badge badge-purple ml-auto">Ключови термини</span>
+          </div>
+          <p className="text-slate-400 text-sm mb-5">Кликни върху термин за повече информация и интересен факт.</p>
+          <div className="space-y-3">
+            {GLOSSARY.map((g, i) => (
+              <div key={i} className="glossary-card glass rounded-xl overflow-hidden"
+                style={{borderColor: open===i ? g.border : undefined}}
+              >
+                <button className="w-full flex items-center gap-4 p-4 text-left"
+                  onClick={() => setOpen(open===i ? null : i)}>
+                  <div className="icon-circle flex-shrink-0" style={{background: g.color, border:`1px solid ${g.border}`}}>
+                    📖
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="font-bold text-white">{g.term}</span>
+                      <span className={`badge ${g.badge}`}>{g.full}</span>
+                    </div>
+                    <p className="text-slate-500 text-xs truncate">{g.def.slice(0,80)}…</p>
+                  </div>
+                  <span className="text-slate-500 transition-transform" style={{transform: open===i ? 'rotate(180deg)' : 'none'}}>▾</span>
+                </button>
+
+                {open === i && (
+                  <div className="px-4 pb-4 fade-in" style={{borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+                    <p className="text-slate-300 text-sm leading-relaxed mt-3 mb-3">{g.def}</p>
+                    <div className="rounded-xl p-3" style={{background:`${g.color}`, border:`1px solid ${g.border}`}}>
+                      <p className="text-xs font-semibold text-yellow-400 mb-1">⭐ Интересен факт</p>
+                      <p className="text-slate-300 text-xs leading-relaxed">{g.fact}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    /* ═══════════════════════════════ Slides Section ════════════════════════ */
+    function SlidesSection() {
+      const [idx, setIdx] = useState(0);
+      const [key, setKey] = useState(0);
+
+      const goTo = (i) => {
+        setIdx(i);
+        setKey(k => k+1);
+      };
+      const prev = () => { if (idx > 0) goTo(idx-1); };
+      const next = () => { if (idx < SLIDES.length-1) goTo(idx+1); };
+
+      const slide = SLIDES[idx];
+      const Body = slide.body;
+
+      return (
+        <section className="fade-in">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="pulse-dot"/>
+            <h2 className="text-xl font-bold text-white">Теория</h2>
+            <span className="badge badge-blue ml-auto">{idx+1}/{SLIDES.length}</span>
+          </div>
+
+          {/* Slide dots */}
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {SLIDES.map((s, i) => (
+              <button key={i} onClick={() => goTo(i)}
+                className={`nav-tab rounded-lg ${i===idx ? 'active' : ''}`}>
+                {s.icon} {s.title}
+              </button>
+            ))}
+          </div>
+
+          {/* Progress */}
+          <div className="progress-track mb-5">
+            <div className="progress-fill" style={{width:`${((idx+1)/SLIDES.length)*100}%`}}/>
+          </div>
+
+          {/* Slide card */}
+          <div className="glass rounded-2xl p-5 md:p-7 mb-5 slide-enter" key={key}>
+            <div className="flex items-center gap-3 mb-4 pb-4" style={{borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+              <span className="text-3xl">{slide.icon}</span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className={`badge ${slide.badgeClass}`}>{slide.badge}</span>
+                </div>
+                <h3 className="text-lg md:text-xl font-bold text-white mt-1">{slide.title}</h3>
+                <p className="text-slate-400 text-xs">{slide.subtitle}</p>
+              </div>
+            </div>
+            <Body/>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between">
+            <button onClick={prev} disabled={idx===0}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-30 transition-all"
+              style={{background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'#94a3b8'}}>
+              ← Назад
+            </button>
+            <button onClick={next} disabled={idx===SLIDES.length-1}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-30 transition-all"
+              style={{background:'rgba(0,120,212,0.2)', border:'1px solid rgba(0,120,212,0.45)', color:'#60a5fa'}}>
+              Напред →
+            </button>
+          </div>
+        </section>
+      );
+    }
+
+    /* ═══════════════════════════════ Main App ═════════════════════════════ */
+    const TABS = [
+      { id: 'theory',   label: '📚 Теория',      component: SlidesSection },
+      { id: 'demo',     label: '💻 Демонстрация', component: CodeDemo },
+      { id: 'game',     label: '🎮 Mapper Matcher', component: MapperGame },
+      { id: 'quiz',     label: '🧠 Куиз',         component: Quiz },
+      { id: 'glossary', label: '📖 Речник',        component: Glossary },
+    ];
+
+    function App() {
+      const [tab, setTab] = useState('theory');
+      const ActiveComp = TABS.find(t => t.id === tab)?.component;
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* Header */}
+          <header className="glass sticky top-0 z-50" style={{borderBottom:'1px solid rgba(255,255,255,0.07)'}}>
+            <div className="max-w-5xl mx-auto px-4">
+              {/* Top bar */}
+              <div className="flex items-center gap-3 py-3" style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                <div className="flex items-center gap-2">
+                  <div style={{width:28, height:28, background:'linear-gradient(135deg,#0078d4,#9b59d0)', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.85rem'}}>⚙</div>
+                  <div>
+                    <p className="font-bold text-white text-sm leading-tight">Обектно-ориентиран модел на РБД</p>
+                    <p className="text-slate-500 text-xs">ORM & Entity Framework · 12. клас · Информатика</p>
+                  </div>
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <span className="badge badge-blue hidden sm:inline-flex">Урок 5</span>
+                  <span className="badge badge-green hidden sm:inline-flex">Модул 4</span>
+                </div>
+              </div>
+              {/* Nav tabs */}
+              <div className="flex overflow-x-auto" style={{scrollbarWidth:'none'}}>
+                {TABS.map(t => (
+                  <button key={t.id} onClick={() => setTab(t.id)}
+                    className={`nav-tab ${tab===t.id ? 'active' : ''}`}>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </header>
+
+          {/* Hero */}
+          {tab === 'theory' && (
+            <div className="py-10 text-center px-4 fade-in"
+              style={{background:'linear-gradient(180deg, rgba(0,120,212,0.08) 0%, transparent 100%)'}}>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="h-px flex-1 max-w-24" style={{background:'linear-gradient(90deg,transparent,rgba(0,120,212,0.5))'}}/>
+                <span className="text-3xl">🔗</span>
+                <div className="h-px flex-1 max-w-24" style={{background:'linear-gradient(90deg,rgba(155,89,208,0.5),transparent)'}}/>
+              </div>
+              <h1 className="text-2xl md:text-4xl font-black text-white mb-2">
+                ORM &amp; <span style={{background:'linear-gradient(90deg,#0078d4,#9b59d0)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent'}}>Entity Framework</span>
+              </h1>
+              <p className="text-slate-400 text-sm max-w-lg mx-auto">
+                Обектно-ориентиран модел на релационна база от данни — от таблици към класове
+              </p>
+            </div>
+          )}
+
+          {/* Main content */}
+          <main className="flex-1 max-w-5xl mx-auto w-full px-4 pb-12 pt-2">
+            {ActiveComp && <ActiveComp key={tab}/>}
+          </main>
+
+          {/* Footer */}
+          <footer className="text-center py-4 text-slate-600 text-xs"
+            style={{borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+            Информатика · 12. клас · ООМ на Релационна База от Данни · Урок 5, Модул 4
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>

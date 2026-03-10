@@ -120,9 +120,19 @@
     "path": "Lessons/Информатика/Modul2/05sets.html"
   },
   {
+    "name": "audio",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul2/audio/"
+  },
+  {
     "name": "Modul4",
     "type": "folder",
     "path": "Lessons/Информатика/Modul4/"
+  },
+  {
+    "name": "ORM",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul4/ORM.html"
   },
   {
     "name": "Procedure",
