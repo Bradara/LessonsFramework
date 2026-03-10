@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Множества и Речници - Интерактивен Урок</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            dark: '#0a0f1c',
+                            panel: '#111827',
+                            primary: '#06b6d4', // Cyan
+                            secondary: '#8b5cf6', // Violet
+                            accent: '#f97316', // Orange
+                            success: '#10b981', // Emerald
+                            danger: '#ef4444' // Red
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['Consolas', 'Monaco', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0a0f1c; color: white; margin: 0; }
+        .glass-panel { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .cyber-glow { box-shadow: 0 0 15px rgba(6, 182, 212, 0.5); }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(17, 24, 39, 0.5); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.5); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(6, 182, 212, 0.8); }
+    </style>
+
+    <!-- React, ReactDOM, Babel, and module imports -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "react": "https://esm.sh/react@18.2.0",
+                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+                "framer-motion": "https://esm.sh/framer-motion@10.16.4?deps=react@18.2.0",
+                "lucide-react": "https://esm.sh/lucide-react@0.292.0?deps=react@18.2.0"
+            }
+        }
+    </script>
+</head>
+<body class="bg-cover bg-center bg-fixed min-h-screen custom-scrollbar" style="background-image: linear-gradient(to right bottom, rgba(10, 15, 28, 0.9), rgba(10, 15, 28, 0.95)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { motion, AnimatePresence } from 'framer-motion';
+        import { BookOpen, MonitorPlay, Gamepad2, BrainCircuit, Info, ChevronRight, ChevronLeft, CheckCircle2, XCircle, Search, Plus, Terminal } from 'lucide-react';
+
+        // MAIN APPLICATION COMPONENT
+        const App = () => {
+            const [currentTab, setCurrentTab] = useState('learn'); // learn, demo, game, quiz, summary
+
+            const tabs = [
+                { id: 'learn', label: 'Теория', icon: <BookOpen size={20} /> },
+                { id: 'demo', label: 'Лаборатория', icon: <MonitorPlay size={20} /> },
+                { id: 'game', label: 'Мини Игра', icon: <Gamepad2 size={20} /> },
+                { id: 'quiz', label: 'Големият Тест', icon: <BrainCircuit size={20} /> },
+                { id: 'summary', label: 'Обобщение', icon: <Info size={20} /> },
+            ];
+
+            return (
+                <div className="flex flex-col md:flex-row min-h-screen">
+                    {/* Navigation Sidebar */}
+                    <nav className="w-full md:w-64 glass-panel border-r border-tech-primary/30 flex flex-col p-6 space-y-8 z-10">
+                        <div className="text-center">
+                            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-tech-primary to-tech-secondary drop-shadow">
+                                STRUCT.io
+                            </h1>
+                            <p className="text-xs text-tech-primary/80 mt-1 uppercase tracking-widest">Множества и Речници</p>
+                        </div>
+
+                        <div className="flex-1 flex flex-col space-y-2">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setCurrentTab(tab.id)}
+                                    className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg transition-all duration-300 ${
+                                        currentTab === tab.id
+                                            ? 'bg-gradient-to-r from-tech-primary/20 to-tech-secondary/20 border border-tech-primary text-white neon-glow'
+                                            : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                                    }`}
+                                >
+                                    {tab.icon}
+                                    <span className="font-medium">{tab.label}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="text-xs text-gray-500 text-center">
+                            &copy; 2026 Code Academy
+                        </div>
+                    </nav>
+
+                    {/* Main Content Area */}
+                    <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full max-w-6xl mx-auto h-screen custom-scrollbar relative">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentTab}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className="h-full"
+                            >
+                                {currentTab === 'learn' && <LearnSection />}
+                                {currentTab === 'demo' && <DemoSection />}
+                                {currentTab === 'game' && <GameSection />}
+                                {currentTab === 'quiz' && <QuizSection />}
+                                {currentTab === 'summary' && <SummarySection />}
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
+                </div>
+            );
+        };
+
+        // --- SECTION COMPONENTS ---
+
+        // 1. LEARN SECTION (Slides)
+        const slides = [
+            {
+                title: "Въведение в Асоциативните Масиви",
+                content: "Асоциативните масиви (или Речници) са абстрактни структури от данни, които съхраняват двойки от Ключ (Key) и Стойност (Value).",
+                points: [
+                    "Те работят като истински речник: търсите дума (ключ) и намирате нейното определение (стойност).",
+                    "Ключовете трябва да са УНИКАЛНИ в рамките на структурата.",
+                    "Ако добавите съществуващ ключ, обикновено се изхвърля грешка или стойността се презаписва (според метода).",
+                    "Те осигуряват изключително бързо търсене благодарение на 'Хеш таблици' (Hash Tables)."
+                ],
+                code: `// Пример: Телефонен указател\nDictionary<string, string> phonebook = new Dictionary<string, string>();\nphonebook.Add("Ivan", "0888123456");\nConsole.WriteLine(phonebook["Ivan"]); // Извежда номера`
+            },
+            {
+                title: "Dictionary срещу SortedDictionary",
+                content: "В C# съществуват различни имплементации на речници, всяка със своето приложение.",
+                points: [
+                    "Dictionary\<K, V\>: Запазва елементите без гарантиран ред. Използва хеш таблица. Най-бързият вариант за търсене, добавяне и изтриване (O(1)).",
+                    "SortedDictionary<K, V>: Запазва елементите сортирани по ключ! Използва дървовидна структура (Червено-черно дърво).",
+                    "По-бавно добавяне/търсене (O(log n)), но винаги имате подредени данни."
+                ],
+                code: `SortedDictionary<int, string> rankings = new SortedDictionary<int, string>();\nrankings.Add(2, "Silver");\nrankings.Add(1, "Gold"); // Ще излезе първо при обхождане`
+            },
+            {
+                title: "Основни Методи и Производителност",
+                content: "Използването на правилните методи е ключово за производителността на вашето приложение.",
+                points: [
+                    ".Add(key, value) - Добавя нова двойка. Хвърля грешка ако ключът съществува.",
+                    ".Remove(key) - Премахва елемент по ключ.",
+                    ".ContainsKey(key) - Проверява дали ключът съществува. МНОГО БЪРЗО (O(1)).",
+                    ".ContainsValue(value) - Проверява дали стойността съществува. МНОГО БАВНО (O(n)), защото проверява всеки елемент един по един!"
+                ],
+                code: `if (!dict.ContainsKey("Pesho")) {\n    dict.Add("Pesho", 5); // Безопасно добавяне\n}`
+            },
+            {
+                title: "Сложни Речници",
+                content: "Какво правим, ако един ключ има множество стойности?",
+                points: [
+                    "Мулти-речник: Речник, чиято стойност е списък! Dictionary<K, List<V>>.",
+                    "Пример: Един ученик (ключ) има много оценки (списък от стойности).",
+                    "Вложени речници: Dictionary<string, Dictionary<string, int>>. Удобни за йерархични данни."
+                ],
+                code: `Dictionary<string, List<int>> grades = new Dictionary<string, List<int>>();\ngrades["Maria"] = new List<int> { 5, 6, 6 };\ngrades["Maria"].Add(5); // Добавя нова оценка`
+            },
+            {
+                title: "Множества (Sets)",
+                content: "Множествата са колекции от уникални елементи (без ключове и стойности - само елементи).",
+                points: [
+                    "HashSet<T>: Съхранява уникални елементи в произволен ред. Супер бързо търсене!",
+                    "SortedSet<T>: Съхранява уникални елементи, сортирани в определен ред.",
+                    "Кога се ползват? Когато искате да премахнете дубликати от списък или да проверите дали даден елемент вече е срещан."
+                ],
+                code: `HashSet<string> uniqueNames = new HashSet<string>();\nuniqueNames.Add("Gosho");\nuniqueNames.Add("Gosho"); // Няма да се добави втори път!`
+            }
+        ];
+
+        const LearnSection = () => {
+            const [slideIdx, setSlideIdx] = useState(0);
+
+            return (
+                <div className="h-full flex flex-col items-center justify-center space-y-6">
+                    <div className="w-full relative glass-panel rounded-2xl p-8 max-w-4xl shadow-2xl">
+                        {/* Progress Bar */}
+                        <div className="absolute top-0 left-0 h-1 bg-tech-panel w-full rounded-t-2xl overflow-hidden">
+                            <motion.div 
+                                className="h-full bg-gradient-to-r from-tech-primary to-tech-secondary"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${((slideIdx + 1) / slides.length) * 100}%` }}
+                                transition={{ duration: 0.5 }}
+                            />
+                        </div>
+
+                        <div className="mb-8 flex justify-between items-center text-tech-primary text-sm font-mono mt-2">
+                            <span>{String(slideIdx + 1).padStart(2, '0')} // THEORY_MODULE</span>
+                            <span>{slideIdx + 1} / {slides.length}</span>
+                        </div>
+
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={slideIdx}
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -50 }}
+                                transition={{ duration: 0.4 }}
+                                className="space-y-6"
+                            >
+                                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                                    {slides[slideIdx].title}
+                                </h2>
+                                <p className="text-lg text-gray-300 border-l-4 border-tech-primary pl-4 py-1">
+                                    {slides[slideIdx].content}
+                                </p>
+                                <ul className="space-y-3 mt-6">
+                                    {slides[slideIdx].points.map((point, i) => (
+                                        <motion.li 
+                                            key={i}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: i * 0.1 }}
+                                            className="flex items-start"
+                                        >
+                                            <ChevronRight className="text-tech-secondary shrink-0 mr-2 mt-1" size={18} />
+                                            <span className="text-gray-300">{point}</span>
+                                        </motion.li>
+                                    ))}
+                                </ul>
+                                
+                                {slides[slideIdx].code && (
+                                    <div className="mt-8 bg-[#0d1117] border border-gray-700 rounded-lg p-4 font-mono text-sm shadow-inner relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 p-2 text-xs text-gray-500">C#</div>
+                                        <pre className="text-tech-primary whitespace-pre-wrap"><code dangerouslySetInnerHTML={{__html: 
+                                            slides[slideIdx].code.replace(/</g, '&lt;')
+                                                                 .replace(/>/g, '&gt;')
+                                                                 .replace(/".*?"/g, match => `<span class='text-yellow-300'>${match}</span>`)
+                                                                 .replace(/new Dictionary/g, "<span class='text-tech-secondary'>new Dictionary</span>")
+                                                                 .replace(/HashSet/g, "<span class='text-tech-secondary'>HashSet</span>")
+                                                                 .replace(/Add/g, "<span class='text-tech-accent'>Add</span>")
+                                                                 .replace(/ContainsKey/g, "<span class='text-tech-accent'>ContainsKey</span>")
+                                                                 .replace(/Console\.WriteLine/g, "<span class='text-tech-accent'>Console.WriteLine</span>")
+                                                                 .replace(/\/\/.*/g, match => `<span class='text-tech-success'>${match}</span>`)
+                                        }} /></pre>
+                                    </div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
+
+                        {/* Navigation */}
+                        <div className="mt-12 flex justify-between items-center">
+                            <button 
+                                onClick={() => setSlideIdx(Math.max(0, slideIdx - 1))}
+                                disabled={slideIdx === 0}
+                                className="px-6 py-2 rounded-lg bg-tech-panel border border-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition flex items-center"
+                            >
+                                <ChevronLeft size={18} className="mr-2" /> Предишен
+                            </button>
+                            <button 
+                                onClick={() => setSlideIdx(Math.min(slides.length - 1, slideIdx + 1))}
+                                disabled={slideIdx === slides.length - 1}
+                                className="px-6 py-2 rounded-lg bg-tech-primary hover:bg-cyan-400 text-tech-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center cyber-glow"
+                            >
+                                Следващ <ChevronRight size={18} className="ml-2" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 2. DEMO SECTION (Interactive Lab)
+        const DemoSection = () => {
+            const [dictionary, setDictionary] = useState([]); // [{key, value}]
+            const [inputKey, setInputKey] = useState("");
+            const [inputValue, setInputValue] = useState("");
+            const [logMsgs, setLogMsgs] = useState([]);
+            const [isSearching, setIsSearching] = useState(false);
+
+            const addLog = (msg, type = "info") => {
+                setLogMsgs(prev => [{ id: Date.now(), msg, type }, ...prev].slice(0, 5));
+            };
+
+            const handleAdd = () => {
+                if(!inputKey.trim() || !inputValue.trim()) {
+                    addLog("Въведете ключ и стойност!", "error");
+                    return;
+                }
+                const exists = dictionary.find(item => item.key === inputKey);
+                if(exists) {
+                    addLog(`Грешка: Ключът '${inputKey}' вече съществува. Ключовете трябва да са уникални!`, "error");
+                    // Highlight the existing one visually via state? For simplicity just log.
+                } else {
+                    setDictionary(prev => [...prev, { key: inputKey, value: inputValue }]);
+                    addLog(`Добавено: [${inputKey}] => ${inputValue}`, "success");
+                    setInputKey("");
+                    setInputValue("");
+                }
+            };
+
+            const handleSearchKey = () => {
+                if(!inputKey.trim()) return;
+                setIsSearching(true);
+                // Simulate fast O(1)
+                setTimeout(() => {
+                    const found = dictionary.find(item => item.key === inputKey);
+                    setIsSearching(false);
+                    if(found) {
+                        addLog(`ContainsKey('${inputKey}'): НАМЕРЕНО (Време: 1ms) - O(1)`, "success");
+                    } else {
+                        addLog(`ContainsKey('${inputKey}'): НЕ Е НАМЕРЕНО (Време: 1ms) - O(1)`, "error");
+                    }
+                }, 300); 
+            };
+
+            const handleSearchValue = () => {
+                if(!inputValue.trim()) return;
+                setIsSearching(true);
+                // Simulate slow O(n) based on size (exaggerated for effect)
+                const delay = 300 + (dictionary.length * 150); 
+                setTimeout(() => {
+                    const found = dictionary.some(item => item.value === inputValue);
+                    setIsSearching(false);
+                    if(found) {
+                        addLog(`ContainsValue('${inputValue}'): НАМЕРЕНО след обхождане (Време: ${delay}ms) - O(N)`, "warning");
+                    } else {
+                        addLog(`ContainsValue('${inputValue}'): НЕ Е НАМЕРЕНО след обхождане (Време: ${delay}ms) - O(N)`, "error");
+                    }
+                }, delay);
+            };
+
+            return (
+                <div className="h-full flex flex-col space-y-6">
+                    <div className="glass-panel p-6 rounded-2xl text-center">
+                        <h2 className="text-2xl font-bold text-white flex items-center justify-center">
+                            <Terminal className="text-tech-primary mr-3" /> Data Structure Lab: Създай своя Речник
+                        </h2>
+                        <p className="text-gray-400 mt-2">Добавяй елементи и тествай скоростта на търсене по Ключ спрямо Стойност.</p>
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
+                        {/* Left Control Panel */}
+                        <div className="glass-panel p-6 rounded-2xl w-full lg:w-1/3 flex flex-col space-y-6">
+                            <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">Операции</h3>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">Ключ <span className="text-red-400">*</span></label>
+                                    <input 
+                                        type="text" 
+                                        value={inputKey} 
+                                        onChange={e => setInputKey(e.target.value)}
+                                        className="w-full bg-tech-dark border border-gray-700 rounded p-2 focus:border-tech-primary focus:outline-none transition-colors"
+                                        placeholder="Напр. Иван, 101, Email_1..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">Стойност</label>
+                                    <input 
+                                        type="text" 
+                                        value={inputValue} 
+                                        onChange={e => setInputValue(e.target.value)}
+                                        className="w-full bg-tech-dark border border-gray-700 rounded p-2 focus:border-tech-secondary focus:outline-none transition-colors"
+                                        placeholder="Напр. 0888123456, Оценка 6..."
+                                    />
+                                </div>
+                                
+                                <button onClick={handleAdd} className="w-full bg-tech-accent hover:bg-orange-500 text-white font-medium py-2 rounded flex items-center justify-center transition">
+                                    <Plus size={18} className="mr-2"/> Добави .Add(K, V)
+                                </button>
+                                
+                                <div className="grid grid-cols-2 gap-2 pt-4 border-t border-gray-700">
+                                    <button onClick={handleSearchKey} disabled={isSearching} className="bg-tech-panel hover:bg-gray-800 border border-tech-primary text-tech-primary py-2 rounded text-sm disabled:opacity-50 transition">
+                                        търси_Ключ()
+                                    </button>
+                                    <button onClick={handleSearchValue} disabled={isSearching} className="bg-tech-panel hover:bg-gray-800 border border-tech-secondary text-tech-secondary py-2 rounded text-sm disabled:opacity-50 transition">
+                                        търси_Стойност()
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex-1 min-h-[150px] bg-black/50 border border-gray-800 rounded p-3 overflow-y-auto space-y-2 font-mono text-xs custom-scrollbar">
+                                <div className="text-gray-500 mb-2">--- System Logs ---</div>
+                                <AnimatePresence>
+                                    {logMsgs.map(log => (
+                                        <motion.div 
+                                            key={log.id} 
+                                            initial={{ opacity: 0, x: -10 }} 
+                                            animate={{ opacity: 1, x: 0 }}
+                                            className={`p-2 border-l-2 ${
+                                                log.type === 'error' ? 'text-tech-danger border-tech-danger bg-red-900/10' : 
+                                                log.type === 'success' ? 'text-tech-success border-tech-success bg-green-900/10' :
+                                                log.type === 'warning' ? 'text-yellow-400 border-yellow-400 bg-yellow-900/10' :
+                                                'text-tech-primary border-tech-primary bg-cyan-900/10'
+                                            }`}
+                                        >
+                                            {log.msg}
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        {/* Right Display Panel */}
+                        <div className="glass-panel p-6 rounded-2xl w-full lg:w-2/3 flex flex-col relative overflow-hidden">
+                            {isSearching && (
+                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                                    <div className="text-tech-primary flex flex-col items-center animate-pulse">
+                                        <Search size={48} className="mb-4" />
+                                        <span className="font-mono">Извършва се търсене...</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                                <h3 className="text-lg font-semibold">Памет (Рам) - {dictionary.length} елемента</h3>
+                                <span className="text-xs bg-tech-panel px-2 py-1 rounded text-gray-400 font-mono">Dictionary&lt;string, string&gt;</span>
+                            </div>
+                            
+                            <div className="flex-1 overflow-y-auto custom-scrollbar">
+                                {dictionary.length === 0 ? (
+                                    <div className="h-full flex items-center justify-center text-gray-500 font-mono text-sm">
+                                        // Речникът е празен
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-4">
+                                        <AnimatePresence>
+                                            {dictionary.map((item, idx) => (
+                                                <motion.div 
+                                                    key={item.key} // Unique keys!
+                                                    initial={{ scale: 0.8, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    className="flex bg-[#161b22] border border-gray-700 rounded-lg overflow-hidden"
+                                                >
+                                                    <div className="bg-tech-primary/10 border-r border-gray-700 px-3 py-2 text-tech-primary font-mono font-bold flex items-center w-1/2 overflow-hidden text-ellipsis whitespace-nowrap">
+                                                        [ <span className="truncate ml-1">{item.key}</span> ]
+                                                    </div>
+                                                    <div className="px-3 py-2 text-gray-300 font-mono flex items-center w-1/2 overflow-hidden text-ellipsis whitespace-nowrap">
+                                                        <span className="truncate">{item.value}</span>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </AnimatePresence>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 3. GAME SECTION (Key-Value Matcher)
+        const gamePairs = [
+            { id: 1, c: "Сортирани елементи по ключ", v: "SortedDictionary" },
+            { id: 2, c: "Уникални стойности, без подредба", v: "HashSet" },
+            { id: 3, c: "Най-бързо търсене по ключ (O(1))", v: "Dictionary" },
+            { id: 4, c: "Един ключ -> много стойности", v: "Dictionary<K, List<V>>" },
+            { id: 5, c: "Сортирани уникални елементи", v: "SortedSet" },
+        ];
+
+        const GameSection = () => {
+            const [leftCols, setLeftCols] = useState([]);
+            const [rightCols, setRightCols] = useState([]);
+            const [selLeft, setSelLeft] = useState(null);
+            const [selRight, setSelRight] = useState(null);
+            const [matched, setMatched] = useState([]);
+            
+            useEffect(() => {
+                // Shuffle logic
+                const shuffledL = [...gamePairs].sort(() => Math.random() - 0.5);
+                const shuffledR = [...gamePairs].sort(() => Math.random() - 0.5);
+                setLeftCols(shuffledL);
+                setRightCols(shuffledR);
+            }, []);
+
+            useEffect(() => {
+                if(selLeft && selRight) {
+                    if(selLeft.id === selRight.id) {
+                        // Match
+                        setMatched(prev => [...prev, selLeft.id]);
+                    }
+                    setTimeout(() => {
+                        setSelLeft(null);
+                        setSelRight(null);
+                    }, 500);
+                }
+            }, [selLeft, selRight]);
+
+            const isDone = matched.length === gamePairs.length && gamePairs.length > 0;
+
+            return (
+                <div className="h-full flex flex-col justify-center max-w-4xl mx-auto space-y-8">
+                    <div className="text-center space-y-2">
+                        <h2 className="text-3xl font-bold text-tech-primary">Свържете Понятията</h2>
+                        <p className="text-gray-400">Изберете характеристика отляво и правилната структура отдясно.</p>
+                    </div>
+
+                    {isDone ? (
+                        <motion.div 
+                            initial={{ scale: 0 }} animate={{ scale: 1 }} 
+                            className="glass-panel p-10 rounded-2xl text-center border-tech-success border-2 shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+                        >
+                            <CheckCircle2 size={64} className="text-tech-success mx-auto mb-4" />
+                            <h2 className="text-3xl font-bold mb-2">Мисията Успешна!</h2>
+                            <p className="text-gray-300">Ти си истински архитект на данни.</p>
+                            <button onClick={() => setMatched([])} className="mt-6 px-6 py-2 bg-tech-panel hover:bg-white/10 border border-gray-500 rounded transition text-white">
+                                Играй отново
+                            </button>
+                        </motion.div>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-8 lg:gap-16 relative">
+                            {/* Connector Line Logic implicitly handled by color hints */}
+                            <div className="space-y-4">
+                                {leftCols.map(item => {
+                                    const isMatched = matched.includes(item.id);
+                                    const isSelected = selLeft?.id === item.id;
+                                    let statusClasses = "bg-tech-panel border-gray-600 hover:border-tech-primary text-gray-200 cursor-pointer hover:bg-gray-800";
+                                    if(isSelected) statusClasses = "bg-tech-primary/20 border-tech-primary text-white scale-105";
+                                    if(isMatched) statusClasses = "bg-tech-success/20 border-tech-success text-tech-success opacity-50 cursor-default";
+
+                                    return (
+                                        <div 
+                                            key={`l-${item.id}`}
+                                            onClick={() => !isMatched && setSelLeft(item)}
+                                            className={`p-4 rounded-xl border-2 transition-all duration-300 transform font-medium text-center shadow-lg ${statusClasses}`}
+                                        >
+                                            {item.c}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <div className="space-y-4">
+                                {rightCols.map(item => {
+                                    const isMatched = matched.includes(item.id);
+                                    const isSelected = selRight?.id === item.id;
+                                    let statusClasses = "bg-tech-panel border-gray-600 hover:border-tech-secondary text-gray-200 cursor-pointer hover:bg-gray-800";
+                                    if(isSelected) statusClasses = "bg-tech-secondary/20 border-tech-secondary text-white scale-105";
+                                    if(isMatched) statusClasses = "bg-tech-success/20 border-tech-success text-tech-success opacity-50 cursor-default";
+
+                                    return (
+                                        <div 
+                                            key={`r-${item.id}`}
+                                            onClick={() => !isMatched && setSelRight(item)}
+                                            className={`p-4 rounded-xl border-2 transition-all duration-300 transform font-mono text-center shadow-lg ${statusClasses}`}
+                                        >
+                                            {item.v}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // 4. QUIZ SECTION
+        const quizQuestions = [
+            { q: "Коя структура съхранява уникални елементи без гарантиран ред?", options: ["List<T>", "HashSet<T>", "SortedSet<T>", "Array"], correct: 1 },
+            { q: "Каква е сложността на метода ContainsKey в Dictionary?", options: ["O(N)", "O(log N)", "O(1)", "O(N^2)"], correct: 2 },
+            { q: "Ако искате ключовете-стойности да са винаги сортирани по ключ, ще използвате:", options: ["SortedDictionary", "HashSet", "Dictionary", "List"], correct: 0 },
+            { q: "Може ли един Dictionary да има повтарящи се ключове?", options: ["Да, винаги", "Да, ако са от тип int", "Не, ключовете са уникални", "Може само две повторения"], correct: 2 },
+            { q: "Кой от следните методи е значително по-бавен?", options: [".Add()", ".Remove()", ".ContainsKey()", ".ContainsValue()"], correct: 3 },
+            { q: "Как HashSet проверява бързо за уникалност?", options: ["Чрез сортиране", "Чрез Hash codes (хеш кодове)", "Чрез масив от битове", "Разчита на късмета"], correct: 1 },
+            { q: "Как се създава речник, в който един ключ има много стойности?", options: ["Dictionary<string, List<int>>", "List<Dictionary>", "HashSet<Dictionary>", "MultiKeyDictionary"], correct: 0 },
+            { q: "Кое множество поддържа елементите си сортирани?", options: ["HashSet", "SortedSet", "ListSet", "TreeSet"], correct: 1 },
+            { q: "Какво се случва, ако използвате .Add() с вече съществуващ ключ?", options: ["Стойността се презаписва", "Хвърля се изключение (Exception)", "Игнорира се", "Речникът се изтрива"], correct: 1 },
+            { q: "Кое е най-подходящо за търсене на дефиниция на дума?", options: ["List<string>", "Queue", "Stack", "Dictionary<string, string>"], correct: 3 },
+        ];
+
+        const QuizSection = () => {
+            const [qIdx, setQIdx] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+            const [selectedIdx, setSelectedIdx] = useState(null);
+            const [answered, setAnswered] = useState(false);
+
+            const handleOptionClick = (idx) => {
+                if(answered) return;
+                setSelectedIdx(idx);
+                setAnswered(true);
+                
+                if(idx === quizQuestions[qIdx].correct) {
+                    setScore(s => s + 1);
+                }
+
+                setTimeout(() => {
+                    if(qIdx < quizQuestions.length - 1) {
+                        setQIdx(prev => prev + 1);
+                        setSelectedIdx(null);
+                        setAnswered(false);
+                    } else {
+                        setShowResult(true);
+                    }
+                }, 1500);
+            };
+
+            const resetQuiz = () => {
+                setQIdx(0); setScore(0); setShowResult(false); setSelectedIdx(null); setAnswered(false);
+            }
+
+            if(showResult) {
+                const percent = (score / quizQuestions.length) * 100;
+                return (
+                    <div className="h-full flex items-center justify-center">
+                        <motion.div initial={{scale:0.8, opacity:0}} animate={{scale:1, opacity:1}} className="glass-panel p-10 rounded-2xl text-center max-w-md w-full">
+                            <h2 className="text-3xl font-bold mb-4 text-tech-primary">Резултати</h2>
+                            <div className="text-6xl font-black mb-6" style={{color: percent >= 80 ? '#10b981' : percent >= 50 ? '#f97316' : '#ef4444'}}>
+                                {score} / 10
+                            </div>
+                            <p className="text-gray-300 mb-8 font-medium">
+                                {percent >= 80 ? "🔥 Отличен! Ти си Master на Речниците." : 
+                                 percent >= 50 ? "👍 Добра работа! Още малко практика и ще успееш." : 
+                                 "💻 Трябва да преговориш теорията отново."}
+                            </p>
+                            <button onClick={resetQuiz} className="px-8 py-3 bg-gradient-to-r from-tech-primary to-tech-secondary text-white rounded-lg font-bold shadow-lg hover:shadow-cyan-500/50 transition">
+                                Опитай Отново
+                            </button>
+                        </motion.div>
+                    </div>
+                );
+            }
+
+            const q = quizQuestions[qIdx];
+
+            return (
+                <div className="h-full flex flex-col justify-center max-w-3xl mx-auto space-y-6">
+                    <div className="glass-panel p-8 rounded-2xl shadow-xl border-t-4 border-t-tech-primary relative">
+                        <div className="absolute -top-4 right-8 bg-tech-dark border border-tech-primary px-4 py-1 rounded-full text-tech-primary font-mono text-sm">
+                            Въпрос {qIdx + 1} от 10
+                        </div>
+                        <h2 className="text-2xl font-semibold mt-4 mb-8 text-white">{q.q}</h2>
+                        
+                        <div className="space-y-3">
+                            {q.options.map((opt, i) => {
+                                let btnStyle = "bg-tech-panel hover:bg-gray-800 border-gray-600 text-gray-200";
+                                if(answered) {
+                                    if(i === q.correct) btnStyle = "bg-green-900/40 border-green-500 text-green-400";
+                                    else if(i === selectedIdx) btnStyle = "bg-red-900/40 border-red-500 text-red-400";
+                                    else btnStyle = "bg-tech-panel/50 border-gray-700 opacity-50";
+                                }
+
+                                return (
+                                    <button 
+                                        key={qIdx + "-" + i}
+                                        onClick={() => handleOptionClick(i)}
+                                        disabled={answered}
+                                        className={`w-full text-left p-4 rounded-xl border transition-all duration-300 ${btnStyle}`}
+                                    >
+                                        <span className="font-mono text-sm mr-4 text-gray-500">{String.fromCharCode(65+i)}]</span>
+                                        {opt}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 5. SUMMARY SECTION
+        const SummarySection = () => {
+            return (
+                <div className="h-full overflow-y-auto custom-scrollbar p-2 pb-10">
+                    <div className="glass-panel p-8 rounded-2xl max-w-4xl mx-auto space-y-10">
+                        <div className="text-center border-b border-gray-700 pb-8">
+                            <h2 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-tech-primary via-tech-secondary to-tech-accent mb-4">
+                                Структури от Данни: Level Complete!
+                            </h2>
+                            <p className="text-gray-400 text-lg">Ключови концепции, които да запомните завинаги.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="text-xl font-bold text-tech-primary border-l-2 border-tech-primary pl-3 mb-2">Ключът (Key)</h3>
+                                    <p className="text-gray-300">Уникалният идентификатор. Помислете си за ЕГН, баркод или потребителско име. Никога не се повтаря.</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-tech-secondary border-l-2 border-tech-secondary pl-3 mb-2">Хеширане (Hashing)</h3>
+                                    <p className="text-gray-300">Скритата магия, която превръща ключа ви в число (индекс), така че компютърът да намери стойността мигновено (O(1)), вместо да търси ред по ред.</p>
+                                </div>
+                            </div>
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="text-xl font-bold text-tech-accent border-l-2 border-tech-accent pl-3 mb-2">Множество (Set)</h3>
+                                    <p className="text-gray-300">Перфектната структура, когато ви трябват само ключовете. 'Искам списък с уникални посетители.' =$gt HashSet е отговорът.</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-tech-success border-l-2 border-tech-success pl-3 mb-2">ContainsValue Уловката</h3>
+                                    <p className="text-gray-300">Винаги помнете: Речникът не е оптимизиран за търсене по стойност. Ако често ви се налага, може би ключът и стойността ви трябва да сменят местата си.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <audio controls className="w-full mt-6 rounded" autoPlay>
+                            <source src="./audio/setsRock.mp3" type="audio/mpeg" />
+                            Вашият браузър не поддържа аудио елемента.
+                        </audio>
+                        <div className="bg-[#0f172a] border border-gray-700 rounded-xl p-6 mt-8">
+                            <h3 className="text-2xl font-bold text-white flex items-center mb-6">
+                                <Info className="text-yellow-400 mr-2" /> Знаехте ли че?
+                            </h3>
+                            <div className="space-y-4">
+                                <motion.div 
+                                    whileHover={{ x: 10 }}
+                                    className="p-4 bg-tech-panel rounded-lg border-l-4 border-yellow-400"
+                                >
+                                    <strong>Търсачките използват концепцията:</strong> Когато търсите в Google, той използва масивен (разпределен) речник, където ключовете са думи, а стойностите са списъци от уебсайтове (Multi-dictionary).
+                                </motion.div>
+                                <motion.div 
+                                    whileHover={{ x: 10 }}
+                                    className="p-4 bg-tech-panel rounded-lg border-l-4 border-tech-primary"
+                                >
+                                    <strong>Хаштагове в Социалните Мрежи:</strong> За да ви покажат трендиг теми, платформите често използват Множества (Sets), за да филтрират милиони повтарящи се хаштагове до списък от уникални такива преди да ги броят.
+                                </motion.div>
+                                <motion.div 
+                                    whileHover={{ x: 10 }}
+                                    className="p-4 bg-tech-panel rounded-lg border-l-4 border-tech-secondary"
+                                >
+                                    <strong>Кеширане (Caching):</strong> Почти всички системи за бързо зареждане на данни (напр. Redis) и вътрешни кешове са базирани на принципа 'Ключ-Стойност' (Key-Value) за максимална скорост.
+                                </motion.div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        };
+
+        // Render Application
+        const rootElement = document.getElementById('root');
+        const root = createRoot(rootElement);
+        root.render(<App />);
+    </script>
+</body>
+</html>
