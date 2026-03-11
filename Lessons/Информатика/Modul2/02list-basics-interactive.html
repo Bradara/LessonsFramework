@@ -1128,7 +1128,7 @@ Console.WriteLine(result);
                                 <div className="glassmorphism p-6 rounded-lg border-l-4 border-pink-500">
                                     <h4 className="font-bold text-pink-400 mb-2">1. Удвояване на Капацитета</h4>
                                     <p className="text-sm text-slate-300">
-                                        Когато списък надвиши капацитета си, подкрепящия масив се удвоява (概 от 4 на 8, 8 на 16...). Това е оптимизирано за производителност!
+                                        Когато списък надвиши капацитета си, вътрешният масив се удвоява (概 от 4 на 8, 8 на 16...). Това е оптимизирано за производителност!
                                     </p>
                                 </div>
                                 <div className="glassmorphism p-6 rounded-lg border-l-4 border-pink-500">
@@ -1140,7 +1140,7 @@ Console.WriteLine(result);
                                 <div className="glassmorphism p-6 rounded-lg border-l-4 border-pink-500">
                                     <h4 className="font-bold text-pink-400 mb-2">3. Генерици в действие</h4>
                                     <p className="text-sm text-slate-300">
-                                        List&lt;T&gt; е генерична колекция - едно &lt;T&gt; може да е int, string, custom class... Така избягачем type casting!
+                                        List&lt;T&gt; е генерична колекция - едно &lt;T&gt; може да е int, string, custom class... Така избягваме type casting!
                                     </p>
                                 </div>
                             </div>
@@ -1150,9 +1150,11 @@ Console.WriteLine(result);
                         <div className="mt-8">
                             <h3 className="text-2xl font-bold text-green-400 mb-4">Практични Примери</h3>
                             <div className="code-block p-6 rounded-lg overflow-x-auto">
-                                <pre className="text-xs md:text-sm font-mono text-slate-200">
-{`<span class="text-green-400">// Инициализация</span>
-List<int> nums = <span class="text-blue-400">new</span> List<int> { 5, 2, 8 };
+                                <pre
+                                    className="text-xs md:text-sm font-mono text-slate-200"
+                                    dangerouslySetInnerHTML={{
+                                        __html: `<span class="text-green-400">// Инициализация</span>
+List&lt;int&gt; nums = <span class="text-blue-400">new</span> List&lt;int&gt; { 5, 2, 8 };
 
 <span class="text-green-400">// Операции</span>
 nums.Add(10);           <span class="text-gray-500">// [5, 2, 8, 10]</span>
@@ -1166,11 +1168,11 @@ Console.WriteLine(result);  <span class="text-gray-500">// Изход: "3, 5, 8,
 
 <span class="text-green-400">// Четене</span>
 string input = <span class="text-yellow-400">"1 2 3"</span>;
-List<int> list = input.Split(' ')
+List&lt;int&gt; list = input.Split(' ')
                      .Select(int.Parse)
-                     .ToList();
-`}
-                                </pre>
+                     .ToList();`
+                                    }}
+                                />
                             </div>
                         </div>
                     </div>
