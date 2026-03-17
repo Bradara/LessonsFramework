@@ -90,6 +90,11 @@
     "path": "Lessons/Информатика/"
   },
   {
+    "name": "Modul1",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul1/"
+  },
+  {
     "name": "Modul2",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/"
@@ -120,9 +125,19 @@
     "path": "Lessons/Информатика/Modul2/05sets.html"
   },
   {
+    "name": "06strings-stringbuilder-app",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/06strings-stringbuilder-app.html"
+  },
+  {
     "name": "audio",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/audio/"
+  },
+  {
+    "name": "Modul3",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul3/"
   },
   {
     "name": "Modul4",

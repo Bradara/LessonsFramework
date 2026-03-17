@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Низове и StringBuilder — Интерактивно Уеб Приложение</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ["Poppins", "ui-sans-serif", "system-ui"],
+            body: ["Rubik", "ui-sans-serif", "system-ui"],
+          },
+          colors: {
+            glass: "rgba(18, 24, 38, 0.62)",
+            glassBorder: "rgba(255, 255, 255, 0.14)",
+            neon: "#22d3ee",
+          },
+          boxShadow: {
+            glow: "0 0 20px rgba(34, 211, 238, 0.25)",
+          },
+          backdropBlur: {
+            xl: "24px",
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Rubik:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background-image: linear-gradient(135deg, rgba(10, 12, 24, 0.9), rgba(17, 24, 39, 0.95)),
+        url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80");
+      background-size: cover;
+      background-position: center;
+    }
+    .glass {
+      background: rgba(17, 25, 40, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(24px);
+    }
+    .soft-grid {
+      background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="text-slate-100 font-body min-h-screen">
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script>
+    // UMD builds sometimes look for a lowercase global.
+    window.react = window.React;
+  </script>
+  <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.js" crossorigin></script>
+  <script>
+    // Normalize the global name for Lucide React UMD.
+    window.lucideReact = window.lucideReact || window.LucideReact;
+  </script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useMemo, useState } = React;
+    const {
+      BookOpen,
+      MonitorPlay,
+      Gamepad2,
+      HelpCircle,
+      Sparkles,
+      ArrowLeft,
+      ArrowRight,
+      CheckCircle2,
+      XCircle,
+    } = lucideReact;
+
+    const slides = [
+      {
+        title: "Какво е низ?",
+        emoji: "🧵",
+        content: (
+          <div className="space-y-4">
+            <p>
+              Низът е <strong>редица от символи</strong>, подредени последователно. В .NET символите са Unicode
+              (UTF-16) и най-често заемат <strong>2 байта</strong> на символ.
+            </p>
+            <p>
+              В паметта низът е масив от символи + дължина. Това позволява бърз достъп до всеки знак чрез индекс.
+            </p>
+          </div>
+        ),
+      },
+      {
+        title: "Характеристики на string",
+        emoji: "🧊",
+        content: (
+          <div className="space-y-4">
+            <p>
+              Типът <strong>string е неизменяем (immutable)</strong>. Това означава, че съдържанието му не може да се
+              променя след създаване.
+            </p>
+            <p className="bg-slate-900/70 border border-slate-700 rounded-xl p-4">
+              Пример: <code>str[2] = 'a'</code> ➜ грешка, защото <strong>string няма сетъри за символи</strong>.
+            </p>
+            <p>
+              При промяна се създава <strong>нов низ</strong>, а старият остава в паметта, докато Garbage Collector го
+              освободи.
+            </p>
+          </div>
+        ),
+      },
+      {
+        title: "Основни методи",
+        emoji: "🧰",
+        content: (
+          <div className="grid gap-3">
+            <div className="glass rounded-xl p-4">
+              <strong>Concat()</strong> — слепва низове. Пример: <code>string.Concat("Hi", "!")</code> ➜ "Hi!"
+            </div>
+            <div className="glass rounded-xl p-4">
+              <strong>IndexOf()</strong> — намира позиция на символ/низ. Пример: <code>"code".IndexOf('d')</code> ➜ 2
+            </div>
+            <div className="glass rounded-xl p-4">
+              <strong>Contains()</strong> — проверява за подниз. Пример: <code>"hello".Contains("ell")</code> ➜ true
+            </div>
+            <div className="glass rounded-xl p-4">
+              <strong>Substring()</strong> — извлича подниз. Пример: <code>"academy".Substring(3, 3)</code> ➜ "dem"
+            </div>
+            <div className="glass rounded-xl p-4">
+              <strong>Split()</strong> — разделя по разделител. Пример: <code>"a,b".Split(',')</code> ➜ ["a", "b"]
+            </div>
+            <div className="glass rounded-xl p-4">
+              <strong>Replace()</strong> — заменя подниз. Пример: <code>"c#".Replace('#', '+')</code> ➜ "c+"
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "StringBuilder",
+        emoji: "🧠",
+        content: (
+          <div className="space-y-4">
+            <p>
+              <strong>StringBuilder</strong> използва динамичен буфер. При много конкатенации в цикъл спестява време и
+              памет.
+            </p>
+            <p className="bg-slate-900/70 border border-slate-700 rounded-xl p-4">
+              Вътрешно увеличава капацитета си автоматично, вместо да създава нов низ при всяка промяна.
+            </p>
+            <p>Използвай при интензивни операции: логове, сериализация, генериране на текстови отчети.</p>
+          </div>
+        ),
+      },
+    ];
+
+    const quizQuestions = [
+      {
+        question: "Какво означава, че string е immutable?",
+        options: [
+          "Символите се пазят като числа",
+          "Низът не може да се променя след създаване",
+          "Низът е винаги с фиксирана дължина от 255",
+          "Низът е тип стойност",
+        ],
+        answer: 1,
+        feedback: "При промяна се създава нов низ, старият остава в паметта.",
+      },
+      {
+        question: "Кой метод търси позиция на символ/подниз?",
+        options: ["Contains()", "IndexOf()", "Split()", "Replace()"],
+        answer: 1,
+        feedback: "IndexOf връща индекса на първото срещане.",
+      },
+      {
+        question: "Какво връща Contains() при липса на подниз?",
+        options: ["null", "-1", "false", "throws error"],
+        answer: 2,
+        feedback: "Contains връща true или false.",
+      },
+      {
+        question: "Кога е най-добре да използваме StringBuilder?",
+        options: [
+          "При еднократна конкатенация",
+          "При много конкатенации в цикъл",
+          "При проверка на палиндром",
+          "Когато имаме малък низ",
+        ],
+        answer: 1,
+        feedback: "StringBuilder е оптимизиран за чести промени.",
+      },
+      {
+        question: "Какво означава Capacity на StringBuilder?",
+        options: [
+          "Брой символи в момента",
+          "Максимум символи без преоразмеряване",
+          "Брой редове",
+          "Брой методи",
+        ],
+        answer: 1,
+        feedback: "Capacity е размерът на буфера преди да се разшири.",
+      },
+      {
+        question: "Кой метод разделя низ по разделител?",
+        options: ["Split()", "Substring()", "Concat()", "IndexOf()"],
+        answer: 0,
+        feedback: "Split връща масив от поднизове.",
+      },
+      {
+        question: "Какво ще върне \"c#\".Replace('#', '+')?",
+        options: ["c+", "c#", "#c", "c++"],
+        answer: 0,
+        feedback: "Replace заменя символа и връща нов низ.",
+      },
+      {
+        question: "Кой израз е коректен (скоби)?",
+        options: ["(2+3] * 4", "((2+3) * 4)", "(2+3)) * 4", "(2+3 * 4"],
+        answer: 1,
+        feedback: "Коректните скоби са отворени и затворени последователно.",
+      },
+      {
+        question: "Какво връща Substring(2, 3) върху \"abcdef\"?",
+        options: ["cde", "bcd", "def", "abc"],
+        answer: 0,
+        feedback: "Започва от индекс 2 и взема 3 символа.",
+      },
+      {
+        question: "Какво е резултатът от IndexOf, ако не намери подниз?",
+        options: ["0", "-1", "false", "throws exception"],
+        answer: 1,
+        feedback: "IndexOf връща -1 при липса на съвпадение.",
+      },
+    ];
+
+    const ranks = [
+      { min: 0, label: "String Rookie 🎯" },
+      { min: 4, label: "Junior C# Dev 🚀" },
+      { min: 7, label: "Mid C# Engineer 🧑‍💻" },
+      { min: 9, label: "Senior Architect 🏆" },
+    ];
+
+    const matchPairs = [
+      {
+        id: "string",
+        term: "string",
+        definition: "Неизменяем (immutable) тип за редица от Unicode символи.",
+      },
+      {
+        id: "stringbuilder",
+        term: "StringBuilder",
+        definition: "Клас с динамичен буфер за ефективни промени по текст.",
+      },
+      {
+        id: "concat",
+        term: "Concat()",
+        definition: "Слепва два или повече низа в нов резултат.",
+      },
+      {
+        id: "indexof",
+        term: "IndexOf()",
+        definition: "Връща индекса на първото срещане на символ или подниз.",
+      },
+      {
+        id: "substring",
+        term: "Substring()",
+        definition: "Извлича подниз от дадена позиция с определена дължина.",
+      },
+      {
+        id: "capacity",
+        term: "Capacity",
+        definition: "Максимален брой символи без преоразмеряване на буфера.",
+      },
+      {
+        id: "replace",
+        term: "Replace()",
+        definition: "Заменя всички срещания на символ или подниз.",
+      },
+    ];
+
+    function shuffleArray(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getRank(score) {
+      return ranks
+        .slice()
+        .reverse()
+        .find((rank) => score >= rank.min).label;
+    }
+
+    function App() {
+      const [activeTab, setActiveTab] = useState("presentation");
+      const [slideIndex, setSlideIndex] = useState(0);
+      const [inputText, setInputText] = useState("ПРОГРАМИРАНЕ");
+      const [termCards, setTermCards] = useState(() =>
+        shuffleArray(matchPairs.map((pair) => ({ id: pair.id, text: pair.term })))
+      );
+      const [definitionCards, setDefinitionCards] = useState(() =>
+        shuffleArray(matchPairs.map((pair) => ({ id: pair.id, text: pair.definition })))
+      );
+      const [selectedTerm, setSelectedTerm] = useState(null);
+      const [selectedDefinition, setSelectedDefinition] = useState(null);
+      const [matchedIds, setMatchedIds] = useState([]);
+      const [matchMessage, setMatchMessage] = useState(null);
+      const [matchAttempts, setMatchAttempts] = useState(0);
+      const [matchCorrect, setMatchCorrect] = useState(0);
+      const [answers, setAnswers] = useState(Array(quizQuestions.length).fill(null));
+      const [showResult, setShowResult] = useState(false);
+
+      const charData = useMemo(() => {
+        return Array.from(inputText).map((char, index) => ({
+          index,
+          char,
+          code: char.codePointAt(0),
+        }));
+      }, [inputText]);
+
+      const tabs = [
+        { id: "presentation", label: "Презентация", icon: BookOpen },
+        { id: "demo", label: "Демонстрация", icon: MonitorPlay },
+        { id: "game", label: "Игра", icon: Gamepad2 },
+        { id: "quiz", label: "Куиз", icon: HelpCircle },
+        { id: "summary", label: "Обобщение", icon: Sparkles },
+      ];
+
+      const resetMatchGame = () => {
+        setTermCards(shuffleArray(matchPairs.map((pair) => ({ id: pair.id, text: pair.term }))));
+        setDefinitionCards(shuffleArray(matchPairs.map((pair) => ({ id: pair.id, text: pair.definition }))));
+        setSelectedTerm(null);
+        setSelectedDefinition(null);
+        setMatchedIds([]);
+        setMatchMessage(null);
+        setMatchAttempts(0);
+        setMatchCorrect(0);
+      };
+
+      const tryMatch = (termCard, definitionCard) => {
+        const isMatch = termCard.id === definitionCard.id;
+        setMatchAttempts((prev) => prev + 1);
+        if (isMatch) {
+          setMatchedIds((prev) => [...prev, termCard.id]);
+          setMatchCorrect((prev) => prev + 1);
+          setMatchMessage("Съвпадение! Отлична работа. ✨");
+        } else {
+          setMatchMessage("Тези две карти не са двойка. Опитай пак! 🔄");
+        }
+        setSelectedTerm(null);
+        setSelectedDefinition(null);
+      };
+
+      const handleSelectTerm = (card) => {
+        if (matchedIds.includes(card.id)) return;
+        setSelectedTerm(card);
+        if (selectedDefinition) {
+          tryMatch(card, selectedDefinition);
+        }
+      };
+
+      const handleSelectDefinition = (card) => {
+        if (matchedIds.includes(card.id)) return;
+        setSelectedDefinition(card);
+        if (selectedTerm) {
+          tryMatch(selectedTerm, card);
+        }
+      };
+
+      const answerQuestion = (qIndex, optionIndex) => {
+        const next = [...answers];
+        next[qIndex] = optionIndex;
+        setAnswers(next);
+        setShowResult(false);
+      };
+
+      const score = answers.reduce((sum, ans, idx) => (ans === quizQuestions[idx].answer ? sum + 1 : sum), 0);
+
+      return (
+        <div className="min-h-screen">
+          <header className="px-6 py-10 lg:px-12">
+            <div className="glass soft-grid rounded-3xl p-8 lg:p-12 shadow-glow">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div>
+                  <p className="text-neon font-semibold tracking-wide uppercase">11. клас | Низове & StringBuilder</p>
+                  <h1 className="text-3xl lg:text-5xl font-display font-bold mt-2">
+                    Низове и класът StringBuilder — интерактивна лаборатория 💡
+                  </h1>
+                  <p className="text-slate-300 mt-4 max-w-2xl">
+                    Учим как работят низовете, защо string е immutable и кога StringBuilder е твоят най-добър приятел.
+                    Готов ли си за мисията? 🚀
+                  </p>
+                </div>
+                <div className="bg-slate-900/70 border border-slate-700 rounded-2xl px-5 py-4">
+                  <p className="text-sm text-slate-400">Днес ще тренираме:</p>
+                  <ul className="mt-2 space-y-1 text-slate-200">
+                    <li>✅ Методи на string</li>
+                    <li>✅ StringBuilder капацитет</li>
+                    <li>✅ Интерактивни задачи</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <main className="px-6 pb-12 lg:px-12">
+            <div className="grid lg:grid-cols-[260px_1fr] gap-8">
+              <aside className="glass rounded-3xl p-5 h-fit">
+                <nav className="space-y-2">
+                  {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all ${
+                          activeTab === tab.id
+                            ? "bg-neon/20 border border-neon text-white shadow-glow"
+                            : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                        }`}
+                      >
+                        <Icon size={18} />
+                        <span className="font-medium">{tab.label}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+              </aside>
+
+              <section className="glass rounded-3xl p-6 lg:p-10">
+                {activeTab === "presentation" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-neon font-semibold">Слайд {slideIndex + 1} / {slides.length}</p>
+                        <h2 className="text-2xl lg:text-3xl font-display font-bold mt-1">
+                          {slides[slideIndex].emoji} {slides[slideIndex].title}
+                        </h2>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          className="px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/70"
+                          onClick={() => setSlideIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
+                        >
+                          <ArrowLeft size={18} />
+                        </button>
+                        <button
+                          className="px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/70"
+                          onClick={() => setSlideIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1))}
+                        >
+                          <ArrowRight size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-slate-200 leading-relaxed">{slides[slideIndex].content}</div>
+                  </div>
+                )}
+
+                {activeTab === "demo" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-2xl font-display font-bold">🔬 String Visualizer</h2>
+                      <p className="text-slate-300 mt-2">
+                        Въведи текст и виж индекса на всеки символ + неговия Unicode код.
+                      </p>
+                    </div>
+                    <input
+                      value={inputText}
+                      onChange={(event) => setInputText(event.target.value)}
+                      className="w-full rounded-2xl bg-slate-900/70 border border-slate-700 px-4 py-3 text-white"
+                      placeholder="Въведи низ..."
+                    />
+                    <div className="overflow-auto rounded-2xl border border-slate-700">
+                      <table className="min-w-full text-left">
+                        <thead className="bg-slate-900/80">
+                          <tr>
+                            <th className="px-4 py-3">Индекс</th>
+                            <th className="px-4 py-3">Символ</th>
+                            <th className="px-4 py-3">Unicode код</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {charData.map((row) => (
+                            <tr key={`${row.index}-${row.char}`} className="border-t border-slate-800">
+                              <td className="px-4 py-3">{row.index}</td>
+                              <td className="px-4 py-3 text-neon text-lg">{row.char}</td>
+                              <td className="px-4 py-3">{row.code}</td>
+                            </tr>
+                          ))}
+                          {charData.length === 0 && (
+                            <tr>
+                              <td colSpan="3" className="px-4 py-6 text-center text-slate-400">
+                                Няма въведени символи.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "game" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-2xl font-display font-bold">🎮 String Master: Познай двойките</h2>
+                      <p className="text-slate-300 mt-2">
+                        Свържи понятието с правилното му значение или метод с описание.
+                      </p>
+                    </div>
+                    <div className="grid gap-6 lg:grid-cols-2">
+                      <div className="space-y-3">
+                        <h3 className="font-semibold text-slate-200">Понятия / Методи</h3>
+                        {termCards.map((card) => {
+                          const isMatched = matchedIds.includes(card.id);
+                          const isSelected = selectedTerm?.id === card.id;
+                          return (
+                            <button
+                              key={card.id}
+                              onClick={() => handleSelectTerm(card)}
+                              className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
+                                isMatched
+                                  ? "border-emerald-400 bg-emerald-500/20"
+                                  : isSelected
+                                  ? "border-neon bg-neon/20"
+                                  : "border-slate-700 bg-slate-900/70 hover:border-slate-500"
+                              }`}
+                            >
+                              {card.text}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="space-y-3">
+                        <h3 className="font-semibold text-slate-200">Значения / Описания</h3>
+                        {definitionCards.map((card) => {
+                          const isMatched = matchedIds.includes(card.id);
+                          const isSelected = selectedDefinition?.id === card.id;
+                          return (
+                            <button
+                              key={card.id}
+                              onClick={() => handleSelectDefinition(card)}
+                              className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
+                                isMatched
+                                  ? "border-emerald-400 bg-emerald-500/20"
+                                  : isSelected
+                                  ? "border-neon bg-neon/20"
+                                  : "border-slate-700 bg-slate-900/70 hover:border-slate-500"
+                              }`}
+                            >
+                              {card.text}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <button
+                        className="px-5 py-3 rounded-xl bg-neon/30 border border-neon hover:bg-neon/40 font-semibold"
+                        onClick={resetMatchGame}
+                      >
+                        Разбъркай отново
+                      </button>
+                      <div className="text-slate-300">
+                        Опити: <span className="text-white font-semibold">{matchAttempts}</span> · Верни двойки: <span className="text-white font-semibold">{matchCorrect}</span> / {matchPairs.length}
+                      </div>
+                    </div>
+                    {matchMessage && (
+                      <div className="bg-slate-900/70 border border-slate-700 rounded-xl p-4 text-slate-200">
+                        {matchMessage}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "quiz" && (
+                  <div className="space-y-8">
+                    <div>
+                      <h2 className="text-2xl font-display font-bold">🧠 Интерактивен куиз</h2>
+                      <p className="text-slate-300 mt-2">Отговори на 10 въпроса и вземи своя ранг.</p>
+                    </div>
+                    <div className="space-y-6">
+                      {quizQuestions.map((q, qIndex) => {
+                        const userAnswer = answers[qIndex];
+                        const isCorrect = userAnswer === q.answer;
+                        return (
+                          <div key={q.question} className="bg-slate-900/70 border border-slate-700 rounded-2xl p-5">
+                            <p className="font-semibold">{qIndex + 1}. {q.question}</p>
+                            <div className="grid gap-3 mt-4">
+                              {q.options.map((option, optionIndex) => (
+                                <button
+                                  key={option}
+                                  onClick={() => answerQuestion(qIndex, optionIndex)}
+                                  className={`text-left px-4 py-3 rounded-xl border transition-all ${
+                                    userAnswer === optionIndex
+                                      ? isCorrect
+                                        ? "border-emerald-400 bg-emerald-500/20"
+                                        : "border-rose-400 bg-rose-500/20"
+                                      : "border-slate-700 bg-slate-800/60 hover:border-slate-500"
+                                  }`}
+                                >
+                                  <span className="font-semibold mr-2">{String.fromCharCode(65 + optionIndex)}.</span>
+                                  {option}
+                                </button>
+                              ))}
+                            </div>
+                            {userAnswer !== null && (
+                              <div className="flex items-start gap-2 mt-4 text-sm">
+                                {isCorrect ? <CheckCircle2 size={18} className="text-emerald-400" /> : <XCircle size={18} className="text-rose-400" />}
+                                <p className="text-slate-300">{q.feedback}</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setShowResult(true)}
+                      className="px-5 py-3 rounded-xl bg-neon/30 border border-neon hover:bg-neon/40 font-semibold"
+                    >
+                      Покажи резултат
+                    </button>
+                    {showResult && (
+                      <div className="bg-slate-900/70 border border-slate-700 rounded-2xl p-6">
+                        <p className="text-xl font-semibold">Резултат: {score} / {quizQuestions.length}</p>
+                        <p className="text-neon font-semibold mt-2">Ранг: {getRank(score)}</p>
+                        <p className="text-slate-300 mt-3">
+                          Продължавай да тренираш с методите на string и ще станеш истински String Master! 🎯
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "summary" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-2xl font-display font-bold">✨ Обобщение и любопитни факти</h2>
+                    </div>
+                    <div className="grid gap-4">
+                      <div className="glass rounded-2xl p-5">
+                        <h3 className="font-semibold text-lg">Определения</h3>
+                        <ul className="mt-3 space-y-2 text-slate-300">
+                          <li><strong>string:</strong> редица от Unicode символи, достъпни чрез индекс.</li>
+                          <li><strong>StringBuilder:</strong> клас с динамичен буфер за ефективни текстови операции.</li>
+                          <li><strong>immutability:</strong> свойство, при което обектът не се променя след създаване.</li>
+                        </ul>
+                      </div>
+                      <div className="glass rounded-2xl p-5">
+                        <h3 className="font-semibold text-lg">Интересен факт</h3>
+                        <p className="text-slate-300 mt-2">
+                          <strong>String Interning</strong> в .NET съхранява еднакви низове само веднъж в паметта и
+                          повторно използва същата референция. Това пести RAM при множество повторения (например имена,
+                          идентификатори или ЕГН, което често се пази като текст за да не се губят водещи нули).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </section>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
