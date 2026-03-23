@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>11. клас • Файлове и сериализация</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      background-image:
+        linear-gradient(to bottom right, rgba(3, 7, 18, 0.88), rgba(15, 23, 42, 0.92)),
+        url('https://images.unsplash.com/photo-1568952433726-3896e3881c65?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .glass {
+      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .fade-slide {
+      animation: fadeSlide 0.45s ease;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .code-block {
+      background: #0b1120;
+      border: 1px solid #1e293b;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+    }
+
+    .kw   { color: #c084fc; }
+    .type { color: #7dd3fc; }
+    .str  { color: #86efac; }
+    .cm   { color: #94a3b8; }
+    .fn   { color: #facc15; }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useMemo, useState } = React;
+
+    const tabs = ["Урок", "Демонстрация", "Игра", "Куиз", "Обобщение"];
+
+    const lessonSlides = [
+      {
+        title: "Потоци и Файлове",
+        text: "Стриймване означава пренасяне на информация – четене и писане на данни. Потоците осигуряват последователен достъп до информацията, без да е нужно всичко да е заредено наведнъж в паметта."
+      },
+      {
+        title: "Четене и Писане",
+        text: "Класът StreamReader чете текст от файл или поток. StreamWriter записва текст във файл. След работа потокът трябва да се затвори с .Close() или да се използва using блок за автоматично освобождаване."
+      },
+      {
+        title: "Изключения (Exceptions)",
+        text: "Изключението е сигнал към операционната система, че програмата не може да продължи нормално – например при деление на нула. Изключенията се обработват с конструкцията try-catch."
+      },
+      {
+        title: "Сериализация",
+        text: "Сериализацията преобразува обект в поток от байтове за съхранение или обмен. Двоичната сериализация обикновено е значително по-бърза от текстовата."
+      },
+      {
+        title: "XML и JSON",
+        text: "XML използва тагове за описание на структурирани данни, например <name>Антон</name>. JSON е формат, базиран на JavaScript обекти, четим както за хора, така и за машини."
+      }
+    ];
+
+    const codeSnippets = [
+      {
+        title: "Четене с File.ReadAllText()",
+        code: `using System;
+using System.IO;
+
+class Program
+{
+    static void Main()
+    {
+        string path = @"data.txt";
+        string content = File.ReadAllText(path);
+        Console.WriteLine(content);
+    }
+}`
+      },
+      {
+        title: "try-catch при отваряне на файл",
+        code: `using System;
+using System.IO;
+
+class Program
+{
+    static void Main()
+    {
+        try
+        {
+            string text = File.ReadAllText("missing.txt");
+            Console.WriteLine(text);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Грешка: {ex.Message}");
+        }
+    }
+}`
+      },
+      {
+        title: "JSON сериализация със System.Text.Json",
+        code: `using System;
+using System.Text.Json;
+
+public class Student
+{
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var student = new Student { Name = "Антон", Grade = 6 };
+        string json = JsonSerializer.Serialize(student);
+        Console.WriteLine(json);
+    }
+}`
+      }
+    ];
+
+    const gamePairs = [
+      { term: "StreamReader", definition: "Клас за четене на текст от файл или поток" },
+      { term: "throw", definition: "Ключова дума за хвърляне на изключение" },
+      { term: "JSON", definition: "Текстов формат за данни, базиран на JavaScript обекти" },
+      { term: "XML", definition: "Формат с тагове за описание на структурирани данни" },
+      { term: "BinaryFormatter", definition: "Клас за двоична сериализация (исторически пример)" }
+    ];
+
+    const quizData = [
+      {
+        q: "1) Какво е основното предназначение на потоците (streams)?",
+        options: ["Пренасяне на информация", "Изтриване на файлове", "Стартиране на процеси", "Създаване на GUI"],
+        correct: 0
+      },
+      {
+        q: "2) Кой клас се използва за записване в текстов файл?",
+        options: ["StreamReader", "StreamWriter", "FileInfo", "DirectoryInfo"],
+        correct: 1
+      },
+      {
+        q: "3) Какво се случва при деление на нула?",
+        options: ["Нищо", "Връща 0", "Възниква изключение (Exception)"],
+        correct: 2
+      },
+      {
+        q: "4) Коя конструкция се използва за прихващане на изключения?",
+        options: ["for-if", "switch-case", "try-catch"],
+        correct: 2
+      },
+      {
+        q: "5) Какво представлява сериализацията?",
+        options: ["Компресия на снимки", "Конвертиране на обект до поток от байтове", "Сортиране на масив"],
+        correct: 1
+      },
+      {
+        q: "6) Кое твърдение за двоичната сериализация е вярно?",
+        options: ["По-бавна е от текстовата", "Значително по-бърза е от текстовата", "Работи само с XML"],
+        correct: 1
+      },
+      {
+        q: "7) Какво е XML?",
+        options: ["Операционна система", "Език за форматиране с етикети/тагове", "База данни", "Компилатор"],
+        correct: 1
+      },
+      {
+        q: "8) На какво е базиран JSON форматът?",
+        options: ["Обекти от JavaScript", "C++ класове", "Бинарни дървета", "Excel таблици"],
+        correct: 0
+      },
+      {
+        q: "9) Кой метод на класа Directory връща имената на подпапките?",
+        options: ["GetFiles()", "CreateDirectory()", "GetDirectories()"],
+        correct: 2
+      },
+      {
+        q: "10) Защо е важно да затваряме файловите потоци?",
+        options: ["За да се промени темата на приложението", "За да сме сигурни, че данните са записани и запазени", "За да работи интернет", "За да се ускори процесорът"],
+        correct: 1
+      }
+    ];
+
+    function highlightCode(code) {
+      return code
+        .replace(/(using|class|public|static|void|string|int|var|new|try|catch|return)/g, "<span class='kw'>$1</span>")
+        .replace(/(Console|File|JsonSerializer|Exception|Program|Student)/g, "<span class='type'>$1</span>")
+        .replace(/("[^"]*")/g, "<span class='str'>$1</span>")
+        .replace(/(\/\/.*)/g, "<span class='cm'>$1</span>")
+        .replace(/(Main|WriteLine|ReadAllText|Serialize)/g, "<span class='fn'>$1</span>");
+    }
+
+    function App() {
+      const [activeTab, setActiveTab] = useState("Урок");
+      const [slideIndex, setSlideIndex] = useState(0);
+
+      const [selectedTerm, setSelectedTerm] = useState(null);
+      const [matchedTerms, setMatchedTerms] = useState([]);
+      const [gameMessage, setGameMessage] = useState("Избери понятие, после правилното определение.");
+
+      const [quizIndex, setQuizIndex] = useState(0);
+      const [quizScore, setQuizScore] = useState(0);
+      const [selectedOption, setSelectedOption] = useState(null);
+      const [quizFinished, setQuizFinished] = useState(false);
+
+      const currentQuestion = quizData[quizIndex];
+
+      const shuffledDefinitions = useMemo(() => {
+        return [...gamePairs].sort(() => Math.random() - 0.5);
+      }, []);
+
+      const changeSlide = (direction) => {
+        setSlideIndex((prev) => {
+          if (direction === "next") return Math.min(prev + 1, lessonSlides.length - 1);
+          return Math.max(prev - 1, 0);
+        });
+      };
+
+      const handleDefinitionClick = (definitionObj) => {
+        if (!selectedTerm) {
+          setGameMessage("Първо избери понятие отляво.");
+          return;
+        }
+
+        if (matchedTerms.includes(selectedTerm.term)) {
+          setGameMessage("Това понятие вече е свързано.");
+          return;
+        }
+
+        if (selectedTerm.definition === definitionObj.definition) {
+          setMatchedTerms((prev) => [...prev, selectedTerm.term]);
+          setGameMessage("✅ Отлично! Връзката е вярна.");
+        } else {
+          setGameMessage("❌ Грешна връзка. Опитай отново.");
+        }
+
+        setSelectedTerm(null);
+      };
+
+      const restartGame = () => {
+        setSelectedTerm(null);
+        setMatchedTerms([]);
+        setGameMessage("Избери понятие, после правилното определение.");
+      };
+
+      const handleQuizAnswer = (idx) => {
+        if (selectedOption !== null) return;
+        setSelectedOption(idx);
+      };
+
+      const nextQuizQuestion = () => {
+        if (selectedOption === null) return;
+
+        if (selectedOption === currentQuestion.correct) {
+          setQuizScore((prev) => prev + 1);
+        }
+
+        if (quizIndex === quizData.length - 1) {
+          setQuizFinished(true);
+        } else {
+          setQuizIndex((prev) => prev + 1);
+          setSelectedOption(null);
+        }
+      };
+
+      const resetQuiz = () => {
+        setQuizIndex(0);
+        setQuizScore(0);
+        setSelectedOption(null);
+        setQuizFinished(false);
+      };
+
+      return (
+        <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
+          <header className="glass rounded-2xl p-6 md:p-8 shadow-2xl mb-6 md:mb-8 fade-slide">
+            <h1 className="text-2xl md:text-4xl font-bold tracking-tight">
+              Файлове и сериализация • 11. клас
+            </h1>
+            <p className="text-slate-300 mt-2 text-sm md:text-base">
+              Интерактивен урок с практика, игра и куиз.
+            </p>
+          </header>
+
+          <nav className="glass rounded-2xl p-3 md:p-4 mb-6 md:mb-8 shadow-xl">
+            <div className="flex flex-wrap gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-xl text-sm md:text-base font-semibold transition-all duration-300 ${
+                    activeTab === tab
+                      ? "bg-cyan-400 text-slate-900 shadow-lg shadow-cyan-500/30"
+                      : "bg-slate-800/70 text-slate-200 hover:bg-slate-700"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          <section className="glass rounded-2xl p-5 md:p-8 shadow-2xl min-h-[460px] fade-slide">
+            {activeTab === "Урок" && (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-2xl font-bold">Презентация</h2>
+                <p className="text-slate-400 text-sm">
+                  Използвай стрелките на клавиатурата или бутоните в презентацията за навигация.
+                  Натисни <kbd className="bg-slate-700 rounded px-1 py-0.5 text-xs">F</kbd> за цял екран,&nbsp;
+                  <kbd className="bg-slate-700 rounded px-1 py-0.5 text-xs">O</kbd> за преглед на всички слайдове.
+                </p>
+                <div className="rounded-xl overflow-hidden border border-slate-700/70 shadow-2xl"
+                     style={{ height: "60vh", minHeight: "420px" }}>
+                  <iframe
+                    src="streams-serialization-presentation.html"
+                    title="Reveal.js презентация – Стриймове, файлове и сериализация"
+                    className="w-full h-full"
+                    style={{ border: "none" }}
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "Демонстрация" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold">Код демонстрации</h2>
+                {codeSnippets.map((snippet) => (
+                  <article key={snippet.title} className="rounded-xl overflow-hidden border border-slate-700/70">
+                    <div className="bg-slate-900/80 px-4 py-3 font-semibold text-cyan-300">{snippet.title}</div>
+                    <pre
+                      className="code-block p-4 overflow-x-auto text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: highlightCode(snippet.code) }}
+                    />
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {activeTab === "Игра" && (
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Игра: Свържи понятие с определение</h2>
+                <p className="text-slate-300 mb-5">{gameMessage}</p>
+
+                <div className="grid md:grid-cols-2 gap-5">
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-cyan-300">Понятия</h3>
+                    {gamePairs.map((item) => {
+                      const isMatched = matchedTerms.includes(item.term);
+                      const isSelected = selectedTerm?.term === item.term;
+                      return (
+                        <button
+                          key={item.term}
+                          onClick={() => !isMatched && setSelectedTerm(item)}
+                          className={`w-full text-left p-3 rounded-lg border transition ${
+                            isMatched
+                              ? "bg-emerald-500/20 border-emerald-400 text-emerald-200 cursor-not-allowed"
+                              : isSelected
+                              ? "bg-cyan-500/20 border-cyan-400"
+                              : "bg-slate-800/70 border-slate-700 hover:border-cyan-400"
+                          }`}
+                        >
+                          {item.term}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-cyan-300">Определения</h3>
+                    {shuffledDefinitions.map((item, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleDefinitionClick(item)}
+                        className="w-full text-left p-3 rounded-lg border bg-slate-800/70 border-slate-700 hover:border-cyan-400 transition"
+                      >
+                        {item.definition}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between">
+                  <p className="font-semibold">Точки: {matchedTerms.length} / {gamePairs.length}</p>
+                  <button onClick={restartGame} className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition">Рестарт</button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "Куиз" && (
+              <div>
+                <h2 className="text-2xl font-bold mb-5">Куиз: Провери знанията си</h2>
+
+                {!quizFinished ? (
+                  <div>
+                    <p className="text-slate-300 mb-2">Въпрос {quizIndex + 1} от {quizData.length}</p>
+                    <p className="text-lg font-semibold mb-4">{currentQuestion.q}</p>
+
+                    <div className="space-y-3">
+                      {currentQuestion.options.map((option, idx) => {
+                        const isChosen = selectedOption === idx;
+                        const isCorrect = idx === currentQuestion.correct;
+
+                        let style = "bg-slate-800/70 border-slate-700 hover:border-cyan-400";
+                        if (selectedOption !== null) {
+                          if (isCorrect) style = "bg-emerald-500/20 border-emerald-400";
+                          if (isChosen && !isCorrect) style = "bg-rose-500/20 border-rose-400";
+                        }
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleQuizAnswer(idx)}
+                            className={`w-full text-left p-3 rounded-lg border transition ${style}`}
+                          >
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={nextQuizQuestion}
+                      disabled={selectedOption === null}
+                      className="mt-5 px-5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-semibold disabled:opacity-40 hover:bg-cyan-400 transition"
+                    >
+                      Следващ въпрос
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-3xl font-bold mb-3">Резултат: {quizScore} / {quizData.length}</p>
+                    <p className="text-slate-300 mb-6">
+                      {quizScore >= 8 ? "Страхотно представяне!" : quizScore >= 5 ? "Добра работа – продължавай!" : "Преговори урока и опитай пак!"}
+                    </p>
+                    <button onClick={resetQuiz} className="px-5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-semibold hover:bg-cyan-400 transition">
+                      Реши отново
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "Обобщение" && (
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Cheat Sheet</h2>
+                <ul className="space-y-3 list-disc pl-5 text-slate-200 leading-relaxed">
+                  <li><strong>Стрийм</strong>: Подредена редица от битове.</li>
+                  <li><strong>StreamReader / StreamWriter</strong>: Четене и запис на текстови данни във файлове.</li>
+                  <li><strong>JSON</strong>: Идва от JavaScript, но днес е независим и универсален формат.</li>
+                  <li><strong>XML</strong>: Използва тагове за структурирани данни и е силно описателен.</li>
+                  <li><strong>Изключение</strong>: По-добре програмата да спре контролирано, отколкото да даде грешен резултат.</li>
+                  <li><strong>Сериализация</strong>: Превръща обект в поток от байтове за съхранение или обмен.</li>
+                </ul>
+              </div>
+            )}
+          </section>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стриймове, Файлове и Сериализация – 11-12 клас</title>
+
+    <!-- ═══════════════════════════════════════════════════════
+         Reveal.js 5 via jsDelivr CDN
+         Сменяй темата като промениш "night" на:
+         black | white | league | beige | sky | moon | solarized
+    ════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/night.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+
+    <style>
+        /* ── Затъмняване на фоновите снимки ────────────────── */
+        .reveal .slide-background-content {
+            filter: brightness(0.30) saturate(0.75);
+        }
+
+        /* ── Сенки за четимост ─────────────────────────────── */
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-shadow: 0 2px 12px rgba(0,0,0,0.95),
+                         0 0  40px rgba(0,0,0,0.7);
+        }
+        .reveal p, .reveal li, .reveal td, .reveal th {
+            text-shadow: 0 1px 6px rgba(0,0,0,0.95);
+        }
+
+        /* ── Цитат блок ────────────────────────────────────── */
+        .reveal blockquote {
+            background: rgba(0, 0, 0, 0.65);
+            border-left: 4px solid #42affa;
+            padding: 0.6em 1.2em;
+            border-radius: 0 10px 10px 0;
+            font-style: normal;
+            width: 90%;
+            margin: 0.8em auto;
+        }
+
+        /* ── Таблици ───────────────────────────────────────── */
+        .reveal table {
+            border-collapse: collapse;
+            width: 92%;
+            height: auto;
+            margin: 0 auto;
+            background: rgba(0,0,0,0.55);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .reveal table th {
+            background: rgba(66, 175, 250, 0.35);
+            padding: 0.35em 0.9em;
+            font-size: 0.92em;
+        }
+        .reveal table td {
+            padding: 0.28em 0.9em;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            font-size: 0.88em;
+            line-height: 1.4;
+        }
+        .reveal table tr:hover td {
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* ── Код блокове ───────────────────────────────────── */
+        .reveal pre {
+            box-shadow: 0 6px 24px rgba(0,0,0,0.7);
+            border-radius: 10px;
+        }
+        .reveal code {
+            border-radius: 4px;
+        }
+
+        /* ── Прогрес лента ─────────────────────────────────── */
+        .reveal .progress {
+            color: #42affa;
+            height: 4px;
+        }
+
+        /* ── Навигационни стрелки ──────────────────────────── */
+        .reveal .controls {
+            color: #42affa;
+        }
+
+        /* ── Slide number ──────────────────────────────────── */
+        .reveal .slide-number {
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            padding: 2px 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="reveal">
+    <div class="slides">
+
+        <section data-markdown
+                 data-separator="\n---\n"
+                 data-separator-vertical="\n--\n"
+                 data-charset="UTF-8">
+            <textarea data-template>
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920&q=80" data-transition="zoom" -->
+
+## Стриймове, файлове и директории
+### Въведение в работата с данни
+*Информатика 11 клас Модул 2*
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80" data-transition="slide" -->
+
+### 1. Какво е Стриймване (Поток)?
+
+* **Стриймът** е подредена редица от битове
+* Позволява последователно четене и писане на данни
+* Не е нужно данните да са изцяло заредени в паметта!
+* **Приложение:** Четене на големи файлове, мрежова комуникация
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&q=80" data-transition="convex" -->
+
+### 2. StreamReader и StreamWriter
+
+Използват се за работа с **текстови файлове**
+
+* `StreamReader` – Чете текст от поток
+* `StreamWriter` – Записва текст в поток
+
+> **Важно:** Винаги затваряйте потока с `.Close()` или използвайте блок `using`, за да освободите ресурсите!
+
+--
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1920&q=80" data-transition="fade" -->
+
+### Пример: Писане във файл
+
+```csharp
+using (StreamWriter writer = new StreamWriter("output.txt"))
+{
+    writer.WriteLine("Здравей, свят!");
+    writer.WriteLine("Това е нов ред.");
+} // Потокът се затваря автоматично тук
+```
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1509228468518-180b4acf4e79?w=1920&q=80" data-transition="concave" style="font-size:0.82em" -->
+
+### 3. Класът File
+
+Предоставя **статични методи** за бърза работа с файлове наведнъж
+
+| Метод | Описание |
+|-------|----------|
+| `File.ReadAllText(path)` | Чете целия текст |
+| `File.WriteAllText(path, text)` | Записва текст (презаписва) |
+| `File.Exists(path)` | Проверява дали файлът съществува |
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80" data-transition="zoom" style="font-size:0.78em" -->
+
+### 4. Класът Directory
+
+Предоставя **статични методи** за работа с папки
+
+| Метод | Описание |
+|-------|----------|
+| `Directory.CreateDirectory(path)` | Създава нова папка |
+| `Directory.GetFiles(path)` | Връща списък с файлове |
+| `Directory.GetDirectories(path)` | Връща списък с подпапки |
+| `Directory.Exists(path)` | Проверява дали папката съществува |
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=80" data-transition="slide" -->
+
+### Обобщение Стриймове, файове и директории
+
+* **Стрийм** = подредена редица от битове
+* **StreamReader / StreamWriter** – четене и писане стъпка по стъпка
+* **File** – четене/писане наведнъж
+* **Directory** – навигация в структурата от папки
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1627398242454-45a1a6df9db1?w=1920&q=80" data-transition="zoom" -->
+
+## Изключения и Сериализация
+### Как да пазим обекти и да хващаме грешки
+*Информатика 11 клас Модул 2*
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1542903660-eedba2cda584?w=1920&q=80" data-transition="convex" -->
+
+### 1. Какво е Изключение (Exception)?
+
+Изключението е събитие, което **нарушава нормалния ход** на програмата
+
+* Позволява на програмата да „хване" грешката, вместо да спре
+* Ключовата дума `throw` предизвиква грешка изкуствено
+
+**Примери:** Липсващ файл &nbsp;·&nbsp; Деление на нула &nbsp;·&nbsp; Невалиден индекс
+
+--
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&q=80" data-transition="fade" -->
+
+### Блокът try-catch
+
+```csharp
+try
+{
+    // Опит за четене на файл, който може да не съществува
+    string text = File.ReadAllText("missing_file.txt");
+}
+catch (FileNotFoundException ex)
+{
+    // Код, изпълняван при грешка
+    Console.WriteLine("Файлът не беше намерен!");
+}
+```
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1544256718-3bcf237f3974?w=1920&q=80" data-transition="slide" -->
+
+### 2. Какво е Сериализация?
+
+> Конвертиране на **обект** в поток от байтове или текст,  
+> за да бъде **запазен** или **изпратен по мрежата**
+
+**Десериализация** = обратният процес
+
+```
+Обект  ──(Serialize)──►  Файл / Мрежа
+
+Файл / Мрежа  ──(Deserialize)──►  Обект
+```
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80" data-transition="concave" -->
+
+### 3. Видове Сериализация
+
+| Вид | Характеристики |
+|-----|----------------|
+| **Бинарна** | Много бърза, не се чете от хора |
+| **XML** | Използва тагове, стандартизиран формат |
+| **JSON** | Лек, лесен за четене, **най-популярен** |
+
+--
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920&q=80" data-transition="fade" -->
+
+### Пример: Сериализация в JSON
+
+```csharp
+using System.Text.Json;
+
+WeatherForecast forecast = new WeatherForecast { TemperatureC = 30 };
+
+// Сериализация: Обект → JSON текст
+string jsonString = JsonSerializer.Serialize(forecast);
+File.WriteAllText("weather.json", jsonString);
+
+// Резултат във файла: {"TemperatureC":30}
+```
+
+---
+
+<!-- .slide: data-background-image="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=80" data-transition="zoom" -->
+
+## Обобщение – Част 2
+
+* **Изключения (Exceptions)** ни предпазват от срив → `try-catch`
+* **Сериализацията** запазва състоянието на нашите обекти
+* **Формати:**
+  * Бинарен – бърз
+  * XML – тагове
+  * **JSON** – модерен и лек ✓
+
+            </textarea>
+        </section>
+
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Reveal.js 5 + Плъгини via jsDelivr CDN
+════════════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/markdown/markdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/zoom/zoom.js"></script>
+
+<script>
+    Reveal.initialize({
+        // ── Навигация ──────────────────────────────────────────
+        hash: true,           // URL се обновява при навигация
+        controls: true,       // стрелки за навигация
+        progress: true,       // лента за прогрес
+        slideNumber: 'c/t',   // текущ / общ брой слайдове
+        center: true,         // вертикално центриране
+
+        // ── Преходи по подразбиране ────────────────────────────
+        // (Оверрайдват се по отделните слайдове с data-transition)
+        transition: 'slide',             // none|fade|slide|convex|concave|zoom
+        transitionSpeed: 'slow',      // default|fast|slow
+        backgroundTransition: 'fade',    // transition за фоновете
+
+        // ── Клавиатурни комбинации ─────────────────────────────
+        keyboard: true,
+        overview: true,       // 'O' за преглед на всички слайдове
+
+        // ── Плъгини ────────────────────────────────────────────
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom ],
+    });
+</script>
+
+</body>
+</html>
