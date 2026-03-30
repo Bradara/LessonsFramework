@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Рекурсия с C# — Интерактивно обучение</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            electric: "#4CC9F0",
+            cyber: "#FF7A18",
+            night: "#0B0F1A",
+            panel: "#121826",
+            steel: "#1F2937"
+          },
+          fontFamily: {
+            display: ["'Space Grotesk'", "sans-serif"],
+            mono: ["'Share Tech Mono'", "monospace"]
+          },
+          boxShadow: {
+            glow: "0 0 30px rgba(76, 201, 240, 0.35)",
+            ember: "0 0 30px rgba(255, 122, 24, 0.35)"
+          },
+          keyframes: {
+            floaty: {
+              "0%, 100%": { transform: "translateY(0px)" },
+              "50%": { transform: "translateY(-8px)" }
+            },
+            pulseSoft: {
+              "0%, 100%": { opacity: 0.6 },
+              "50%": { opacity: 1 }
+            }
+          },
+          animation: {
+            floaty: "floaty 6s ease-in-out infinite",
+            pulseSoft: "pulseSoft 3s ease-in-out infinite"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      background: radial-gradient(circle at top, rgba(76, 201, 240, 0.18), transparent 45%),
+        radial-gradient(circle at 20% 20%, rgba(255, 122, 24, 0.15), transparent 35%),
+        #0b0f1a;
+    }
+    .noise {
+      background-image: url("data:image/svg+xml,%3Csvg width='160' height='160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+    }
+    .bg-grid {
+      background-size: 40px 40px;
+      background-image:
+        linear-gradient(to right, rgba(76, 201, 240, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(76, 201, 240, 0.08) 1px, transparent 1px);
+    }
+    .code-block {
+      background: linear-gradient(145deg, rgba(18, 24, 38, 0.95), rgba(13, 18, 32, 0.95));
+      border: 1px solid rgba(76, 201, 240, 0.25);
+      box-shadow: inset 0 0 18px rgba(76, 201, 240, 0.1);
+    }
+    .code-block code {
+      color: #d7e7ff;
+    }
+  </style>
+</head>
+<body class="text-slate-100 font-display">
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useEffect, useMemo, useState } = React;
+    const PlaceholderIcon = ({ size = 20, className = "" }) => (
+      <span
+        className={`inline-block rounded-full ${className}`}
+        style={{ width: size, height: size, backgroundColor: "currentColor", opacity: 0.6 }}
+      ></span>
+    );
+
+    const initApp = (Lucide) => {
+      const icon = (name) => (Lucide && Lucide[name]) || PlaceholderIcon;
+      const BookOpen = icon("BookOpen");
+      const Layers = icon("Layers");
+      const Cpu = icon("Cpu");
+      const AlertTriangle = icon("AlertTriangle");
+      const ChevronLeft = icon("ChevronLeft");
+      const ChevronRight = icon("ChevronRight");
+      const Play = icon("Play");
+      const Gamepad2 = icon("Gamepad2");
+      const Sparkles = icon("Sparkles");
+      const Code2 = icon("Code2");
+      const Repeat = icon("Repeat");
+      const CheckCircle2 = icon("CheckCircle2");
+      const XCircle = icon("XCircle");
+
+    const slideData = [
+      {
+        id: "intro",
+        title: "Въведение: Рекурсия и Матрьошки",
+        icon: BookOpen,
+        bg: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
+        points: [
+          "Рекурсия = функция, която се самоизвиква до базов случай.",
+          "Метафора: Матрьошка — всяка кукла съдържа по-малка версия на себе си.",
+          "Използва се за разделяне на проблема на по-малки подпроблеми."
+        ]
+      },
+      {
+        id: "anatomy",
+        title: "Анатомия на рекурсията",
+        icon: Layers,
+        bg: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=1600&q=80",
+        points: [
+          "Базов случай (base case) спира рекурсивното извикване.",
+          "Рекурсивно извикване: функцията решава по-малък проблем.",
+          "Кодът се обработва от последното извикване към първото (LIFO)."
+        ]
+      },
+      {
+        id: "stack",
+        title: "Стекът (Call Stack)",
+        icon: Cpu,
+        bg: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
+        points: [
+          "Стекът е малка част от паметта с фиксиран размер (~1MB).",
+          "Следи точката, където всяка функция трябва да върне контрол.",
+          "Препълване = Stack Overflow."
+        ]
+      },
+      {
+        id: "types",
+        title: "Видове рекурсия",
+        icon: Repeat,
+        bg: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1600&q=80",
+        points: [
+          "Директна: методът извиква себе си.",
+          "Индиректна: A → B → C → A.",
+          "И двата типа изискват стабилен базов случай."
+        ]
+      },
+      {
+        id: "vs",
+        title: "Рекурсия vs Итерация",
+        icon: Code2,
+        bg: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1600&q=80",
+        points: [
+          "Рекурсивните извиквания имат разход (стек, параметри).",
+          "Итерацията е по-бърза за линейни проблеми (напр. факториел).",
+          "Рекурсията е силна при разклонени алгоритми."
+        ]
+      },
+      {
+        id: "risks",
+        title: "Опасности",
+        icon: AlertTriangle,
+        bg: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80",
+        points: [
+          "Безкрайна рекурсия = липсва или е грешен базов случай.",
+          "Неефективна рекурсия: Фибоначи с повторни изчисления.",
+          "Решение: мемоизация или итерация."
+        ]
+      }
+    ];
+
+    const codeSamples = [
+      {
+        id: "sum",
+        title: "Сума на масив",
+        code: `static int Sum(int[] array, int index)
+{
+   if (index == array.Length - 1)
+   {
+      return array[index];
+   }
+   return array[index] + Sum(array, index + 1);
+}`,
+        trace: [
+          { label: "Sum(array, 0)", detail: "Търсим Sum(1..3)" },
+          { label: "Sum(array, 1)", detail: "Търсим Sum(2..3)" },
+          { label: "Sum(array, 2)", detail: "Търсим Sum(3)" },
+          { label: "Sum(array, 3)", detail: "Базов случай: връща array[3]" },
+          { label: "Return 4", detail: "array[2] + 4 = 7" },
+          { label: "Return 7", detail: "array[1] + 7 = 9" },
+          { label: "Return 9", detail: "array[0] + 9 = 10" }
+        ]
+      },
+      {
+        id: "factorial",
+        title: "Рекурсивен факториел",
+        code: `static long GetFactorial(int num)
+{
+   if (num == 0)
+      return 1;
+   return num * GetFactorial(num - 1);
+}`,
+        trace: [
+          { label: "Fact(5)", detail: "5 * Fact(4)" },
+          { label: "Fact(4)", detail: "4 * Fact(3)" },
+          { label: "Fact(3)", detail: "3 * Fact(2)" },
+          { label: "Fact(2)", detail: "2 * Fact(1)" },
+          { label: "Fact(1)", detail: "1 * Fact(0)" },
+          { label: "Fact(0)", detail: "Базов случай: 1" },
+          { label: "Return 1", detail: "1 * 1 = 1" },
+          { label: "Return 2", detail: "2 * 1 = 2" },
+          { label: "Return 6", detail: "3 * 2 = 6" },
+          { label: "Return 24", detail: "4 * 6 = 24" },
+          { label: "Return 120", detail: "5 * 24 = 120" }
+        ]
+      },
+      {
+        id: "figure",
+        title: "Рекурсивно рисуване",
+        code: `static void PrintFigure(int n)
+{
+    if (n == 0)
+      return;
+
+    // Преди действието: отпечатайте n звездички
+    PrintFigure(n - 1);
+    // След действието: отпечатайте n хаштага
+}`,
+        trace: [
+          { label: "Print(3)", detail: "Печат: ***" },
+          { label: "Print(2)", detail: "Печат: **" },
+          { label: "Print(1)", detail: "Печат: *" },
+          { label: "Print(0)", detail: "Базов случай: стоп" },
+          { label: "Return", detail: "Печат: #" },
+          { label: "Return", detail: "Печат: ##" },
+          { label: "Return", detail: "Печат: ###" }
+        ]
+      }
+    ];
+
+    const quizQuestions = [
+      {
+        q: "Какво е базов случай?",
+        options: [
+          "Първото рекурсивно извикване",
+          "Условие, което спира рекурсията",
+          "Последният ред от метода",
+          "Метод, който не връща стойност"
+        ],
+        answer: 1,
+        explain: "Базовият случай прекратява рекурсивните извиквания."
+      },
+      {
+        q: "Какво описва Call Stack?",
+        options: [
+          "Списък с глобални променливи",
+          "Памет за активните извиквания на функции",
+          "Таблица с рекурсивни формули",
+          "Паралелни нишки"
+        ],
+        answer: 1,
+        explain: "Стекът пази рамките на активните функции и точката на връщане."
+      },
+      {
+        q: "Типичният лимит на стека в презентацията е около:",
+        options: ["16GB", "512KB", "1MB", "100MB"],
+        answer: 2,
+        explain: "В материала е даден примерен размер ~1MB."
+      },
+      {
+        q: "Директна рекурсия означава:",
+        options: [
+          "Метод извиква друг метод",
+          "Метод извиква сам себе си",
+          "Функция без базов случай",
+          "Итеративно обхождане"
+        ],
+        answer: 1,
+        explain: "Директната рекурсия е самоизвикване."
+      },
+      {
+        q: "Индиректна рекурсия е когато:",
+        options: [
+          "Методът няма параметри",
+          "A извиква B, а B извиква A",
+          "Рекурсията е бърза",
+          "Използва се цикъл"
+        ],
+        answer: 1,
+        explain: "Няколко метода образуват цикъл от извиквания."
+      },
+      {
+        q: "Кога рекурсията може да бъде вредна?",
+        options: [
+          "Когато има базов случай",
+          "Когато е прекалено плитка",
+          "Когато повтаря много изчисления",
+          "Когато връща стойност"
+        ],
+        answer: 2,
+        explain: "Примерът с Фибоначи показва повторни изчисления и голям разход."
+      },
+      {
+        q: "Какво се случва при безкрайна рекурсия?",
+        options: [
+          "Програмата спира нормално",
+          "Стекът се препълва",
+          "Става по-бърза",
+          "Нищо специално"
+        ],
+        answer: 1,
+        explain: "Липсващ базов случай води до Stack Overflow."
+      },
+      {
+        q: "Кое е по-бързо за факториел?",
+        options: [
+          "Рекурсивна версия",
+          "Итеративна версия",
+          "И двете са равни",
+          "Зависи само от компилатора"
+        ],
+        answer: 1,
+        explain: "Итерацията избягва разходите на стека."
+      },
+      {
+        q: "Рекурсията е най-подходяща за:",
+        options: [
+          "Линейни проблеми без разклонение",
+          "Разклонени комбинаторни алгоритми",
+          "Сортиране с един цикъл",
+          "Прости математически формули"
+        ],
+        answer: 1,
+        explain: "При разклонение рекурсията описва естествено дървовидни решения."
+      },
+      {
+        q: "Редът на обработка в рекурсията е:",
+        options: [
+          "Първи влязъл, първи излязъл",
+          "Последен влязъл, първи излязъл",
+          "Случаен",
+          "Паралелен"
+        ],
+        answer: 1,
+        explain: "Стекът е LIFO: последното извикване се обработва първо."
+      }
+    ];
+
+    const ranks = [
+      { min: 0, label: "Junior Dev" },
+      { min: 5, label: "Stack Master" },
+      { min: 8, label: "Recursion Guru" }
+    ];
+
+    function SlideCard({ slide }) {
+      const Icon = slide.icon || Sparkles;
+      return (
+        <section className="relative min-w-full">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${slide.bg})` }}
+          ></div>
+          <div className="absolute inset-0 bg-night/80"></div>
+          <div className="absolute inset-0 noise"></div>
+          <div className="relative z-10 min-h-[70vh] px-6 py-12 md:px-14 md:py-16 flex items-center">
+            <div className="max-w-5xl w-full grid gap-8 md:grid-cols-[1.2fr_0.8fr]">
+              <div>
+                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-electric/40 bg-panel/70 shadow-glow">
+                  <Icon size={20} className="text-electric" />
+                  <span className="uppercase tracking-[0.2em] text-xs text-electric">Слайд</span>
+                </div>
+                <h2 className="mt-6 text-3xl md:text-4xl font-semibold text-white">
+                  {slide.title}
+                </h2>
+                <ul className="mt-6 space-y-3 text-slate-200">
+                  {slide.points.map((point) => (
+                    <li key={point} className="flex items-start gap-3">
+                      <span className="mt-2 h-2 w-2 rounded-full bg-cyber"></span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-3xl border border-electric/20 bg-panel/70 p-6 shadow-glow">
+                <h3 className="text-lg font-semibold text-electric">Матрьошка визуализация</h3>
+                <div className="mt-6 flex justify-center">
+                  <div className="relative h-48 w-48">
+                    {[0, 1, 2, 3].map((level) => (
+                      <div
+                        key={level}
+                        className="absolute inset-0 rounded-full border-2 border-cyber/70 bg-cyber/10"
+                        style={{
+                          transform: `scale(${1 - level * 0.18})`,
+                          top: `${level * 10}px`,
+                          left: `${level * 10}px`
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-4 text-sm text-slate-300">
+                  Всеки по-малък проблем "живее" вътре в по-големия.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function SlideDeck() {
+      const [index, setIndex] = useState(0);
+      const total = slideData.length;
+
+      const go = (dir) => {
+        setIndex((prev) => (prev + dir + total) % total);
+      };
+
+      return (
+        <div className="relative overflow-hidden rounded-[32px] border border-electric/30 bg-panel/60 shadow-glow">
+          <div
+            className="flex transition-transform duration-700 ease-in-out"
+            style={{ transform: `translateX(-${index * 100}%)` }}
+          >
+            {slideData.map((slide) => (
+              <SlideCard key={slide.id} slide={slide} />
+            ))}
+          </div>
+          <div className="absolute inset-x-0 bottom-4 flex items-center justify-between px-6">
+            <button
+              onClick={() => go(-1)}
+              className="flex items-center gap-2 rounded-full border border-electric/40 bg-night/80 px-4 py-2 text-sm text-electric hover:bg-electric/20"
+            >
+              <ChevronLeft size={16} /> Предишен
+            </button>
+            <div className="flex items-center gap-2">
+              {slideData.map((slide, idx) => (
+                <button
+                  key={slide.id}
+                  onClick={() => setIndex(idx)}
+                  className={`h-2.5 w-8 rounded-full transition ${
+                    idx === index ? "bg-cyber" : "bg-white/20"
+                  }`}
+                ></button>
+              ))}
+            </div>
+            <button
+              onClick={() => go(1)}
+              className="flex items-center gap-2 rounded-full border border-cyber/40 bg-night/80 px-4 py-2 text-sm text-cyber hover:bg-cyber/20"
+            >
+              Следващ <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function TracePanel({ sample }) {
+      const [step, setStep] = useState(0);
+      const currentSteps = sample.trace;
+
+      const nextStep = () => {
+        setStep((prev) => (prev + 1) % currentSteps.length);
+      };
+
+      return (
+        <div className="rounded-2xl border border-electric/20 bg-panel/70 p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-electric">{sample.title}</h3>
+            <button
+              onClick={nextStep}
+              className="inline-flex items-center gap-2 rounded-full border border-cyber/40 bg-cyber/10 px-4 py-2 text-sm text-cyber hover:bg-cyber/20"
+            >
+              <Play size={16} /> Trace
+            </button>
+          </div>
+          <pre className="code-block mt-4 rounded-xl p-4 overflow-x-auto text-sm font-mono">
+            <code>{sample.code}</code>
+          </pre>
+          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr]">
+            <div className="rounded-xl border border-white/10 bg-night/70 p-4">
+              <p className="text-xs uppercase tracking-widest text-slate-400">Стъпка</p>
+              <p className="mt-2 text-lg text-white">{currentSteps[step].label}</p>
+              <p className="mt-2 text-sm text-slate-300">{currentSteps[step].detail}</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-night/70 p-4">
+              <p className="text-xs uppercase tracking-widest text-slate-400">Call Stack</p>
+              <div className="mt-3 space-y-2">
+                {currentSteps
+                  .slice(0, step + 1)
+                  .reverse()
+                  .map((frame, idx) => (
+                    <div
+                      key={`${frame.label}-${idx}`}
+                      className={`rounded-lg px-3 py-2 text-sm ${
+                        idx === 0 ? "bg-electric/20 text-electric" : "bg-white/5 text-slate-200"
+                      }`}
+                    >
+                      {frame.label}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function RecursionGame() {
+      const [choice, setChoice] = useState(null);
+      const [result, setResult] = useState(null);
+      const maxDepth = 7;
+      const startN = 6;
+      const options = [
+        { label: "n == 0", correct: true },
+        { label: "n == 1", correct: false },
+        { label: "n < 0", correct: false },
+        { label: "n == 2", correct: false }
+      ];
+
+      const simulate = (option) => {
+        const depth = option.correct ? startN + 1 : startN + 2;
+        const safe = depth <= maxDepth;
+        setChoice(option.label);
+        setResult({ safe, depth, correct: option.correct });
+      };
+
+      const stackBars = useMemo(() => {
+        const active = result ? result.depth : 0;
+        return Array.from({ length: maxDepth }, (_, i) => i < active);
+      }, [result]);
+
+      return (
+        <div className="rounded-3xl border border-electric/30 bg-panel/70 p-8 shadow-glow">
+          <div className="flex items-center gap-3">
+            <Gamepad2 className="text-cyber" size={24} />
+            <h3 className="text-2xl font-semibold text-white">Игра: Recursion Depth</h3>
+          </div>
+          <p className="mt-3 text-slate-300">
+            Старт: n = {startN}. Избираме базов случай за факториел. Целта е да спрем
+            рекурсията преди да се запълни стекът.
+          </p>
+          <div className="mt-6 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-3">
+              {options.map((option) => (
+                <button
+                  key={option.label}
+                  onClick={() => simulate(option)}
+                  className={`w-full rounded-xl border px-4 py-3 text-left transition ${
+                    choice === option.label
+                      ? "border-cyber bg-cyber/10"
+                      : "border-white/10 bg-night/60 hover:border-electric/40"
+                  }`}
+                >
+                  Базов случай: {option.label}
+                </button>
+              ))}
+              {result && (
+                <div className="rounded-xl border border-white/10 bg-night/70 p-4">
+                  <p className="text-sm text-slate-200">
+                    Дълбочина: <span className="text-electric">{result.depth}</span> / {maxDepth}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-300">
+                    {result.correct
+                      ? "Правилен базов случай: рекурсията приключва контролирано."
+                      : "Неправилен базов случай: риск от препълване или грешен резултат."}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-night/70 p-4">
+              <p className="text-xs uppercase tracking-widest text-slate-400">Визуален стек</p>
+              <div className="mt-4 flex flex-col-reverse gap-2">
+                {stackBars.map((active, idx) => (
+                  <div
+                    key={`stack-${idx}`}
+                    className={`h-6 rounded-lg transition ${
+                      active ? "bg-cyber/80" : "bg-white/5"
+                    }`}
+                  ></div>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-slate-400">Лимитът е около 1MB (примерно).</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function Quiz() {
+      const [answers, setAnswers] = useState(Array(quizQuestions.length).fill(null));
+
+      const score = answers.reduce((acc, ans, idx) => {
+        return acc + (ans === quizQuestions[idx].answer ? 1 : 0);
+      }, 0);
+
+      const rank = ranks
+        .slice()
+        .reverse()
+        .find((r) => score >= r.min)?.label;
+
+      return (
+        <div className="rounded-3xl border border-electric/30 bg-panel/70 p-8 shadow-glow">
+          <div className="flex items-center gap-3">
+            <Sparkles className="text-electric" size={24} />
+            <h3 className="text-2xl font-semibold text-white">Куиз: Провери знанията</h3>
+          </div>
+          <div className="mt-6 space-y-6">
+            {quizQuestions.map((item, idx) => (
+              <div key={item.q} className="rounded-2xl border border-white/10 bg-night/70 p-5">
+                <p className="text-sm text-slate-400">Въпрос {idx + 1}</p>
+                <h4 className="mt-2 text-lg text-white">{item.q}</h4>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {item.options.map((option, optIdx) => {
+                    const isSelected = answers[idx] === optIdx;
+                    const isCorrect = optIdx === item.answer;
+                    let stateClass = "border-white/10 bg-night/80";
+                    if (isSelected) {
+                      stateClass = isCorrect
+                        ? "border-electric bg-electric/10"
+                        : "border-cyber bg-cyber/10";
+                    }
+                    return (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          const next = [...answers];
+                          next[idx] = optIdx;
+                          setAnswers(next);
+                        }}
+                        className={`rounded-xl border px-4 py-3 text-left text-sm transition ${stateClass}`}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+                {answers[idx] !== null && (
+                  <div className="mt-4 flex items-start gap-3 text-sm text-slate-300">
+                    {answers[idx] === item.answer ? (
+                      <CheckCircle2 size={18} className="text-electric" />
+                    ) : (
+                      <XCircle size={18} className="text-cyber" />
+                    )}
+                    <span>{item.explain}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 rounded-2xl border border-electric/20 bg-night/70 p-6">
+            <p className="text-sm uppercase tracking-widest text-slate-400">Резултат</p>
+            <p className="mt-2 text-2xl text-white">{score} / {quizQuestions.length}</p>
+            <p className="mt-1 text-lg text-electric">Ранг: {rank}</p>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [activeSection, setActiveSection] = useState("slides");
+      const [bgLayers, setBgLayers] = useState([
+        { id: 0, url: "", opacity: 1 }
+      ]);
+      const sectionBackgrounds = {
+        slides: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=80",
+        demo: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1800&q=80",
+        game: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1800&q=80",
+        quiz: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1800&q=80",
+        final: "https://images.unsplash.com/photo-1484417894907-623942c8ee29?auto=format&fit=crop&w=1800&q=80"
+      };
+      const activeBackground = sectionBackgrounds[activeSection];
+
+      useEffect(() => {
+        if (!activeBackground) {
+          return;
+        }
+        setBgLayers((prev) => {
+          const lastId = prev.length ? prev[prev.length - 1].id : 0;
+          const faded = prev.map((layer) => ({ ...layer, opacity: 0 }));
+          return [...faded, { id: lastId + 1, url: activeBackground, opacity: 1 }];
+        });
+        const timeout = setTimeout(() => {
+          setBgLayers((prev) => prev.filter((layer) => layer.opacity === 1));
+        }, 700);
+        return () => clearTimeout(timeout);
+      }, [activeBackground]);
+      const navItems = [
+        { id: "slides", label: "Слайдове", icon: Layers },
+        { id: "demo", label: "Демо", icon: Code2 },
+        { id: "game", label: "Игра", icon: Gamepad2 },
+        { id: "quiz", label: "Куиз", icon: Sparkles },
+        { id: "final", label: "Речник", icon: BookOpen }
+      ];
+
+      return (
+        <div className="min-h-screen">
+          <div className="fixed inset-0 -z-10">
+            {bgLayers.map((layer) => (
+              <div
+                key={layer.id}
+                className="absolute inset-0 bg-cover bg-center transition-opacity duration-1500"
+                style={{ backgroundImage: `url(${layer.url})`, opacity: layer.opacity }}
+              ></div>
+            ))}
+            <div className="absolute inset-0 bg-gradient-to-br from-night/35 via-night/55 to-night/70"></div>
+            <div className="absolute inset-0 noise"></div>
+          </div>
+          <header className="relative overflow-hidden border-b border-electric/20">
+            <div className="absolute inset-0 bg-grid opacity-30"></div>
+            <div className="absolute inset-0 noise"></div>
+            <div className="relative z-10 mx-auto max-w-6xl px-6 py-12">
+              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.35em] text-cyber">C# Recursion</p>
+                  <h1 className="mt-3 text-3xl md:text-5xl font-semibold text-white">
+                    Рекурсия с C# — геймифицирано SPA обучение
+                  </h1>
+                  <p className="mt-4 max-w-2xl text-slate-300">
+                    Учебен маршрут за 11. клас: дефиниции, стек, типове рекурсия, сравнение
+                    с итерация и интерактивни упражнения.
+                  </p>
+                </div>
+                <div className="rounded-3xl border border-cyber/40 bg-panel/70 p-5 shadow-ember">
+                  <p className="text-xs uppercase tracking-widest text-slate-400">Цел</p>
+                  <p className="mt-2 text-lg text-white">Разбиране + практика + игра</p>
+                  <div className="mt-4 flex items-center gap-2 text-sm text-slate-300">
+                    <Sparkles size={16} className="text-cyber" />
+                    Готов за часа
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <nav className="sticky top-0 z-20 border-b border-electric/20 bg-night/90 backdrop-blur">
+            <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-6 py-4">
+              {navItems.map((item) => {
+                const Icon = item.icon || Sparkles;
+                const active = activeSection === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveSection(item.id)}
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition ${
+                      active
+                        ? "border-cyber bg-cyber/20 text-cyber"
+                        : "border-white/10 bg-night/70 text-slate-300 hover:border-electric/40"
+                    }`}
+                  >
+                    <Icon size={16} /> {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+
+          <main className="mx-auto max-w-6xl px-6 py-10">
+            <div className="relative rounded-[32px] border border-electric/20 bg-night/75 backdrop-blur">
+              <div className="p-6 md:p-10">
+                {activeSection === "slides" && (
+                  <section id="slides" className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-2xl md:text-3xl font-semibold text-white">Slide-based Learning</h2>
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Layers size={16} /> 6 тематични слайда
+                      </div>
+                    </div>
+                    <SlideDeck />
+                  </section>
+                )}
+
+                {activeSection === "demo" && (
+                  <section id="demo" className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-2xl md:text-3xl font-semibold text-white">Демонстрация: Code Playground</h2>
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Code2 size={16} /> Trace визуализации
+                      </div>
+                    </div>
+                    <div className="grid gap-6">
+                      {codeSamples.map((sample) => (
+                        <TracePanel key={sample.id} sample={sample} />
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {activeSection === "game" && (
+                  <section id="game">
+                    <RecursionGame />
+                  </section>
+                )}
+
+                {activeSection === "quiz" && (
+                  <section id="quiz">
+                    <Quiz />
+                  </section>
+                )}
+
+                {activeSection === "final" && (
+                  <section id="final" className="rounded-3xl border border-electric/30 bg-panel/70 p-8 shadow-glow">
+                    <div className="flex items-center gap-3">
+                      <BookOpen className="text-electric" size={24} />
+                      <h3 className="text-2xl font-semibold text-white">Речник и Любопитни факти</h3>
+                    </div>
+                    <div className="mt-6 grid gap-6 md:grid-cols-2">
+                      <div className="rounded-2xl border border-white/10 bg-night/70 p-5">
+                        <h4 className="text-lg text-white">Ключови термини</h4>
+                        <ul className="mt-4 space-y-3 text-slate-300">
+                          <li><span className="text-electric">Базов случай</span> — условие за спиране на рекурсията.</li>
+                          <li><span className="text-electric">Стек</span> — памет за активните извиквания.</li>
+                          <li><span className="text-electric">Рекурсивно стъпало</span> — всяко по-дълбоко извикване.</li>
+                          <li><span className="text-electric">Дъно на рекурсия</span> — моментът на връщане.</li>
+                        </ul>
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-night/70 p-5">
+                        <h4 className="text-lg text-white">Fun Facts</h4>
+                        <p className="mt-4 text-slate-300">
+                          Вицът: "За да разбереш рекурсията, трябва първо да разбереш рекурсията" —
+                          показва как обяснението използва самата идея за самоповторение.
+                        </p>
+                        <p className="mt-4 text-slate-300">
+                          Фракталите в природата (папрат, снежинки) са пример за рекурсивни структури —
+                          един и същ модел се повтаря в различни мащаби.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+                )}
+              </div>
+            </div>
+          </main>
+
+          <footer className="border-t border-electric/20 py-8">
+            <div className="mx-auto max-w-6xl px-6 text-sm text-slate-400 flex flex-col gap-2 md:flex-row md:justify-between">
+              <span>Курс: Структури от данни и алгоритми — Рекурсия</span>
+              <span>Лиценз: CC-BY-NC-SA (BG-IT-Edu)</span>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    };
+
+    const loadLucide = () => import("https://esm.sh/lucide-react@0.487.0");
+
+    loadLucide()
+      .then((mod) => initApp(mod))
+      .catch((err) => {
+        console.warn("Lucide icons failed to load, using placeholders.", err);
+        initApp({});
+      });
+  </script>
+</body>
+</html>

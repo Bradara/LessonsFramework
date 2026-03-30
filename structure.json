@@ -130,6 +130,11 @@
     "path": "Lessons/Информатика/Modul2/06strings-stringbuilder-app.html"
   },
   {
+    "name": "07recursion-spa",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/07recursion-spa.html"
+  },
+  {
     "name": "audio",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/audio/"
