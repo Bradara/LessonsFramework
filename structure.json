@@ -90,11 +90,6 @@
     "path": "Lessons/Информатика/"
   },
   {
-    "name": "Modul1",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul1/"
-  },
-  {
     "name": "Modul2",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/"
@@ -140,19 +135,14 @@
     "path": "Lessons/Информатика/Modul2/audio/"
   },
   {
-    "name": "file-serialization-lesson",
-    "type": "file",
-    "path": "Lessons/Информатика/Modul2/file-serialization-lesson.html"
+    "name": "reveal",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul2/reveal/"
   },
   {
     "name": "streams-serialization-presentation",
     "type": "file",
-    "path": "Lessons/Информатика/Modul2/streams-serialization-presentation.html"
-  },
-  {
-    "name": "Modul3",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul3/"
+    "path": "Lessons/Информатика/Modul2/reveal/streams-serialization-presentation.html"
   },
   {
     "name": "Modul4",
