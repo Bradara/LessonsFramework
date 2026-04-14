@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Стек и Опашка — Интерактивен урок</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../../libs/tailwind.cdn.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -28,29 +28,27 @@
     }
   </style>
   
-  <script type="importmap">
-  {
-    "imports": {
-      "react": "https://esm.sh/react@18.2.0",
-      "react-dom/client": "https://esm.sh/react-dom@18.2.0/client?deps=react@18.2.0",
-      "framer-motion": "https://esm.sh/framer-motion@10.16.16?deps=react@18.2.0,react-dom@18.2.0",
-      "lucide-react": "https://esm.sh/lucide-react@0.292.0?deps=react@18.2.0"
-    }
-  }
+  
+  <!-- Local UMD libraries (replaces importmap) -->
+  <script crossorigin src="../../../libs/react.production.min.js"></script>
+  <script crossorigin src="../../../libs/react-dom.production.min.js"></script>
+  <script>
+    window.react = window.React; // needed by lucide-react UMD
   </script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="../../../libs/framer-motion.js"></script>
+  <script src="../../../libs/lucide-react.min.js"></script>
+<script src="../../../libs/babel.min.js"></script>
 </head>
 <body class="min-h-screen text-slate-100">
   <div id="app" class="max-w-6xl mx-auto px-4 py-8"></div>
 
-  <script type="text/babel" data-type="module">
-    import React, { useState, useEffect, useMemo } from 'react';
-    import { createRoot } from 'react-dom/client';
-    import { motion, AnimatePresence } from 'framer-motion';
-    import {
-      BookOpen, FlaskConical, Gamepad2, HelpCircle, Sparkle,
-      Box, ArrowRightFromLine, Table2, Cpu 
-    } from 'lucide-react';
+  <script type="text/babel">
+    // UMD globals (importmap replaced with local UMD builds)
+    const { useState, useEffect, useMemo, useRef, useCallback, useContext } = React;
+    const { createRoot } = ReactDOM;
+    const { motion, AnimatePresence } = Motion;
+    const { BookOpen, FlaskConical, Gamepad2, HelpCircle, Sparkle,
+      Box, ArrowRightFromLine, Table2, Cpu } = LucideReact;
 
     const LucideIcons = { BookOpen, FlaskConical, Gamepad2, HelpCircle, Sparkle, Box, ArrowRightFromLine, Table2, Cpu };
 

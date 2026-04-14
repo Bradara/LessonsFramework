@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.4/dist/es/utils/transform */
+import{interpolate as c}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_utils_._interpolate.mjs";var p=t=>typeof t=="object"&&t.mix,m=t=>p(t)?t.mix:void 0;function f(...t){let o=!Array.isArray(t[0]),n=o?0:-1,r=t[0+n],s=t[1+n],e=t[2+n],u=t[3+n],i=c(s,e,{mixer:m(e[0]),...u});return o?i(r):i}export{f as transform};
+//# sourceMappingURL=transform.mjs.map

@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/animation/animators/waapi/index */
+import{mapEasingToNativeEasing as y}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_2b4c73af.mjs";function p(e,n,t,{delay:o=0,duration:s,repeat:f=0,repeatType:l="loop",ease:m,times:i}={}){let r={[n]:t};i&&(r.offset=i);let a=y(m);return Array.isArray(a)&&(r.easing=a),e.animate(r,{delay:o,duration:s,easing:Array.isArray(a)?"linear":a,fill:"both",iterations:f+1,direction:l==="reverse"?"alternate":"normal"})}export{p as animateStyle};
+//# sourceMappingURL=index.mjs.map

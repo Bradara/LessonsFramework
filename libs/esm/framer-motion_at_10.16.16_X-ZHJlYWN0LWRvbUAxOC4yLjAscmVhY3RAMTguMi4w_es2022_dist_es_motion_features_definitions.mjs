@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/motion/features/definitions */
+var n={animation:["animate","variants","whileHover","whileTap","exit","whileInView","whileFocus","whileDrag"],exit:["exit"],drag:["drag","dragControls"],focus:["whileFocus"],hover:["whileHover","onHoverStart","onHoverEnd"],tap:["whileTap","onTap","onTapStart","onTapCancel"],pan:["onPan","onPanStart","onPanSessionStart","onPanEnd"],inView:["whileInView","onViewportEnter","onViewportLeave"],layout:["layout","layoutId"]},t={};for(let e in n)t[e]={isEnabled:o=>n[e].some(a=>!!o[a])};export{t as featureDefinitions};
+//# sourceMappingURL=definitions.mjs.map

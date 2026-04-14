@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/render/html/utils/build-transform */
+import{transformPropOrder as o}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_render_html_utils_._transform.mjs";var c={x:"translateX",y:"translateY",z:"translateZ",transformPerspective:"perspective"},u=o.length;function p(e,{enableHardwareAcceleration:a=!0,allowTransformNone:l=!0},i,s){let t="";for(let n=0;n<u;n++){let r=o[n];if(e[r]!==void 0){let f=c[r]||r;t+=`${f}(${e[r]}) `}}return a&&!e.z&&(t+="translateZ(0)"),t=t.trim(),s?t=s(e,i?"":t):l&&i&&(t="none"),t}export{p as buildTransform};
+//# sourceMappingURL=build-transform.mjs.map

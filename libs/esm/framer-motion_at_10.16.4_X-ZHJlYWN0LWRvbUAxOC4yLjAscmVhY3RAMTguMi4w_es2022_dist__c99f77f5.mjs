@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.4/dist/es/render/utils/is-controlling-variants */
+import{isAnimationControls as o}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__618905ed.mjs";import{isVariantLabel as r}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_render_utils_._is-variant-label.mjs";import{variantProps as t}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_render_utils_._variant-props.mjs";function a(i){return o(i.animate)||t.some(n=>r(i[n]))}function f(i){return!!(a(i)||i.variants)}export{a as isControllingVariants,f as isVariantNode};
+//# sourceMappingURL=is-controlling-variants.mjs.map

@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/render/utils/resolve-dynamic-variants */
+import{resolveVariantFromProps as n}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_render_utils_._resolve-variants.mjs";function c(r){let t={};return r.values.forEach((o,e)=>t[e]=o.get()),t}function u(r){let t={};return r.values.forEach((o,e)=>t[e]=o.getVelocity()),t}function s(r,t,o){let e=r.getProps();return n(e,t,o!==void 0?o:e.custom,c(r),u(r))}export{s as resolveVariant};
+//# sourceMappingURL=resolve-dynamic-variants.mjs.map

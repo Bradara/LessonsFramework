@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/utils/subscription-manager */
+import{addUniqueItem as u,removeItem as c}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_utils_._array.mjs";var e=class{constructor(){this.subscriptions=[]}add(s){return u(this.subscriptions,s),()=>c(this.subscriptions,s)}notify(s,r,n){let t=this.subscriptions.length;if(t)if(t===1)this.subscriptions[0](s,r,n);else for(let i=0;i<t;i++){let o=this.subscriptions[i];o&&o(s,r,n)}}getSize(){return this.subscriptions.length}clear(){this.subscriptions.length=0}};export{e as SubscriptionManager};
+//# sourceMappingURL=subscription-manager.mjs.map

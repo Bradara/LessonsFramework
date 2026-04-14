@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/animation/utils/stagger */
+import{easingDefinitionToFunction as g}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_7fc365d6.mjs";function f(t,e){if(t==="first")return 0;{let n=e-1;return t==="last"?n:n/2}}function d(t=.1,{startDelay:e=0,from:n=0,ease:s}={}){return(c,o)=>{let a=typeof n=="number"?n:f(n,o),u=Math.abs(a-c),i=t*u;if(s){let r=o*t;i=g(s)(i/r)*r}return e+i}}export{f as getOriginIndex,d as stagger};
+//# sourceMappingURL=stagger.mjs.map

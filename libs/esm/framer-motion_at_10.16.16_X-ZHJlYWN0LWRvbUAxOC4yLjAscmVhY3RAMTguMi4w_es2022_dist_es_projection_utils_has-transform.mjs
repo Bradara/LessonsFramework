@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/projection/utils/has-transform */
+function t(n){return n===void 0||n===1}function e({scale:n,scaleX:o,scaleY:i}){return!t(n)||!t(o)||!t(i)}function c(n){return e(n)||f(n)||n.z||n.rotate||n.rotateX||n.rotateY}function f(n){return r(n.x)||r(n.y)}function r(n){return n&&n!=="0%"}export{f as has2DTranslate,e as hasScale,c as hasTransform};
+//# sourceMappingURL=has-transform.mjs.map

@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.4/dist/es/motion/utils/is-forced-motion-value */
+import{scaleCorrectors as i}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__3a427e6a.mjs";import{transformProps as n}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__ea404194.mjs";function c(r,{layout:o,layoutId:t}){return n.has(r)||r.startsWith("origin")||(o||t!==void 0)&&(!!i[r]||r==="opacity")}export{c as isForcedMotionValue};
+//# sourceMappingURL=is-forced-motion-value.mjs.map

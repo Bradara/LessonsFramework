@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/value/types/numbers/units */
+import{isString as n}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_value_types_numbers_.._utils.mjs";var s=t=>({test:e=>n(e)&&e.endsWith(t)&&e.split(" ").length===1,parse:parseFloat,transform:e=>`${e}${t}`}),p=s("deg"),r=s("%"),a=s("px"),c=s("vh"),g=s("vw"),i={...r,parse:t=>r.parse(t)/100,transform:t=>r.transform(t*100)};export{p as degrees,r as percent,i as progressPercentage,a as px,c as vh,g as vw};
+//# sourceMappingURL=units.mjs.map

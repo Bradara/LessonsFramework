@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.4/dist/es/projection/utils/measure */
+import{convertBoundingBoxToBox as s,transformBoxPoints as f}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__bc07a6f9.mjs";import{translateAxis as n}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__cb7ed80d.mjs";function x(o,t){return s(f(o.getBoundingClientRect(),t))}function c(o,t,i){let r=x(o,i),{scroll:e}=t;return e&&(n(r.x,e.offset.x),n(r.y,e.offset.y)),r}export{c as measurePageBox,x as measureViewportBox};
+//# sourceMappingURL=measure.mjs.map

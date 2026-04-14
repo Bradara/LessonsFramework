@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.4/dist/es/render/svg/utils/render */
+import{camelToDash as i}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__fe1b90fa.mjs";import{renderHTML as m}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__9a094a63.mjs";import{camelCaseAttributes as e}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__57a89b77.mjs";function c(o,t,f,s){m(o,t,void 0,s);for(let r in t.attrs)o.setAttribute(e.has(r)?r:i(r),t.attrs[r])}export{c as renderSVG};
+//# sourceMappingURL=render.mjs.map

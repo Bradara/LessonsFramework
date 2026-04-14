@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../../libs/tailwind.cdn.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -77,9 +77,15 @@
 <body class="text-slate-100 font-display">
   <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="../../../libs/react.production.min.js" crossorigin></script>
+  <script src="../../../libs/react-dom.production.min.js" crossorigin></script>
+  <script src="../../../libs/babel.min.js"></script>
+  <!-- lucide-react UMD -->
+  <script>
+    window.react = window.React; // needed by lucide-react UMD
+  </script>
+  <script src="../../../libs/lucide-react.min.js"></script>
+
 
   <script type="text/babel">
     const { useEffect, useMemo, useState } = React;
@@ -852,7 +858,8 @@
       root.render(<App />);
     };
 
-    const loadLucide = () => import("https://esm.sh/lucide-react@0.487.0");
+    // lucide-react loaded from local UMD build
+    const loadLucide = () => Promise.resolve(window.LucideReact);
 
     loadLucide()
       .then((mod) => initApp(mod))

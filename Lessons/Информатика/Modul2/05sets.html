@@ -6,7 +6,7 @@
     <title>Множества и Речници - Интерактивен Урок</title>
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../../libs/tailwind.cdn.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -42,26 +42,26 @@
     </style>
 
     <!-- React, ReactDOM, Babel, and module imports -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="importmap">
-        {
-            "imports": {
-                "react": "https://esm.sh/react@18.2.0",
-                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-                "framer-motion": "https://esm.sh/framer-motion@10.16.4?deps=react@18.2.0",
-                "lucide-react": "https://esm.sh/lucide-react@0.292.0?deps=react@18.2.0"
-            }
-        }
-    </script>
-</head>
+    
+  <!-- Local UMD libraries (replaces importmap) -->
+  <script crossorigin src="../../../libs/react.production.min.js"></script>
+  <script crossorigin src="../../../libs/react-dom.production.min.js"></script>
+  <script>
+    window.react = window.React; // needed by lucide-react UMD
+  </script>
+  <script src="../../../libs/framer-motion.js"></script>
+  <script src="../../../libs/lucide-react.min.js"></script>
+<script src="../../../libs/babel.min.js"></script>
+    </head>
 <body class="bg-cover bg-center bg-fixed min-h-screen custom-scrollbar" style="background-image: linear-gradient(to right bottom, rgba(10, 15, 28, 0.9), rgba(10, 15, 28, 0.95)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
     <div id="root"></div>
 
-    <script type="text/babel" data-type="module">
-        import React, { useState, useEffect, useRef } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { motion, AnimatePresence } from 'framer-motion';
-        import { BookOpen, MonitorPlay, Gamepad2, BrainCircuit, Info, ChevronRight, ChevronLeft, CheckCircle2, XCircle, Search, Plus, Terminal } from 'lucide-react';
+    <script type="text/babel">
+    // UMD globals (importmap replaced with local UMD builds)
+    const { useState, useEffect, useMemo, useRef, useCallback, useContext } = React;
+    const { createRoot } = ReactDOM;
+    const { motion, AnimatePresence } = Motion;
+    const { BookOpen, MonitorPlay, Gamepad2, BrainCircuit, Info, ChevronRight, ChevronLeft, CheckCircle2, XCircle, Search, Plus, Terminal } = LucideReact;
 
         // MAIN APPLICATION COMPONENT
         const App = () => {

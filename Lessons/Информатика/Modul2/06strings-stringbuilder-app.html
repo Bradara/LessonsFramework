@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Низове и StringBuilder — Интерактивно Уеб Приложение</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../../libs/tailwind.cdn.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -53,18 +53,18 @@
 <body class="text-slate-100 font-body min-h-screen">
   <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="../../../libs/react.production.min.js" crossorigin></script>
+  <script src="../../../libs/react-dom.production.min.js" crossorigin></script>
   <script>
     // UMD builds sometimes look for a lowercase global.
     window.react = window.React;
   </script>
-  <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.js" crossorigin></script>
+  <script src="../../../libs/lucide-react.min.js"></script>
   <script>
     // Normalize the global name for Lucide React UMD.
     window.lucideReact = window.lucideReact || window.LucideReact;
   </script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="../../../libs/babel.min.js"></script>
 
   <script type="text/babel">
     const { useMemo, useState } = React;

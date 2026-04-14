@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.4/dist/es/frameloop/index-legacy */
+import{stepsOrder as n}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_frameloop_._batcher.mjs";import{frame as o,cancelFrame as t}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_frameloop_._frame.mjs";var p=o,a=n.reduce((r,e)=>(r[e]=c=>t(c),r),{});export{a as cancelSync,p as sync};
+//# sourceMappingURL=index-legacy.mjs.map

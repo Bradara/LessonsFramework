@@ -1,0 +1,3 @@
+/* esm.sh - lucide-react@0.487.0 */
+import "./react_at_18.2.0_es2022_react.mjs";
+export * from "./lucide-react_at_0.487.0_X-ZHJlYWN0QDE4LjIuMA_es2022_lucide-react.mjs";

@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.4/dist/es/utils/reduced-motion/index */
+import{isBrowser as o}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist__f7a03cf0.mjs";import{hasReducedMotionListener as i,prefersReducedMotion as t}from"./framer-motion_at_10.16.4_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_utils_reduced-motion_._state.mjs";function c(){if(i.current=!0,!!o)if(window.matchMedia){let e=window.matchMedia("(prefers-reduced-motion)"),r=()=>t.current=e.matches;e.addListener(r),r()}else t.current=!1}export{c as initPrefersReducedMotion};
+//# sourceMappingURL=index.mjs.map

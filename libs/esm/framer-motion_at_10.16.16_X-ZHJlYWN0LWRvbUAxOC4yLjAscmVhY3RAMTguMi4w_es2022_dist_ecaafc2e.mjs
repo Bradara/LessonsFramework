@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/render/html/utils/scrape-motion-values */
+import{isForcedMotionValue as r}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_aeff8772.mjs";import{isMotionValue as s}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_2e20b321.mjs";function u(e,n){let{style:t}=e,i={};for(let o in t)(s(t[o])||n.style&&s(n.style[o])||r(o,e))&&(i[o]=t[o]);return i}export{u as scrapeMotionValuesFromProps};
+//# sourceMappingURL=scrape-motion-values.mjs.map

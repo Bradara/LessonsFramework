@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/animation/interfaces/single-value */
+import{animateMotionValue as m}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_d2970412.mjs";import{motionValue as a}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_cea2793f.mjs";import{isMotionValue as r}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_16c7209d.mjs";function f(o,i,n){let t=r(o)?o:a(o);return t.start(m("",t,i,n)),t.animation}export{f as animateSingleValue};
+//# sourceMappingURL=single-value.mjs.map

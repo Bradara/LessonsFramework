@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/render/html/utils/transform */
+var t=["transformPerspective","x","y","z","translateX","translateY","translateZ","scale","scaleX","scaleY","rotate","rotateX","rotateY","rotateZ","skew","skewX","skewY"],e=new Set(t);export{t as transformPropOrder,e as transformProps};
+//# sourceMappingURL=transform.mjs.map

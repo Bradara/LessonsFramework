@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/easing/cubic-bezier */
+import{noop as b}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_es_easing_.._utils_noop.mjs";var s=(n,i,r)=>(((1-3*r+3*i)*n+(3*r-6*i))*n+3*i)*n,f=1e-7,l=12;function a(n,i,r,c,o){let e,t,u=0;do t=i+(r-i)/2,e=s(t,c,o)-n,e>0?r=t:i=t;while(Math.abs(e)>f&&++u<l);return t}function d(n,i,r,c){if(n===i&&r===c)return b;let o=e=>a(e,0,1,n,r);return e=>e===0||e===1?e:s(o(e),i,c)}export{d as cubicBezier};
+//# sourceMappingURL=cubic-bezier.mjs.map

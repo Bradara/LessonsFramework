@@ -1,0 +1,3 @@
+/* esm.sh - framer-motion@10.16.16/dist/es/render/dom/viewport/index */
+import{resolveElements as d}from"./framer-motion_at_10.16.16_X-ZHJlYWN0LWRvbUAxOC4yLjAscmVhY3RAMTguMi4w_es2022_dist_98e10b2f.mjs";var m={some:0,all:1};function b(i,a,{root:f,margin:l,amount:t="some"}={}){let g=d(i),n=new WeakMap,h=o=>{o.forEach(e=>{let r=n.get(e.target);if(e.isIntersecting!==!!r)if(e.isIntersecting){let c=a(e);typeof c=="function"?n.set(e.target,c):s.unobserve(e.target)}else r&&(r(e),n.delete(e.target))})},s=new IntersectionObserver(h,{root:f,rootMargin:l,threshold:typeof t=="number"?t:m[t]});return g.forEach(o=>s.observe(o)),()=>s.disconnect()}export{b as inView};
+//# sourceMappingURL=index.mjs.map
