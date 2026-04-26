@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дървета и Графи — 11/12 клас</title>
+
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- Reveal.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="reveal-theme">
+
+  <!-- React & Babel -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #050b17;
+      --card: rgba(10, 17, 38, 0.88);
+      --neon-cyan: #00d4ff;
+      --neon-purple: #a855f7;
+      --neon-green: #00ff9d;
+      --neon-pink: #ff2d78;
+      --accent: #00d4ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated background ── */
+    .bg-layer {
+      position: fixed; inset: 0; z-index: -2;
+      background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=60');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.07;
+    }
+    .bg-overlay {
+      position: fixed; inset: 0; z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 0%, rgba(0,212,255,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 55% at 85% 100%, rgba(168,85,247,0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0,255,157,0.06) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(5,11,23,0.6) 0%, rgba(5,11,23,0.98) 100%);
+    }
+
+    /* ── Glass ── */
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .glass-neon {
+      background: rgba(0,212,255,0.04);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,212,255,0.2);
+      box-shadow: 0 0 20px rgba(0,212,255,0.08), inset 0 0 20px rgba(0,212,255,0.03);
+    }
+
+    /* ── Nav ── */
+    .nav-tab {
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: #64748b;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.6rem 1rem;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+    }
+    .nav-tab:hover { color: #cbd5e1; background: rgba(255,255,255,0.03); }
+    .nav-tab.active {
+      border-bottom-color: var(--neon-cyan);
+      color: #00d4ff;
+      background: rgba(0,212,255,0.07);
+      text-shadow: 0 0 12px rgba(0,212,255,0.5);
+    }
+
+    /* ── Animations ── */
+    .fade-in { animation: fadeIn 0.45s ease both; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
+
+    /* ── Reveal container ── */
+    #reveal-container {
+      width: 100%;
+      height: 520px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(0,212,255,0.2);
+      box-shadow: 0 0 40px rgba(0,212,255,0.1);
+    }
+    #reveal-container .reveal {
+      width: 100% !important; height: 100% !important;
+    }
+    .reveal .slide-background { background: #07101f !important; }
+    .reveal h2 { color: #00d4ff !important; text-shadow: 0 0 20px rgba(0,212,255,0.4); font-size: 1.4em !important; }
+    .reveal h3 { color: #a855f7 !important; font-size: 1em !important; }
+    .reveal ul li { color: #cbd5e1; }
+    .reveal .controls button { color: #00d4ff !important; }
+    .reveal .progress span { background: #00d4ff !important; }
+    .reveal .slide-number { color: #00d4ff !important; }
+
+    /* ── Flash Cards ── */
+    .flashcard-scene {
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%; height: 220px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(.4,0,.2,1);
+    }
+    .flashcard-scene.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-face {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.2rem;
+      text-align: center;
+    }
+    .flashcard-front {
+      background: linear-gradient(135deg, #0a1a2e, #0d1538);
+      border: 1px solid rgba(0,212,255,0.35);
+      box-shadow: 0 0 30px rgba(0,212,255,0.08), inset 0 0 40px rgba(0,212,255,0.04);
+    }
+    .flashcard-back {
+      background: linear-gradient(135deg, #071a14, #091520);
+      border: 1px solid rgba(0,255,157,0.4);
+      box-shadow: 0 0 30px rgba(0,255,157,0.1), inset 0 0 40px rgba(0,255,157,0.05);
+      transform: rotateY(180deg);
+    }
+
+    /* ── Quiz ── */
+    .quiz-btn {
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      text-align: left;
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+      background: rgba(255,255,255,0.02);
+      color: #cbd5e1;
+      width: 100%;
+    }
+    .quiz-btn:hover:not(:disabled) { border-color: rgba(0,212,255,0.5); background: rgba(0,212,255,0.07); color: #e2e8f0; }
+    .quiz-btn.correct { border-color: #00ff9d; background: rgba(0,255,157,0.1); color: #6ee7b7; }
+    .quiz-btn.wrong   { border-color: #ff2d78; background: rgba(255,45,120,0.08); color: #fca5a5; }
+    .quiz-btn.reveal-ans { border-color: #00ff9d; background: rgba(0,255,157,0.06); color: #6ee7b7; }
+
+    /* ── Progress bar ── */
+    .progress-track { background: rgba(255,255,255,0.06); border-radius: 99px; height: 5px; overflow: hidden; }
+    .progress-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); transition: width 0.4s ease; }
+
+    /* ── Neon badge ── */
+    .badge {
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em;
+      padding: 2px 9px; border-radius: 99px; text-transform: uppercase;
+    }
+    .badge-cyan   { background: rgba(0,212,255,0.15);  color: #00d4ff;  border: 1px solid rgba(0,212,255,0.35); }
+    .badge-purple { background: rgba(168,85,247,0.15); color: #c084fc;  border: 1px solid rgba(168,85,247,0.35); }
+    .badge-green  { background: rgba(0,255,157,0.1);   color: #00ff9d;  border: 1px solid rgba(0,255,157,0.3); }
+    .badge-pink   { background: rgba(255,45,120,0.12); color: #ff2d78;  border: 1px solid rgba(255,45,120,0.3); }
+
+    /* ── Term card ── */
+    .term-card {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.25s ease;
+    }
+    .term-card:hover {
+      border-color: rgba(0,212,255,0.35);
+      transform: translateY(-2px);
+      background: rgba(0,212,255,0.04);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    /* — Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.2); border-radius: 4px; }
+
+    /* ── Pulse ── */
+    @keyframes pulse-neon { 0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.5); } 50% { box-shadow: 0 0 0 8px rgba(0,212,255,0); } }
+    .pulse-neon { animation: pulse-neon 2s ease-in-out infinite; }
+
+    /* ── Node animation ── */
+    .tree-node-circle {
+      transition: fill 0.3s ease, filter 0.3s ease;
+    }
+    .tree-node-circle.visited {
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+
+    /* ── Glow text ── */
+    .glow-cyan   { text-shadow: 0 0 16px rgba(0,212,255,0.7); color: #00d4ff; }
+    .glow-purple { text-shadow: 0 0 16px rgba(168,85,247,0.7); color: #a855f7; }
+    .glow-green  { text-shadow: 0 0 16px rgba(0,255,157,0.7); color: #00ff9d; }
+
+    /* ── Responsive helpers ── */
+    @media (max-width: 640px) {
+      .nav-tab { font-size: 0.68rem; padding: 0.5rem 0.6rem; }
+      #reveal-container { height: 380px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <div class="bg-overlay"></div>
+  <div id="root"></div>
+
+  <!-- Reveal.js scripts (loaded after DOM) -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/markdown/markdown.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* ══════════════════════════════════
+       DATA
+    ══════════════════════════════════ */
+
+    const SLIDES_MARKDOWN = `
+## Малко история
+
+* Основите на математическата теория на графите са положени от **Леонард Ойлер**.
+* През 1736 г. той решава известната **"Задача за мостовете на Кьонигсберг"**.
+* Задачата е да се мине по всички седем моста на града **точно по веднъж**.
+* Ойлер доказва, че такава обиколка е **невъзможна**, използвайки модел — **граф**.
+
+---
+
+## Какво е Граф?
+
+* **Графът** $G(V,E)$ се състои от: **върхове (V)** и **ребра (E)**.
+* **Неориентиран граф:** Връзките нямат посока.
+* **Ориентиран граф:** Връзките имат определена посока.
+* **Претеглен граф:** На всяко ребро е присвоено **тегло / цена**.
+
+---
+
+## Пътища и Цикли
+
+* **Път:** Последователност от възли, свързани с ребра.
+* **Прост път:** Път без **повтарящи се** върхове.
+* **Цикъл:** Път, който **започва и завършва** в един и същ възел.
+* **Свързан граф:** Има **път** между **всеки два** възела.
+
+---
+
+## Представяне в паметта
+
+* **Списък на ребрата:** Списък на всички двойки свързани върхове.
+* **Матрица на съседствата:** 2D масив — 1 ако има ребро, 0 ако няма.
+* **Списъци на съседите:** Всеки възел съдържа списък на съседите си.
+
+---
+
+## Какво е Дърво?
+
+* **Дървото** е ADT (абстрактен тип данни), моделиращ **йерархична структура**.
+* В теорията: **свързан ацикличен граф**.
+* **Корен (Root):** Най-горният възел — **без родител**.
+* **Листо (Leaf):** Възел **без деца**.
+
+---
+
+## BFS — Търсене в широчина
+
+* Посещава **съседните** възли **първо**, след това техните съседи.
+* Обхожда граф **по нива**.
+* Реализира се чрез структура **Опашка (Queue)**.
+* Открива **най-краткия** път в претеглени графи с равни тегла.
+
+---
+
+## DFS — Търсене в дълбочина
+
+* Посещава **всички наследници** на даден възел до дъното, преди да се върне.
+* Обхожда граф **по клони**.
+* Реализира се чрез **Рекурсия** (или Стек).
+* Използва се за **топологична сортировка** и **намиране на цикли**.
+`;
+
+    const FLASH_CARDS = [
+      { q: "Какво е Граф?",          a: "Множество от върхове (V) и ребра (E), моделиращи връзки между обекти." },
+      { q: "Кой е коренът на дърво?", a: "Най-горният възел в дървото — той няма родител." },
+      { q: "Каква структура ползва BFS?", a: "Опашка (Queue) — обхождане по нива." },
+      { q: "Каква структура ползва DFS?", a: "Стек / Рекурсия — обхождане по дълбочина." },
+      { q: "Какво е листо в дърво?",  a: "Възел, който няма нито едно дете." },
+      { q: "Какво е цикъл в граф?",   a: "Път, който започва и завършва в един и същ възел." },
+    ];
+
+    const QUIZ_QUESTIONS = [
+      {
+        q: "Кой учен поставя основите на теорията на графите?",
+        opts: ["Исак Нютон", "Леонард Ойлер", "Карл Гаус", "Алан Тюринг"],
+        ans: 1
+      },
+      {
+        q: "Кой алгоритъм обхожда ПЪРВО най-близките съседи?",
+        opts: ["DFS", "Dijkstra", "BFS", "Prim"],
+        ans: 2
+      },
+      {
+        q: "Кой граф е едновременно ацикличен и свързан?",
+        opts: ["Пълен граф", "Претеглен граф", "Дърво", "Двустранен граф"],
+        ans: 2
+      },
+      {
+        q: "В коя структура нули и единици показват връзки между възли?",
+        opts: ["Списък на ребрата", "Матрица на съседство", "Опашка", "Хеш таблица"],
+        ans: 1
+      },
+      {
+        q: "Как се нарича възел без деца?",
+        opts: ["Корен", "Родител", "Листо", "Ребро"],
+        ans: 2
+      },
+      {
+        q: "Коя характеристика описва ПРЕТЕГЛЕН граф?",
+        opts: ["Само ориентирани ребра", "Ребрата имат цена/тегло", "Без цикли", "Само двудялен граф"],
+        ans: 1
+      },
+      {
+        q: "Кой алгоритъм е най-често реализиран чрез рекурсия?",
+        opts: ["BFS", "Dijkstra", "DFS", "Bellman-Ford"],
+        ans: 2
+      },
+      {
+        q: "Кой град е известен с математическата задача за своите 7 моста?",
+        opts: ["Прага", "Виена", "Берлин", "Кьонигсберг"],
+        ans: 3
+      },
+      {
+        q: "Кое множество описва ВРЪЗКИТЕ в един граф?",
+        opts: ["Множеството V", "Множеството E (ребра)", "Множеството N", "Множеството P"],
+        ans: 1
+      },
+      {
+        q: "Колко прости пътя съществуват между два възела в кореново дърво?",
+        opts: ["Нито един", "Точно един", "Два", "Неограничен брой"],
+        ans: 1
+      },
+    ];
+
+    /* ══════════════════════════════════
+       TREE DEMO COMPONENT
+    ══════════════════════════════════ */
+
+    // Binary tree structure:
+    //         1
+    //       /   \
+    //      2     3
+    //     / \   / \
+    //    4   5 6   7
+
+    const TREE_NODES = {
+      1: { id:1, x:300, y:50,  label:"A", children:[2,3] },
+      2: { id:2, x:180, y:160, label:"B", children:[4,5] },
+      3: { id:3, x:420, y:160, label:"C", children:[6,7] },
+      4: { id:4, x:110, y:270, label:"D", children:[] },
+      5: { id:5, x:250, y:270, label:"E", children:[] },
+      6: { id:6, x:370, y:270, label:"F", children:[] },
+      7: { id:7, x:490, y:270, label:"G", children:[] },
+    };
+
+    const EDGES = [
+      [1,2],[1,3],[2,4],[2,5],[3,6],[3,7]
+    ];
+
+    function bfsOrder() {
+      const order = [];
+      const queue = [1];
+      while (queue.length) {
+        const n = queue.shift();
+        order.push(n);
+        TREE_NODES[n].children.forEach(c => queue.push(c));
+      }
+      return order;
+    }
+
+    function dfsOrder() {
+      const order = [];
+      function dfs(n) {
+        order.push(n);
+        TREE_NODES[n].children.forEach(c => dfs(c));
+      }
+      dfs(1);
+      return order;
+    }
+
+    const NODE_COLORS = {
+      default:  "#1e3a5f",
+      visited:  "#00d4ff",
+      current:  "#a855f7",
+      done:     "#00ff9d",
+    };
+
+    function TreeDemo() {
+      const [nodeState, setNodeState] = useState(
+        Object.fromEntries(Object.keys(TREE_NODES).map(id => [id, "default"]))
+      );
+      const [running, setRunning] = useState(false);
+      const [algo, setAlgo] = useState(null);
+      const timers = useRef([]);
+
+      const reset = () => {
+        timers.current.forEach(clearTimeout);
+        timers.current = [];
+        setNodeState(Object.fromEntries(Object.keys(TREE_NODES).map(id => [id, "default"])));
+        setRunning(false);
+        setAlgo(null);
+      };
+
+      const animate = (order, name) => {
+        reset();
+        setAlgo(name);
+        setRunning(true);
+        order.forEach((nodeId, i) => {
+          const t1 = setTimeout(() => {
+            setNodeState(prev => ({ ...prev, [nodeId]: "current" }));
+          }, i * 700);
+          const t2 = setTimeout(() => {
+            setNodeState(prev => ({ ...prev, [nodeId]: "visited" }));
+          }, i * 700 + 350);
+          timers.current.push(t1, t2);
+        });
+        const tDone = setTimeout(() => {
+          setNodeState(Object.fromEntries(Object.keys(TREE_NODES).map(id => [id, "done"])));
+          setRunning(false);
+        }, order.length * 700 + 400);
+        timers.current.push(tDone);
+      };
+
+      const nodeColor = (id) => {
+        const state = nodeState[id];
+        if (state === "current") return "#a855f7";
+        if (state === "visited") return "#00d4ff";
+        if (state === "done")    return "#00ff9d";
+        return "#1e3a5f";
+      };
+
+      const nodeTextColor = (id) => {
+        const state = nodeState[id];
+        if (state === "default") return "#94a3b8";
+        return "#ffffff";
+      };
+
+      const nodeGlow = (id) => {
+        const state = nodeState[id];
+        if (state === "current") return "drop-shadow(0 0 10px #a855f7)";
+        if (state === "visited") return "drop-shadow(0 0 8px #00d4ff)";
+        if (state === "done")    return "drop-shadow(0 0 8px #00ff9d)";
+        return "none";
+      };
+
+      return (
+        <div className="fade-in space-y-5">
+          <div className="text-center">
+            <h2 className="text-xl font-bold glow-cyan mb-1">Интерактивно Демо</h2>
+            <p className="text-slate-400 text-sm">Натисни бутон и наблюдавай как алгоритъмът обхожда дървото</p>
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-wrap justify-center gap-4 text-xs">
+            {[
+              { color: "#1e3a5f", border: "#4a6fa5", label: "Непосетен" },
+              { color: "#a855f7", border: "#a855f7", label: "Текущ" },
+              { color: "#00d4ff", border: "#00d4ff", label: "Посетен" },
+              { color: "#00ff9d", border: "#00ff9d", label: "Завършен" },
+            ].map(l => (
+              <div key={l.label} className="flex items-center gap-2">
+                <div style={{ width:14, height:14, borderRadius:"50%", background: l.color, border:`1.5px solid ${l.border}` }}></div>
+                <span style={{ color: l.border }}>{l.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* SVG Tree */}
+          <div className="glass rounded-2xl p-4 overflow-x-auto">
+            <svg viewBox="0 0 600 350" width="100%" style={{ maxHeight:340, display:"block", margin:"0 auto" }}>
+              {/* Edges */}
+              {EDGES.map(([a, b]) => (
+                <line
+                  key={`${a}-${b}`}
+                  x1={TREE_NODES[a].x} y1={TREE_NODES[a].y}
+                  x2={TREE_NODES[b].x} y2={TREE_NODES[b].y}
+                  stroke="rgba(0,212,255,0.2)" strokeWidth="2"
+                />
+              ))}
+              {/* Nodes */}
+              {Object.values(TREE_NODES).map(node => (
+                <g key={node.id} style={{ filter: nodeGlow(node.id), transition:"filter 0.3s" }}>
+                  <circle
+                    cx={node.x} cy={node.y} r={28}
+                    fill={nodeColor(node.id)}
+                    stroke={nodeColor(node.id) === "#1e3a5f" ? "rgba(0,212,255,0.3)" : nodeColor(node.id)}
+                    strokeWidth="2"
+                    style={{ transition: "fill 0.35s ease, stroke 0.35s ease" }}
+                  />
+                  <text
+                    x={node.x} y={node.y + 1}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontSize="14" fontWeight="700"
+                    fill={nodeTextColor(node.id)}
+                    style={{ transition: "fill 0.35s ease" }}
+                  >{node.label}</text>
+                </g>
+              ))}
+            </svg>
+          </div>
+
+          {/* Algo info */}
+          {algo && (
+            <div className="glass-neon rounded-xl p-3 text-center text-sm fade-in">
+              {algo === "BFS" ? (
+                <span>🔵 <span className="text-cyan-300 font-bold">BFS</span> — обхождане по нива: <span className="text-slate-300">A → B → C → D → E → F → G</span></span>
+              ) : (
+                <span>🟣 <span className="text-purple-300 font-bold">DFS</span> — обхождане в дълбочина: <span className="text-slate-300">A → B → D → E → C → F → G</span></span>
+              )}
+            </div>
+          )}
+
+          {/* Buttons */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => animate(bfsOrder(), "BFS")}
+              disabled={running}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all"
+              style={{
+                background: running ? "rgba(0,212,255,0.05)" : "linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,212,255,0.1))",
+                border: "1px solid rgba(0,212,255,0.4)",
+                color: running ? "#475569" : "#00d4ff",
+                cursor: running ? "not-allowed" : "pointer",
+                boxShadow: running ? "none" : "0 0 20px rgba(0,212,255,0.15)"
+              }}
+            >
+              🔵 Анимирай BFS
+            </button>
+            <button
+              onClick={() => animate(dfsOrder(), "DFS")}
+              disabled={running}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all"
+              style={{
+                background: running ? "rgba(168,85,247,0.03)" : "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.08))",
+                border: "1px solid rgba(168,85,247,0.4)",
+                color: running ? "#475569" : "#c084fc",
+                cursor: running ? "not-allowed" : "pointer",
+                boxShadow: running ? "none" : "0 0 20px rgba(168,85,247,0.15)"
+              }}
+            >
+              🟣 Анимирай DFS
+            </button>
+            <button
+              onClick={reset}
+              className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#64748b",
+                cursor: "pointer"
+              }}
+            >
+              ↺ Рестарт
+            </button>
+          </div>
+
+          {/* Description boxes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div className="glass rounded-xl p-4 border border-cyan-900">
+              <p className="font-bold text-cyan-400 mb-1 text-sm">BFS — Опашка (Queue)</p>
+              <p className="text-slate-400 text-xs leading-relaxed">Поставя всеки непосетен съсед в <b>опашка</b>. Обхожда нивата на дървото отляво надясно. Идеален за намиране на <b>най-краткия маршрут</b> при еднакви тегла.</p>
+            </div>
+            <div className="glass rounded-xl p-4 border border-purple-900">
+              <p className="font-bold text-purple-400 mb-1 text-sm">DFS — Рекурсия / Стек</p>
+              <p className="text-slate-400 text-xs leading-relaxed">Следва всеки клон до края, преди да се върне. Реализира се чрез <b>рекурсия</b> или явен стек. Подходящ за <b>топологична сортировка</b> и <b>намиране на цикли</b>.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       FLASH CARDS COMPONENT
+    ══════════════════════════════════ */
+
+    function FlashCards() {
+      const total = FLASH_CARDS.length;
+      const [current, setCurrent] = useState(0);
+      const [flipped, setFlipped]  = useState(false);
+
+      const goTo = (idx) => {
+        setFlipped(false);
+        setTimeout(() => setCurrent(idx), 150);
+      };
+
+      const prev = () => goTo((current - 1 + total) % total);
+      const next = () => goTo((current + 1) % total);
+
+      const card = FLASH_CARDS[current];
+
+      return (
+        <div className="fade-in space-y-5">
+          <div className="text-center">
+            <h2 className="text-xl font-bold glow-cyan mb-1">Флаш Карти</h2>
+            <p className="text-slate-400 text-sm">Кликни върху картата, за да видиш отговора</p>
+          </div>
+
+          {/* Progress dots */}
+          <div className="flex justify-center gap-2">
+            {FLASH_CARDS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                style={{
+                  width: i === current ? 24 : 8,
+                  height: 8,
+                  borderRadius: 99,
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  background: i === current ? "#00d4ff" : "rgba(255,255,255,0.12)",
+                  boxShadow: i === current ? "0 0 8px rgba(0,212,255,0.6)" : "none",
+                  padding: 0,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Card counter */}
+          <p className="text-center text-slate-500 text-xs">{current + 1} / {total}</p>
+
+          {/* The card */}
+          <div
+            className={`flashcard-scene${flipped ? " flipped" : ""}`}
+            onClick={() => setFlipped(f => !f)}
+            style={{ maxWidth: 560, margin: "0 auto" }}
+          >
+            <div className="flashcard-inner">
+              <div className="flashcard-face flashcard-front">
+                <div style={{ width:"100%" }}>
+                  <div className="badge badge-cyan mb-4" style={{ display:"inline-block" }}>Въпрос</div>
+                  <p className="text-slate-100 font-bold" style={{ fontSize:"1.05rem", lineHeight:1.5, marginBottom:"1rem" }}>{card.q}</p>
+                  <p className="text-slate-500 text-xs">↩ Кликни за отговор</p>
+                </div>
+              </div>
+              <div className="flashcard-face flashcard-back">
+                <div style={{ width:"100%" }}>
+                  <div className="badge badge-green mb-4" style={{ display:"inline-block" }}>Отговор</div>
+                  <p className="font-bold" style={{ fontSize:"1.05rem", lineHeight:1.5, color:"#86efac" }}>{card.a}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation buttons */}
+          <div className="flex justify-center items-center gap-4">
+            <button
+              onClick={prev}
+              className="px-6 py-3 rounded-xl font-bold text-sm"
+              style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", color:"#94a3b8", cursor:"pointer" }}
+            >← Предишна</button>
+            <button
+              onClick={() => setFlipped(f => !f)}
+              className="px-6 py-3 rounded-xl font-bold text-sm"
+              style={{
+                background: flipped ? "linear-gradient(135deg,rgba(0,255,157,0.2),rgba(0,212,255,0.1))" : "linear-gradient(135deg,rgba(0,212,255,0.2),rgba(168,85,247,0.1))",
+                border: flipped ? "1px solid rgba(0,255,157,0.4)" : "1px solid rgba(0,212,255,0.4)",
+                color: flipped ? "#86efac" : "#00d4ff",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+            >{flipped ? "🔄 Скрий" : "↩ Покажи отговор"}</button>
+            <button
+              onClick={next}
+              className="px-6 py-3 rounded-xl font-bold text-sm"
+              style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", color:"#94a3b8", cursor:"pointer" }}
+            >Следваща →</button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       QUIZ COMPONENT
+    ══════════════════════════════════ */
+
+    function Quiz() {
+      const [current, setCurrent] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [score, setScore]   = useState(0);
+      const [done, setDone]     = useState(false);
+
+      const q = QUIZ_QUESTIONS[current];
+      const total = QUIZ_QUESTIONS.length;
+
+      const choose = (idx) => {
+        if (selected !== null) return;
+        setSelected(idx);
+        if (idx === q.ans) setScore(s => s + 1);
+      };
+
+      const next = () => {
+        if (current + 1 >= total) {
+          setDone(true);
+        } else {
+          setCurrent(c => c + 1);
+          setSelected(null);
+        }
+      };
+
+      const restart = () => {
+        setCurrent(0); setSelected(null); setScore(0); setDone(false);
+      };
+
+      const getMessage = (sc) => {
+        const pct = sc / total;
+        if (pct === 1)      return { icon:"🏆", msg:"Перфектно! Ти си истински Граф-Майстор!", color:"text-yellow-300" };
+        if (pct >= 0.8)     return { icon:"🎉", msg:"Отлично! Почти перфектен резултат!", color:"text-green-300" };
+        if (pct >= 0.6)     return { icon:"👍", msg:"Добре! Малко повторение и ще стигнеш върха!", color:"text-cyan-300" };
+        return { icon:"📚", msg:"Продължавай! Прочети теорията отново и опитай пак.", color:"text-purple-300" };
+      };
+
+      if (done) {
+        const { icon, msg, color } = getMessage(score);
+        return (
+          <div className="fade-in flex flex-col items-center justify-center text-center py-10 space-y-5">
+            <div style={{ fontSize:"4rem" }}>{icon}</div>
+            <h2 className="text-2xl font-bold glow-cyan">Край на куиза!</h2>
+            <div className="glass rounded-2xl p-6 max-w-sm w-full">
+              <p className="text-5xl font-black mb-1" style={{ color:"#00d4ff" }}>{score}<span className="text-2xl text-slate-400">/{total}</span></p>
+              <p className={`text-sm font-semibold mt-2 ${color}`}>{msg}</p>
+            </div>
+            {/* Score bar */}
+            <div className="w-full max-w-sm">
+              <div className="progress-track">
+                <div className="progress-fill" style={{ width:`${(score/total)*100}%` }}></div>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Точност: {Math.round((score/total)*100)}%</p>
+            </div>
+            <button
+              onClick={restart}
+              className="px-8 py-3 rounded-xl font-bold text-sm pulse-neon"
+              style={{ background:"linear-gradient(135deg,rgba(0,212,255,0.2),rgba(168,85,247,0.15))", border:"1px solid rgba(0,212,255,0.4)", color:"#00d4ff", cursor:"pointer" }}
+            >
+              🔄 Опитай пак
+            </button>
+          </div>
+        );
+      }
+
+      const btnClass = (idx) => {
+        if (selected === null) return "quiz-btn";
+        if (idx === q.ans)     return "quiz-btn correct";
+        if (idx === selected)  return "quiz-btn wrong";
+        return "quiz-btn";
+      };
+
+      return (
+        <div className="fade-in space-y-5">
+          <div className="text-center mb-2">
+            <h2 className="text-xl font-bold glow-cyan mb-1">Куиз Предизвикателство 🎯</h2>
+            <p className="text-slate-400 text-sm">Въпрос {current+1} от {total}</p>
+          </div>
+
+          <div className="progress-track mb-4">
+            <div className="progress-fill" style={{ width:`${((current)/total)*100}%` }}></div>
+          </div>
+
+          <div className="glass rounded-2xl p-6 space-y-4">
+            <p className="text-slate-100 font-semibold text-base leading-snug">{q.q}</p>
+            <div className="space-y-2">
+              {q.opts.map((opt, idx) => (
+                <button
+                  key={idx}
+                  className={btnClass(idx)}
+                  disabled={selected !== null}
+                  onClick={() => choose(idx)}
+                >
+                  <span className="font-bold text-slate-400 mr-2">{String.fromCharCode(65+idx)}.</span>
+                  {opt}
+                </button>
+              ))}
+            </div>
+
+            {selected !== null && (
+              <div className="fade-in">
+                {selected === q.ans ? (
+                  <p className="text-green-400 text-sm font-semibold">✅ Браво! Верен отговор!</p>
+                ) : (
+                  <p className="text-red-400 text-sm font-semibold">❌ Грешка. Верният отговор е: <span className="text-green-300">{q.opts[q.ans]}</span></p>
+                )}
+                <div className="flex justify-between items-center mt-3">
+                  <span className="text-slate-500 text-xs">Точки: {score}</span>
+                  <button
+                    onClick={next}
+                    className="px-5 py-2 rounded-lg font-bold text-sm"
+                    style={{ background:"linear-gradient(135deg,rgba(0,212,255,0.2),rgba(168,85,247,0.1))", border:"1px solid rgba(0,212,255,0.35)", color:"#00d4ff", cursor:"pointer" }}
+                  >
+                    {current+1 >= total ? "Виж резултата 🏁" : "Следващ →"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       SUMMARY COMPONENT
+    ══════════════════════════════════ */
+
+    const TERMS = [
+      { term:"Граф G(V,E)",    badge:"badge-cyan",   def:"Структура от върхове V и ребра E, моделираща връзки между обекти." },
+      { term:"Дърво",          badge:"badge-purple", def:"Свързан ацикличен граф. Йерархична структура с корен, родители и деца." },
+      { term:"BFS",            badge:"badge-cyan",   def:"Breadth-First Search — обхождане по нива чрез Опашка (Queue)." },
+      { term:"DFS",            badge:"badge-purple", def:"Depth-First Search — обхождане в дълбочина чрез Рекурсия или Стек." },
+      { term:"Матрица на съседство", badge:"badge-green", def:"2D масив A[i][j]=1 ако има ребро между i и j, иначе 0." },
+      { term:"Корен",          badge:"badge-pink",   def:"Най-горният възел в дърво — единственият без родител." },
+      { term:"Листо",          badge:"badge-green",  def:"Краен възел в дърво — без деца." },
+      { term:"Цикъл",          badge:"badge-pink",   def:"Път, който започва и завършва в един и същ възел." },
+      { term:"Претеглен граф", badge:"badge-purple", def:"Граф, в който всяко ребро носи числова стойност (тегло/цена)." },
+      { term:"Свързан граф",   badge:"badge-cyan",   def:"Граф, в който съществува път между всеки два произволни върха." },
+    ];
+
+    function Summary() {
+      return (
+        <div className="fade-in space-y-6">
+          <div className="text-center">
+            <h2 className="text-xl font-bold glow-cyan mb-1">Обобщение</h2>
+            <p className="text-slate-400 text-sm">Ключови термини за запомняне</p>
+          </div>
+
+          {/* Fun fact */}
+          <div
+            className="rounded-2xl p-5 text-center"
+            style={{ background:"linear-gradient(135deg, rgba(0,255,157,0.08), rgba(0,212,255,0.06))", border:"1px solid rgba(0,255,157,0.25)" }}
+          >
+            <p className="text-2xl mb-2">🌐</p>
+            <p className="text-green-200 font-bold text-base mb-1">Знаехте ли?</p>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Интернет мрежата е един <span className="text-green-300 font-semibold">гигантски граф</span> — всеки сайт е <b>връх</b>, а хиперлинковете са <b>ребра</b>.
+              Google PageRank е алгоритъм, базиран на теория на графите, за да нарежда резултатите от търсачката!
+            </p>
+          </div>
+
+          {/* Terms grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {TERMS.map((t, i) => (
+              <div key={i} className="term-card">
+                <div className="flex items-start gap-3">
+                  <span className={`badge ${t.badge} mt-0.5`} style={{ whiteSpace:"nowrap", flexShrink:0 }}>{t.term}</span>
+                </div>
+                <p className="text-slate-400 text-xs mt-2 leading-relaxed">{t.def}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Complexity comparison */}
+          <div className="glass rounded-2xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-white border-opacity-5">
+              <p className="font-bold text-slate-300 text-sm">📊 BFS vs DFS — бърза справка</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"0.8rem" }}>
+                <thead>
+                  <tr style={{ background:"rgba(0,212,255,0.06)" }}>
+                    <th style={{ padding:"0.6rem 1rem", textAlign:"left", color:"#94a3b8", fontWeight:600 }}>Характеристика</th>
+                    <th style={{ padding:"0.6rem 1rem", textAlign:"center", color:"#00d4ff", fontWeight:700 }}>BFS</th>
+                    <th style={{ padding:"0.6rem 1rem", textAlign:"center", color:"#a855f7", fontWeight:700 }}>DFS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Структура", "Опашка (Queue)", "Стек / Рекурсия"],
+                    ["Ред на обхождане", "По нива", "По дълбочина"],
+                    ["Намиране на кратък път", "✅ Да (еднакви тегла)", "❌ Не директно"],
+                    ["Търсене на цикли", "Може", "✅ Оптимален"],
+                    ["Топологична сортировка", "❌", "✅"],
+                    ["Сложност по памет", "O(V+E)", "O(V+E)"],
+                  ].map(([prop, bfs, dfs], i) => (
+                    <tr key={i} style={{ borderTop:"1px solid rgba(255,255,255,0.04)" }}>
+                      <td style={{ padding:"0.55rem 1rem", color:"#64748b" }}>{prop}</td>
+                      <td style={{ padding:"0.55rem 1rem", textAlign:"center", color:"#cbd5e1" }}>{bfs}</td>
+                      <td style={{ padding:"0.55rem 1rem", textAlign:"center", color:"#cbd5e1" }}>{dfs}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       PRESENTATION COMPONENT
+    ══════════════════════════════════ */
+
+    function Presentation({ active }) {
+      const initialized = useRef(false);
+      const deckRef      = useRef(null);
+
+      useEffect(() => {
+        if (!active || initialized.current) return;
+        // Small delay to ensure the container is visible
+        const timer = setTimeout(() => {
+          if (typeof Reveal === "undefined") return;
+          try {
+            const deck = new Reveal(document.getElementById("reveal-deck"), {
+              embedded: true,
+              hash: false,
+              controls: true,
+              progress: true,
+              slideNumber: true,
+              transition: "slide",
+              plugins: [RevealMarkdown, RevealHighlight],
+            });
+            deck.initialize();
+            deckRef.current = deck;
+            initialized.current = true;
+          } catch(e) {
+            console.warn("Reveal init:", e);
+          }
+        }, 200);
+        return () => clearTimeout(timer);
+      }, [active]);
+
+      return (
+        <div className="fade-in space-y-4">
+          <div className="text-center">
+            <h2 className="text-xl font-bold glow-cyan mb-1">Теория</h2>
+            <p className="text-slate-400 text-sm">Използвай стрелките вдясно/вляво или клавишите ← → за навигация</p>
+          </div>
+          <div id="reveal-container">
+            <div className="reveal" id="reveal-deck">
+              <div className="slides">
+                {/* Title slide */}
+                <section>
+                  <h2>🌲 Дървета и Графи</h2>
+                  <h3>Структури от данни — 11/12 клас</h3>
+                  <p style={{ color:"#64748b", fontSize:"0.75em", marginTop:"1.5em" }}>Навигирай с ← → или Space</p>
+                </section>
+                {/* Content from markdown — split by --- */}
+                {SLIDES_MARKDOWN.trim().split(/\n---\n/).map((section, i) => (
+                  <section key={i} data-markdown="" data-separator-notes="^Note:">
+                    <textarea data-template defaultValue={section.trim()} style={{ display:"none" }} readOnly />
+                  </section>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       APP ROOT
+    ══════════════════════════════════ */
+
+    const TABS = [
+      { id:"theory",    label:"📖 Теория",           emoji:"📖" },
+      { id:"demo",      label:"🌳 Интерактивно Демо", emoji:"🌳" },
+      { id:"flashcards",label:"🃏 Флаш Карти",        emoji:"🃏" },
+      { id:"quiz",      label:"🎯 Куиз",              emoji:"🎯" },
+      { id:"summary",   label:"📌 Обобщение",         emoji:"📌" },
+    ];
+
+    function App() {
+      const [tab, setTab] = useState("theory");
+
+      return (
+        <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column" }}>
+          {/* Header */}
+          <header className="glass sticky top-0 z-50" style={{ borderBottom:"1px solid rgba(0,212,255,0.12)" }}>
+            <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 1rem" }}>
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <div style={{ width:36, height:36, borderRadius:10, background:"linear-gradient(135deg,#00d4ff22,#a855f722)", border:"1px solid rgba(0,212,255,0.3)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.1rem" }}>🌲</div>
+                  <div>
+                    <p className="font-bold text-sm glow-cyan" style={{ lineHeight:1.2 }}>Дървета и Графи</p>
+                    <p className="text-slate-500 text-xs">Информатика · 11/12 клас</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-cyan hidden sm:inline-flex">Интерактивен урок</span>
+                  <div style={{ width:8, height:8, borderRadius:"50%", background:"#00ff9d", animation:"pulse-neon 2s infinite" }}></div>
+                </div>
+              </div>
+              {/* Nav tabs */}
+              <nav style={{ display:"flex", overflowX:"auto", gap:2, paddingBottom:1 }}>
+                {TABS.map(t => (
+                  <button
+                    key={t.id}
+                    className={`nav-tab${tab === t.id ? " active" : ""}`}
+                    onClick={() => setTab(t.id)}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </header>
+
+          {/* Main content */}
+          <main style={{ flex:1, maxWidth:1100, margin:"0 auto", width:"100%", padding:"1.5rem 1rem 3rem" }}>
+            {tab === "theory"     && <Presentation active={tab === "theory"} />}
+            {tab === "demo"       && <TreeDemo />}
+            {tab === "flashcards" && <FlashCards />}
+            {tab === "quiz"       && <Quiz />}
+            {tab === "summary"    && <Summary />}
+          </main>
+
+          {/* Footer */}
+          <footer style={{ borderTop:"1px solid rgba(255,255,255,0.04)", padding:"1rem", textAlign:"center" }}>
+            <p className="text-slate-600 text-xs">Дървета и Графи · Интерактивен урок · Информатика 11/12 клас</p>
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>

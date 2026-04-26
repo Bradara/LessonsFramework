@@ -90,11 +90,6 @@
     "path": "Lessons/Информатика/"
   },
   {
-    "name": "Modul1",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul1/"
-  },
-  {
     "name": "Modul2",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/"
@@ -145,6 +140,11 @@
     "path": "Lessons/Информатика/Modul2/audio/"
   },
   {
+    "name": "graphs-and-trees",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/graphs-and-trees.html"
+  },
+  {
     "name": "reveal",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/reveal/"
@@ -153,11 +153,6 @@
     "name": "streams-serialization-presentation",
     "type": "file",
     "path": "Lessons/Информатика/Modul2/reveal/streams-serialization-presentation.html"
-  },
-  {
-    "name": "Modul3",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul3/"
   },
   {
     "name": "Modul4",
@@ -173,5 +168,75 @@
     "name": "Procedure",
     "type": "file",
     "path": "Lessons/Информатика/Modul4/Procedure.html"
+  },
+  {
+    "name": "libs",
+    "type": "folder",
+    "path": "libs/"
+  },
+  {
+    "name": "esm",
+    "type": "folder",
+    "path": "libs/esm/"
+  },
+  {
+    "name": "font-awesome",
+    "type": "folder",
+    "path": "libs/font-awesome/"
+  },
+  {
+    "name": "webfonts",
+    "type": "folder",
+    "path": "libs/font-awesome/webfonts/"
+  },
+  {
+    "name": "reveal",
+    "type": "folder",
+    "path": "libs/reveal/"
+  },
+  {
+    "name": "dist",
+    "type": "folder",
+    "path": "libs/reveal/dist/"
+  },
+  {
+    "name": "theme",
+    "type": "folder",
+    "path": "libs/reveal/dist/theme/"
+  },
+  {
+    "name": "plugin",
+    "type": "folder",
+    "path": "libs/reveal/plugin/"
+  },
+  {
+    "name": "highlight",
+    "type": "folder",
+    "path": "libs/reveal/plugin/highlight/"
+  },
+  {
+    "name": "markdown",
+    "type": "folder",
+    "path": "libs/reveal/plugin/markdown/"
+  },
+  {
+    "name": "math",
+    "type": "folder",
+    "path": "libs/reveal/plugin/math/"
+  },
+  {
+    "name": "notes",
+    "type": "folder",
+    "path": "libs/reveal/plugin/notes/"
+  },
+  {
+    "name": "search",
+    "type": "folder",
+    "path": "libs/reveal/plugin/search/"
+  },
+  {
+    "name": "zoom",
+    "type": "folder",
+    "path": "libs/reveal/plugin/zoom/"
   }
 ]
