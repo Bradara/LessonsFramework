@@ -160,6 +160,11 @@
     "path": "Lessons/Информатика/Modul2/reveal/streams-serialization-presentation.html"
   },
   {
+    "name": "sort-search-spa",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/sort-search-spa.html"
+  },
+  {
     "name": "Modul3",
     "type": "folder",
     "path": "Lessons/Информатика/Modul3/"
