@@ -24,7 +24,8 @@ IGNORE_ITEMS = {
     'node_modules',
     '.DS_Store',
     'Thumbs.db',
-    'backgrounds'
+    'backgrounds',
+    'libs'
 }
 
 def should_ignore(item_name: str) -> bool:
