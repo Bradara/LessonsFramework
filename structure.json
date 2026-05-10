@@ -150,6 +150,11 @@
     "path": "Lessons/Информатика/Modul2/graphs-and-trees.html"
   },
   {
+    "name": "regex-spa",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/regex-spa.html"
+  },
+  {
     "name": "reveal",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/reveal/"

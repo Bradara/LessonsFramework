@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Регулярни Изрази — Информатика 11 клас</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night: "#0f172a",
+            panel: "#1e293b",
+            accent: "#22c55e",
+            accentDark: "#16a34a",
+          },
+          fontFamily: {
+            code: ["'Fira Code'", "monospace"],
+            sans: ["'Inter'", "sans-serif"],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+    }
+    .font-code { font-family: 'Fira Code', monospace; }
+
+    /* Animated background grid */
+    .bg-grid {
+      background-image:
+        linear-gradient(rgba(34,197,94,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,197,94,0.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    /* Flash card 3D flip */
+    .card-flip-container { perspective: 1200px; }
+    .card-flip-inner {
+      transition: transform 0.65s cubic-bezier(0.4,0.2,0.2,1);
+      transform-style: preserve-3d;
+      position: relative;
+      width: 100%; height: 100%;
+    }
+    .card-flip-inner.flipped { transform: rotateY(180deg); }
+    .card-face {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      position: absolute; inset: 0;
+      border-radius: 1rem;
+      isolation: isolate;
+    }
+    .card-back { transform: rotateY(180deg); }
+
+    /* Slide animation */
+    .slide-enter { animation: slideEnter 0.35s ease both; }
+    @keyframes slideEnter {
+      from { opacity: 0; transform: translateX(32px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .fade-in { animation: fadeIn 0.4s ease both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glow helpers */
+    .glow-green { box-shadow: 0 0 24px rgba(34,197,94,0.3); }
+    .text-glow  { text-shadow: 0 0 24px rgba(34,197,94,0.6); }
+
+    /* Match highlight used inside dangerouslySetInnerHTML */
+    .match-hl {
+      background: rgba(34,197,94,0.35);
+      border: 1px solid rgba(34,197,94,0.55);
+      border-radius: 3px;
+      padding: 0 2px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85em;
+      color: #bbf7d0;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: rgba(34,197,94,0.3); border-radius: 4px; }
+
+    /* Matrix rain canvas behind hero */
+    #matrix-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; opacity: 0.07;
+    }
+
+    /* Glassmorphism panel */
+    .glass {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Typing cursor blink */
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .blink { animation: blink 1.1s step-end infinite; }
+
+    /* Pulse ring */
+    @keyframes pulseRing {
+      0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      100% { box-shadow: 0 0 0 14px rgba(34,197,94,0); }
+    }
+    .pulse-ring { animation: pulseRing 2s ease-out infinite; }
+
+    /* Nav tab hover underline */
+    .nav-tab::after {
+      content: '';
+      display: block; height: 2px;
+      background: #22c55e;
+      transform: scaleX(0);
+      transition: transform 0.25s ease;
+    }
+    .nav-tab:hover::after, .nav-tab.active::after { transform: scaleX(1); }
+    .nav-tab.active { color: #22c55e; }
+  </style>
+</head>
+<body class="text-slate-100">
+
+  <!-- Matrix rain -->
+  <canvas id="matrix-bg"></canvas>
+
+  <div id="root" class="relative z-10"></div>
+
+  <!-- React + Babel (CDN; swap to ../libs/ paths for offline use) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Matrix canvas effect -->
+  <script>
+    (function(){
+      const canvas = document.getElementById('matrix-bg');
+      const ctx = canvas.getContext('2d');
+      const chars = '01アイウエオカキクケコ∀∃∈∉⊂⊃∪∩→←↑↓≠≡±∞∂∇λΣΠ';
+      let cols, drops;
+      function init(){
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        cols  = Math.floor(canvas.width / 18);
+        drops = Array.from({length: cols}, () => Math.random() * -50);
+      }
+      function draw(){
+        ctx.fillStyle = 'rgba(15,23,42,0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#22c55e';
+        ctx.font = '13px Fira Code, monospace';
+        drops.forEach((y, i) => {
+          const ch = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(ch, i * 18, y * 18);
+          if (y * 18 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+          drops[i] += 0.5;
+        });
+      }
+      init();
+      window.addEventListener('resize', init);
+      setInterval(draw, 50);
+    })();
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    /* ======================================================
+       DATA
+    ====================================================== */
+
+    const SLIDES = [
+      {
+        id: 1, type: 'title',
+        title: 'Регулярни Изрази (RegEx)',
+        subtitle: 'Информатика — 11 клас',
+        icon: '⌨️',
+        bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
+      },
+      {
+        id: 2, type: 'list',
+        title: '1. Азбуки и Езици',
+        icon: '📖',
+        items: [
+          { label: 'Азбука (A)', text: 'Крайно множество A = {a₁, a₂, …, aₙ} от знаци — наречени букви.' },
+          { label: 'Дума / Низ (α)', text: 'Наредена последователност α = b₁b₂…bₗ от букви на азбуката.' },
+          { label: 'Дължина (ℓ)', text: 'Броят на буквите l в низа.' },
+          { label: 'Празен низ (ε)', text: 'Низ с дължина 0 — не съдържа нито една буква.' },
+          { label: 'A* — всички низове', text: 'Множеството от всички низове над A (включително ε).' },
+          { label: 'Език (L)', text: 'Всяко подмножество L ⊆ A* от низове над A се нарича език над A.' },
+        ],
+        example: 'Ако B = {0, 1}, то B* е множеството от всички двоични низове вкл. ε.',
+      },
+      {
+        id: 3, type: 'list',
+        title: '2. Формални Езици и Ноам Чомски',
+        icon: '🧠',
+        items: [
+          { label: 'Основна задача', text: 'Разпознаване на език — дали дума α принадлежи на L.' },
+          { label: 'Компилатор', text: 'Проверява дали вашият код е "дума" от езика C#.' },
+          { label: 'Формален език', text: 'Език, дефиниран чрез точни правила (формална граматика).' },
+          { label: 'Ноам Чомски (1956)', text: 'Американски математик — създател на йерархията на формалните граматики.' },
+        ],
+        quote: '"Езикът е огледало на разума." — Ноам Чомски',
+      },
+      {
+        id: 4, type: 'list',
+        title: '3. Операции над Езици',
+        icon: '🔢',
+        items: [
+          { label: 'Сума  L₁ + L₂', text: 'Обединение на двете множества от думи: L₁ ∪ L₂.' },
+          { label: 'Произведение  L₁L₂', text: 'Конкатенация: {αβ | α∈L₁, β∈L₂}.' },
+          { label: 'Степенуване', text: 'L⁰ = {ε},  L¹ = L,  Lⁿ = L · Lⁿ⁻¹.' },
+          { label: 'Итерация  L*', text: 'L* = L⁰ + L¹ + L² + … (Клийни звезда — вкл. ε).' },
+        ],
+        example: 'Ако A = {a,b}, L = {ab}: L* = {ε, ab, abab, ababab, aabb, …}',
+      },
+      {
+        id: 5, type: 'table',
+        title: '4. Метазнаци в C#',
+        icon: '🔣',
+        tableHead: ['Метазнак', 'Значение', 'Пример'],
+        tableRows: [
+          ['.', 'Всеки един знак', 'a.t  →  aat, abt, act, a5t'],
+          ['\\d', 'Цифра  [0-9]', '\\d{3}  →  123'],
+          ['\\D', 'Нецифра', '\\D+  →  abc'],
+          ['\\w', 'Буква, цифра или _', '\\w+  →  hello_1'],
+          ['\\W', 'Специален символ', '\\W  →  @, #, !'],
+          ['\\s', 'Интервал (whitespace)', '\\s  →  space, tab, newline'],
+          ['\\\\', 'Буквален \\', '\\\\.  →  точка като символ'],
+        ],
+      },
+      {
+        id: 6, type: 'table',
+        title: '5. Квантификатори',
+        icon: '🎛️',
+        tableHead: ['Квантификатор', 'Значение', 'Пример'],
+        tableRows: [
+          ['*', '0 или повече пъти', "[a-z]*  →  '', 'abc'"],
+          ['+', '1 или повече пъти', '[a-z]+  →  abc'],
+          ['?', '0 или 1 път', "colou?r  →  'color', 'colour'"],
+          ['{n}', 'Точно n пъти', '\\d{3}  →  123'],
+          ['{n,m}', 'От n до m пъти', '\\d{2,4}  →  12, 123, 1234'],
+          ['{n,}', 'n или повече пъти', '\\d{2,}  →  12, 1234, …'],
+        ],
+      },
+      {
+        id: 7, type: 'list',
+        title: '6. Класове и Котви',
+        icon: '🎯',
+        items: [
+          { label: '[A-Z]', text: 'Всяка главна латинска буква.' },
+          { label: '[a-z]', text: 'Всяка малка латинска буква.' },
+          { label: '[0-9]', text: 'Всяка десетична цифра (= \\d).' },
+          { label: '[^0-9]', text: 'Всичко, което НЕ е цифра (= \\D).' },
+          { label: '^', text: 'Котва — начало на низа.' },
+          { label: '$', text: 'Котва — край на низа.' },
+          { label: 'a|b', text: 'Алтернация — a или b (класическата операция сума).' },
+        ],
+        example: '[A-Za-z][A-Za-z0-9_]*  →  Валиден идентификатор в C#',
+      },
+      {
+        id: 8, type: 'code',
+        title: '7. Класът Regex в C#',
+        icon: '💻',
+        code: `using System.Text.RegularExpressions;
+
+// Създаване на шаблон (@ за verbatim string)
+Regex r = new Regex(@"([a-z]+)[0-9]{0,1}");
+
+// IsMatch — проверка дали има съвпадение
+bool found = r.IsMatch(text);
+
+// Match — ПЪРВОТО съвпадение
+Match m = r.Match(text);
+Console.WriteLine(m.Value);
+
+// Matches — ВСИЧКИ съвпадения
+MatchCollection mc = r.Matches(text);
+for (int i = 0; i < mc.Count; i++)
+    Console.WriteLine(mc[i]);
+
+// Replace — замяна на съвпаденията
+string result = Regex.Replace(text, pattern, repl);`,
+        methods: [
+          { name: 'IsMatch(s)', desc: 'Проверява дали шаблонът намира дума в низа — връща bool.' },
+          { name: 'Match(s)', desc: 'Връща обект Match с първото срещане.' },
+          { name: 'Matches(s)', desc: 'Връща MatchCollection с всички срещания.' },
+          { name: 'Replace(s, repl)', desc: 'Заменя всички срещания с втория низ.' },
+          { name: 'Split(s)', desc: 'Разделя низа по позициите на съвпаденията.' },
+        ],
+      },
+      {
+        id: 9, type: 'examples',
+        title: '8. Практически Примери',
+        icon: '🚀',
+        examples: [
+          { label: 'Имейл адрес', pattern: '@"[a-z\\.]*@[a-z\\.]*"', desc: 'Намиране на имейл адрес в текст.' },
+          { label: 'Дата (DD-MM-YYYY)', pattern: '@"\\d{2}-\\d{2}-\\d{4}"', desc: 'Формат: 01-01-2024.' },
+          { label: 'C# идентификатор', pattern: '@"[A-Za-z_][A-Za-z0-9_]*"', desc: 'Валидно C# име на променлива.' },
+          { label: 'Цяло число', pattern: '@"[1-9][0-9]*"', desc: 'Положително цяло число без водещи нули.' },
+          { label: 'Главна дума', pattern: '@"[A-Z][a-z]+"', desc: 'Дума, която започва с главна буква.' },
+          { label: 'Само цифри', pattern: '@"^[0-9]+$"', desc: 'Низ, съставен изцяло от цифри.' },
+        ],
+      },
+    ];
+
+    const FLASH_CARDS = [
+      {
+        id: 1,
+        front: { icon: '📚', term: 'Азбука', sub: 'Alphabet' },
+        back: {
+          def: 'Крайно множество A = {a₁, a₂, …, aₙ} от знаци (символи), наречени букви.',
+          ex: 'A = {a, b, c}  или  A = {0, 1}',
+        },
+      },
+      {
+        id: 2,
+        front: { icon: '🌐', term: 'Език (L)', sub: 'Formal Language' },
+        back: {
+          def: 'Всяко подмножество L ⊆ A* от низове над азбуката A се нарича език над A.',
+          ex: 'Езикът C# = всички синтактично верни C# програми',
+        },
+      },
+      {
+        id: 3,
+        front: { icon: '🔄', term: 'Итерация  L*', sub: 'Kleene Star' },
+        back: {
+          def: 'L* = L⁰ + L¹ + L² + …  Безкрайно обединение на всички степени, вкл. ε.',
+          ex: '{ab}* = {ε, ab, abab, ababab, …}',
+        },
+      },
+      {
+        id: 4,
+        front: { icon: '🔢', term: '\\d', sub: 'Digit metachar' },
+        back: {
+          def: 'Метазнак, съответстващ на всяка десетична цифра. Еквивалент на [0-9].',
+          ex: '\\d{3}  →  123, 456, 007',
+        },
+      },
+      {
+        id: 5,
+        front: { icon: '📝', term: '\\w', sub: 'Word metachar' },
+        back: {
+          def: 'Метазнак за буква, цифра или долна черта. Еквивалент на [A-Za-z0-9_].',
+          ex: '\\w+  →  hello, world_1, ABC',
+        },
+      },
+      {
+        id: 6,
+        front: { icon: '⚡', term: 'Квантификатор', sub: 'Quantifier' },
+        back: {
+          def: 'Знак след израз, задаващ брой повторения: * (0+),  + (1+),  ? (0 или 1),  {n,m}.',
+          ex: '[0-9]{2,4}  →  12, 123, 1234',
+        },
+      },
+      {
+        id: 7,
+        front: { icon: '🎁', term: 'Група  ( )', sub: 'Capture Group' },
+        back: {
+          def: 'Скоби ( ) групират части от шаблона и позволяват капчуринг на съвпадения.',
+          ex: '(\\d{2})-(\\d{2})  →  captures "12" и "34" от "12-34"',
+        },
+      },
+      {
+        id: 8,
+        front: { icon: '✅', term: 'Regex.IsMatch', sub: 'C# метод' },
+        back: {
+          def: 'Метод на класа Regex. Проверява дали шаблонът намери съвпадение и връща bool.',
+          ex: 'Regex.IsMatch("test@mail.bg", @"\\w+@\\w+\\.\\w+")  →  true',
+        },
+      },
+    ];
+
+    const QUIZ = [
+      {
+        id: 1,
+        q: 'Кой е създател на теорията за формалните езици?',
+        opts: ['Алан Тюринг', 'Ноам Чомски', 'Клод Шенън', 'Джон фон Нойман'],
+        ans: 1,
+        exp: 'Ноам Чомски е американски математик, лингвист и философ, създал йерархията на формалните граматики около 1956 г.',
+      },
+      {
+        id: 2,
+        q: 'Какво означава метазнакът \\d в регулярен израз?',
+        opts: ['Всеки знак', 'Буква', 'Цифра [0-9]', 'Интервал'],
+        ans: 2,
+        exp: '\\d е съкращение за класа [0-9] — съответства на всяка десетична цифра от 0 до 9.',
+      },
+      {
+        id: 3,
+        q: "Кой квантификатор означава '0 или 1 път'?",
+        opts: ['*', '+', '?', '{1}'],
+        ans: 2,
+        exp: "? означава '0 или 1 пъти'. Например: colou?r съответства на 'color' и 'colour'.",
+      },
+      {
+        id: 4,
+        q: 'Как се задава интервал за точно 3 повторения?',
+        opts: ['{3}', '(3)', '[3]', '3*'],
+        ans: 0,
+        exp: '{n} задава точно n повторения. Например: \\d{3} съответства на точно 3 цифри.',
+      },
+      {
+        id: 5,
+        q: 'Какво прави методът Regex.IsMatch()?',
+        opts: ['Замества съвпаденията', 'Връща всички съвпадения', 'Връща булев резултат дали има съвпадение', 'Разделя низа'],
+        ans: 2,
+        exp: 'IsMatch() проверява дали шаблонът намери дума в низа и връща true или false.',
+      },
+      {
+        id: 6,
+        q: "Кой символ означава 'начало на низ' в шаблон?",
+        opts: ['$', '^', '#', '@'],
+        ans: 1,
+        exp: '^ (caret) в началото на шаблон означава начало на низа. $ означава край на низа.',
+      },
+      {
+        id: 7,
+        q: 'Какво ще намери изразът [A-Z][a-z]*?',
+        opts: ['Само главна буква', 'Дума, започваща с главна буква', 'Само малки букви', 'Произволна дума'],
+        ans: 1,
+        exp: '[A-Z] съответства на точно 1 главна буква, след което [a-z]* — на 0 или повече малки букви.',
+      },
+      {
+        id: 8,
+        q: 'Кой метазнак съответства на всеки един произволен символ?',
+        opts: ['*', '+', '.', '?'],
+        ans: 2,
+        exp: '. (точка) съответства на всеки един знак. Например a.t намери aat, abt, act, a5t…',
+      },
+      {
+        id: 9,
+        q: 'Какво означава операцията итерация (L*)?',
+        opts: ['Повтаря думи точно 2 пъти', 'Обединение само на L⁰ и L¹', 'Безкрайно обединение на степени на езика', 'Конкатенация на два езика'],
+        ans: 2,
+        exp: 'L* = L⁰ + L¹ + L² + … — безкрайна итерация (Клийни звезда), включва и празния низ ε.',
+      },
+      {
+        id: 10,
+        q: 'Кой клас в C# се използва за работа с RegEx?',
+        opts: ['Pattern', 'RegularExp', 'Regex', 'Match'],
+        ans: 2,
+        exp: 'Класът Regex от System.Text.RegularExpressions е основният клас за работа с регулярни изрази в C#.',
+      },
+    ];
+
+    const MISSIONS = [
+      {
+        id: 1,
+        title: 'Мисия 1: Намери всички дати',
+        desc: 'Намери всички дати с формат DD-MM-YYYY в текста.',
+        pattern: '\\d{2}-\\d{2}-\\d{4}',
+        text: 'Учебната година започна на 15-09-2024. Коледната ваканция е от 21-12-2024 до 05-01-2025. Следващото важно събитие е на 03-03-2025.',
+        hint: '\\d{2}-\\d{2}-\\d{4}',
+      },
+      {
+        id: 2,
+        title: 'Мисия 2: Намери имейл адреси',
+        desc: 'Намери всички имейл адреси в текста.',
+        pattern: '[a-z][a-z0-9._]*@[a-z][a-z0-9.]*\\.[a-z]+',
+        text: 'Свържете се с ivan.petrov@gmail.com или support@school.bg за въпроси. Невалидни: test@, @domain.com, нещо@тест.',
+        hint: '[a-z][a-z0-9._]*@[a-z][a-z0-9.]*\\.[a-z]+',
+      },
+      {
+        id: 3,
+        title: 'Мисия 3: C# идентификатори',
+        desc: 'Намери всички валидни C# имена на променливи.',
+        pattern: '[A-Za-z_][A-Za-z0-9_]*',
+        text: 'int myVar = 5; string _name = "test"; double 3invalid = 0; bool isReady = true; char x = \'a\';',
+        hint: '[A-Za-z_][A-Za-z0-9_]*',
+      },
+    ];
+
+    const SUMMARY_TERMS = [
+      { term: 'Азбука (A)',       def: 'Крайно множество от символи (букви).' },
+      { term: 'Дума / Низ',       def: 'Последователност от букви над азбуката.' },
+      { term: 'Празен низ (ε)',   def: 'Низ с дължина 0 — неутрален елемент за конкатенация.' },
+      { term: 'Език (L)',         def: 'Подмножество L ⊆ A* от низове.' },
+      { term: 'Итерация (L*)',    def: 'Клийни звезда — безкрайно обединение на степени.' },
+      { term: 'Метазнак',         def: 'Знак с особено значение в шаблон: ., \\d, \\w, \\s…' },
+      { term: 'Квантификатор',    def: 'Задава брой повторения: *, +, ?, {n,m}.' },
+      { term: 'Клас символи [ ]', def: 'Набор: [A-Z], [0-9], [^abc] (отрицание).' },
+      { term: 'Котви ^ и $',      def: '^ — начало; $ — край на низа.' },
+      { term: 'Алтернация  |',    def: 'Логическо ИЛИ между изрази: a|b.' },
+      { term: 'Група  ( )',       def: 'Групиране и капчуринг на съвпадение.' },
+      { term: 'Regex клас (C#)',  def: 'System.Text.RegularExpressions.Regex.' },
+      { term: 'MatchCollection',  def: 'Колекция от всички съвпадения — метод Matches().' },
+      { term: 'Вербатим низ (@)', def: '"@" пред низа в C# — \\ не се екранира.' },
+    ];
+
+    const CHOMSKY_FACTS = [
+      {
+        icon: '🎓',
+        title: 'Бащата на Лингвистиката',
+        text: 'Ноам Чомски (роден 7 декември 1928) е смятан за "баща на съвременната лингвистика". Неговата теория за трансформационна граматика революционизира разбирането ни за езика като вроден човешки капацитет.',
+      },
+      {
+        icon: '🧩',
+        title: 'Йерархията на Чомски (1956)',
+        text: 'Чомски класифицира формалните граматики в четири нива: регулярни (Тип 3), безконтекстни (Тип 2), контекстно-зависими (Тип 1) и рекурсивно-изброими (Тип 0). Регулярните изрази отговарят на Тип 3 — най-простото ниво.',
+      },
+      {
+        icon: '💡',
+        title: 'Произходът на RegEx',
+        text: 'Математикът Стивън Клийни формализира регулярните изрази в края на 1940-те. Кен Томпсън (създател на Unix) ги имплементира в редактора ed/grep около 1968 г. От тогава RegEx е неразделна част от всяко средство за обработка на текст.',
+      },
+    ];
+
+    /* ======================================================
+       UTILITIES
+    ====================================================== */
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function buildHighlightedHtml(text, pattern, flags) {
+      if (!pattern) return { html: escapeHtml(text), count: 0, error: '' };
+      try {
+        const safeFlags = flags.replace(/[^gimsuy]/g, '');
+        const re = new RegExp(pattern, safeFlags.includes('g') ? safeFlags : safeFlags + 'g');
+        const matches = [];
+        let m;
+        while ((m = re.exec(text)) !== null) {
+          matches.push({ start: m.index, end: m.index + m[0].length });
+          if (m[0].length === 0) re.lastIndex++;
+          if (matches.length > 500) break; // safety
+        }
+        let html = '', last = 0;
+        for (const { start, end } of matches) {
+          html += escapeHtml(text.slice(last, start));
+          html += `<mark class="match-hl">${escapeHtml(text.slice(start, end))}</mark>`;
+          last = end;
+        }
+        html += escapeHtml(text.slice(last));
+        return { html, count: matches.length, error: '' };
+      } catch (e) {
+        return { html: escapeHtml(text), count: 0, error: e.message };
+      }
+    }
+
+    /* ======================================================
+       NAV
+    ====================================================== */
+
+    const SECTIONS = [
+      { id: 'presentation', label: 'Презентация', icon: '📊' },
+      { id: 'flashcards',   label: 'Флаш карти',  icon: '🃏' },
+      { id: 'demo',         label: 'Демо',         icon: '⚡' },
+      { id: 'quiz',         label: 'Куиз',         icon: '🏆' },
+      { id: 'summary',      label: 'Обобщение',    icon: '📋' },
+    ];
+
+    function Nav({ active, setActive }) {
+      return (
+        <nav style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+          background: 'rgba(15,23,42,0.92)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(34,197,94,0.18)',
+        }}>
+          <div className="max-w-6xl mx-auto px-4 flex items-center justify-between" style={{height: '60px'}}>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="font-code font-bold text-green-400 text-base"
+                style={{textShadow: '0 0 12px rgba(34,197,94,0.5)'}}>
+                /^RegEx$/
+              </span>
+              <span className="text-slate-600 text-xs hidden lg:inline">· Информатика 11 клас</span>
+            </div>
+            <div className="flex gap-0.5 md:gap-1">
+              {SECTIONS.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => setActive(s.id)}
+                  className={`nav-tab flex items-center gap-1.5 px-2 md:px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
+                    active === s.id ? 'active text-green-400' : 'text-slate-400 hover:text-white'
+                  }`}
+                  style={{background: active === s.id ? 'rgba(34,197,94,0.1)' : 'transparent'}}
+                >
+                  <span>{s.icon}</span>
+                  <span className="hidden sm:inline">{s.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </nav>
+      );
+    }
+
+    /* ======================================================
+       PRESENTATION
+    ====================================================== */
+
+    function Presentation() {
+      const [cur, setCur] = useState(0);
+      const total = SLIDES.length;
+      const slide = SLIDES[cur];
+
+      const go = useCallback((dir) => {
+        setCur(c => Math.max(0, Math.min(total - 1, c + dir)));
+      }, [total]);
+
+      useEffect(() => {
+        const handler = e => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+          if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+      }, [go]);
+
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 pb-12"
+          style={{paddingTop: '80px', background: 'radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.07) 0%, transparent 65%)'}}>
+          <div className="w-full max-w-5xl">
+
+            {/* Top bar */}
+            <div className="flex items-center gap-3 mb-5">
+              <span className="font-code text-green-400 text-sm shrink-0">
+                {String(cur + 1).padStart(2,'0')} / {String(total).padStart(2,'0')}
+              </span>
+              <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${((cur + 1) / total) * 100}%`,
+                    background: 'linear-gradient(90deg, #22c55e, #06b6d4)',
+                  }} />
+              </div>
+              <div className="flex gap-1.5 shrink-0">
+                {SLIDES.map((_, i) => (
+                  <button key={i} onClick={() => setCur(i)}
+                    className="w-2 h-2 rounded-full transition-all duration-200"
+                    style={{
+                      background: i === cur ? '#22c55e' : 'rgba(255,255,255,0.15)',
+                      transform: i === cur ? 'scale(1.4)' : 'scale(1)',
+                    }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Slide */}
+            <div key={cur} className="slide-enter rounded-2xl overflow-hidden"
+              style={{
+                background: 'linear-gradient(145deg, rgba(30,41,59,0.85), rgba(15,23,42,0.9))',
+                border: '1px solid rgba(34,197,94,0.2)',
+                minHeight: '480px',
+                boxShadow: '0 0 60px rgba(34,197,94,0.08), 0 20px 60px rgba(0,0,0,0.5)',
+              }}>
+              {slide.type === 'title'    && <TitleSlide s={slide} />}
+              {slide.type === 'list'     && <ListSlide  s={slide} />}
+              {slide.type === 'table'    && <TableSlide s={slide} />}
+              {slide.type === 'code'     && <CodeSlide  s={slide} />}
+              {slide.type === 'examples' && <ExamplesSlide s={slide} />}
+            </div>
+
+            {/* Controls */}
+            <div className="flex items-center justify-between mt-5">
+              <button onClick={() => go(-1)} disabled={cur === 0}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-25"
+                style={{background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80'}}>
+                ← Назад
+              </button>
+              <span className="text-slate-600 text-xs font-code hidden sm:block">← стрелки за навигация →</span>
+              <button onClick={() => go(1)} disabled={cur === total - 1}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-25"
+                style={{background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)', color: '#4ade80'}}>
+                Напред →
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function TitleSlide({ s }) {
+      return (
+        <div className="relative flex flex-col items-center justify-center text-center p-12" style={{minHeight: '480px'}}>
+          <div className="absolute inset-0 opacity-15 rounded-2xl overflow-hidden"
+            style={{backgroundImage: `url(${s.bg})`, backgroundSize: 'cover', backgroundPosition: 'center'}} />
+          <div className="absolute inset-0 bg-grid opacity-40 rounded-2xl" />
+          <div className="relative z-10">
+            <div className="text-7xl mb-6" style={{filter: 'drop-shadow(0 0 20px rgba(34,197,94,0.5))'}}>
+              {s.icon}
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-3 font-code"
+              style={{background: 'linear-gradient(135deg, #22c55e 30%, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+              {s.title}
+            </h1>
+            <p className="text-lg text-slate-400 mb-8">{s.subtitle}</p>
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full font-code text-sm"
+              style={{background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e'}}>
+              <span className="blink">▋</span>
+              <span>/^[A-Z][a-z]+$/i</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ListSlide({ s }) {
+      return (
+        <div className="p-8 md:p-12" style={{minHeight: '480px'}}>
+          <div className="flex items-center gap-3 mb-7">
+            <span className="text-4xl">{s.icon}</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{s.title}</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {s.items.map((item, i) => (
+              <div key={i} className="flex gap-3 p-4 rounded-xl"
+                style={{background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.14)'}}>
+                <span className="font-code text-green-400 font-semibold text-sm shrink-0 mt-0.5">{item.label}</span>
+                <span className="text-slate-300 text-sm leading-relaxed">{item.text}</span>
+              </div>
+            ))}
+          </div>
+          {s.example && (
+            <div className="mt-5 p-4 rounded-xl font-code text-sm"
+              style={{background: 'rgba(6,182,212,0.07)', border: '1px solid rgba(6,182,212,0.2)', color: '#67e8f9'}}>
+              💡 {s.example}
+            </div>
+          )}
+          {s.quote && (
+            <div className="mt-4 p-4 rounded-xl text-sm italic"
+              style={{background: 'rgba(168,85,247,0.07)', border: '1px solid rgba(168,85,247,0.2)', color: '#c4b5fd'}}>
+              {s.quote}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function TableSlide({ s }) {
+      return (
+        <div className="p-8 md:p-12" style={{minHeight: '480px'}}>
+          <div className="flex items-center gap-3 mb-7">
+            <span className="text-4xl">{s.icon}</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{s.title}</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl" style={{border: '1px solid rgba(34,197,94,0.18)'}}>
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{background: 'rgba(34,197,94,0.12)'}}>
+                  {s.tableHead.map((h, i) => (
+                    <th key={i} className="px-4 py-3 text-left font-semibold font-code text-green-400">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {s.tableRows.map((row, i) => (
+                  <tr key={i} style={{
+                    background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
+                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                  }}>
+                    {row.map((cell, j) => (
+                      <td key={j} className={`px-4 py-3 ${j === 0 ? 'font-code text-green-300 font-semibold' : 'text-slate-300'}`}>
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function CodeSlide({ s }) {
+      return (
+        <div className="p-8 md:p-12" style={{minHeight: '480px'}}>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-4xl">{s.icon}</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{s.title}</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-5">
+            {/* Code block */}
+            <div className="rounded-xl overflow-hidden"
+              style={{background: 'rgba(13,18,32,0.95)', border: '1px solid rgba(34,197,94,0.2)'}}>
+              <div className="flex items-center gap-2 px-4 py-2.5"
+                style={{background: 'rgba(34,197,94,0.07)', borderBottom: '1px solid rgba(34,197,94,0.15)'}}>
+                <div className="flex gap-1.5">
+                  {['#ef4444','#f59e0b','#22c55e'].map(c => (
+                    <div key={c} className="w-2.5 h-2.5 rounded-full" style={{background: c}} />
+                  ))}
+                </div>
+                <span className="text-xs font-code text-slate-500 ml-2">Program.cs</span>
+              </div>
+              <pre className="p-4 text-xs font-code overflow-x-auto"
+                style={{color: '#c8d8f8', lineHeight: '1.75', margin: 0}}>
+                <code>{s.code}</code>
+              </pre>
+            </div>
+            {/* Methods */}
+            <div className="space-y-2.5">
+              {s.methods.map((m, i) => (
+                <div key={i} className="p-3 rounded-xl"
+                  style={{background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.13)'}}>
+                  <div className="font-code text-green-400 text-sm font-semibold">{m.name}</div>
+                  <div className="text-slate-400 text-xs mt-1 leading-relaxed">{m.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ExamplesSlide({ s }) {
+      return (
+        <div className="p-8 md:p-12" style={{minHeight: '480px'}}>
+          <div className="flex items-center gap-3 mb-7">
+            <span className="text-4xl">{s.icon}</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{s.title}</h2>
+          </div>
+          <div className="space-y-3">
+            {s.examples.map((ex, i) => (
+              <div key={i} className="flex items-start gap-4 p-4 rounded-xl"
+                style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)'}}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold font-code"
+                  style={{background: 'rgba(34,197,94,0.2)', color: '#22c55e'}}>{i + 1}</div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-3 flex-wrap mb-1">
+                    <span className="text-white font-semibold text-sm">{ex.label}</span>
+                    <span className="font-code text-xs px-2 py-0.5 rounded"
+                      style={{background: 'rgba(34,197,94,0.13)', color: '#4ade80'}}>{ex.pattern}</span>
+                  </div>
+                  <p className="text-slate-400 text-xs leading-relaxed">{ex.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* ======================================================
+       FLASH CARDS
+    ====================================================== */
+
+    function FlashCards() {
+      const [currentIdx, setCurrentIdx] = useState(0);
+      const [flipped, setFlipped] = useState(false);
+      const [remembered, setRemembered] = useState(new Set());
+      const [notRemembered, setNotRemembered] = useState(new Set());
+      const [finished, setFinished] = useState(false);
+      const [animKey, setAnimKey] = useState(0);
+
+      const total = FLASH_CARDS.length;
+      const card = FLASH_CARDS[currentIdx];
+      const answered = remembered.size + notRemembered.size;
+
+      const reset = () => {
+        setCurrentIdx(0);
+        setFlipped(false);
+        setRemembered(new Set());
+        setNotRemembered(new Set());
+        setFinished(false);
+        setAnimKey(k => k + 1);
+      };
+
+      const advance = (wasRemembered) => {
+        if (wasRemembered) {
+          setRemembered(r => new Set([...r, card.id]));
+        } else {
+          setNotRemembered(n => new Set([...n, card.id]));
+        }
+        if (currentIdx + 1 >= total) {
+          setFinished(true);
+        } else {
+          setCurrentIdx(i => i + 1);
+          setFlipped(false);
+          setAnimKey(k => k + 1);
+        }
+      };
+
+      if (finished) {
+        return (
+          <div className="min-h-screen flex items-center justify-center px-4" style={{paddingTop: '80px'}}>
+            <div className="max-w-lg w-full text-center fade-in">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-3xl font-bold text-white mb-2">Готово!</h2>
+              <p className="text-slate-400 mb-8">Разгледа всички {total} флаш карти</p>
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="p-5 rounded-2xl"
+                  style={{background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)'}}>
+                  <div className="text-3xl font-bold text-green-400">{remembered.size}</div>
+                  <div className="text-slate-400 text-sm mt-1">✅ Запомнени</div>
+                </div>
+                <div className="p-5 rounded-2xl"
+                  style={{background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)'}}>
+                  <div className="text-3xl font-bold text-red-400">{notRemembered.size}</div>
+                  <div className="text-slate-400 text-sm mt-1">🔁 За повторение</div>
+                </div>
+              </div>
+              <div className="h-3 bg-slate-800 rounded-full overflow-hidden mb-8">
+                <div className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: `${(remembered.size / total) * 100}%`,
+                    background: 'linear-gradient(90deg, #22c55e, #06b6d4)',
+                  }} />
+              </div>
+              <button onClick={reset}
+                className="px-8 py-3 rounded-xl font-bold text-white transition-all hover:scale-105 active:scale-95"
+                style={{background: 'linear-gradient(135deg, #22c55e, #16a34a)', boxShadow: '0 0 24px rgba(34,197,94,0.35)'}}>
+                🔄 Започни отново
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen px-4 pb-16 flex flex-col" style={{paddingTop: '80px'}}>
+          <div className="max-w-xl mx-auto w-full flex flex-col flex-1">
+
+            {/* Header */}
+            <div className="text-center mb-6 fade-in">
+              <h2 className="text-3xl font-bold text-white mb-2">🃏 Флаш Карти</h2>
+              <p className="text-slate-400 text-sm mb-4">
+                Карта <span className="text-green-400 font-bold">{currentIdx + 1}</span> от {total}
+              </p>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <span className="px-3 py-1 rounded-full text-xs font-code"
+                  style={{background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80'}}>
+                  ✅ {remembered.size} запомнени
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-code"
+                  style={{background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171'}}>
+                  🔁 {notRemembered.size} за повторение
+                </span>
+                <button onClick={reset}
+                  className="px-3 py-1 rounded-full text-xs text-slate-400 hover:text-white transition-colors"
+                  style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)'}}>
+                  🔄 Нулиране
+                </button>
+              </div>
+              <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${(answered / total) * 100}%`,
+                    background: 'linear-gradient(90deg, #22c55e, #06b6d4)',
+                  }} />
+              </div>
+            </div>
+
+            {/* Single Card */}
+            <div key={animKey} className="flex-1 flex flex-col items-center justify-center">
+              <div className="card-flip-container cursor-pointer slide-enter w-full"
+                style={{height: '300px', maxWidth: '480px'}}
+                onClick={() => setFlipped(f => !f)}>
+                <div className={`card-flip-inner ${flipped ? 'flipped' : ''}`}>
+                  {/* Front */}
+                  <div className="card-face flex flex-col items-center justify-center p-8 text-center"
+                    style={{
+                      background: 'linear-gradient(145deg, #1e293b, #0f172a)',
+                      border: '1px solid rgba(34,197,94,0.25)',
+                      boxShadow: '0 0 40px rgba(34,197,94,0.10)',
+                    }}>
+                    <div className="text-6xl mb-4"
+                      style={{filter: 'drop-shadow(0 0 14px rgba(34,197,94,0.5))'}}>
+                      {card.front.icon}
+                    </div>
+                    <div className="font-code text-2xl font-bold text-green-400 mb-1">{card.front.term}</div>
+                    <div className="text-slate-500 text-sm mb-6">{card.front.sub}</div>
+                    <div className="text-xs text-slate-600 flex items-center gap-1.5">
+                      <span>↺</span><span>клик за да видиш определението</span>
+                    </div>
+                  </div>
+                  {/* Back */}
+                  <div className="card-face card-back p-7 flex flex-col justify-between"
+                    style={{
+                      background: 'linear-gradient(145deg, #162a1e, #0d1f26)',
+                      border: '1px solid rgba(34,197,94,0.4)',
+                    }}>
+                    <div>
+                      <div className="font-code text-green-400 font-semibold text-sm mb-3">{card.front.term}</div>
+                      <p className="text-slate-200 text-base leading-relaxed">{card.back.def}</p>
+                    </div>
+                    <div className="mt-4 p-3 rounded-xl font-code text-sm break-all"
+                      style={{background: 'rgba(0,0,0,0.35)', color: '#67e8f9', border: '1px solid rgba(6,182,212,0.25)'}}>
+                      {card.back.ex}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Confirm buttons — appear after flip */}
+              <div className={`mt-6 flex gap-4 transition-all duration-300 ${flipped ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                <button
+                  onClick={() => advance(false)}
+                  className="flex-1 px-6 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-105 active:scale-95"
+                  style={{
+                    background: 'rgba(239,68,68,0.12)',
+                    border: '1px solid rgba(239,68,68,0.4)',
+                    color: '#fca5a5',
+                  }}>
+                  🔁 Не запомних
+                </button>
+                <button
+                  onClick={() => advance(true)}
+                  className="flex-1 px-6 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-105 active:scale-95"
+                  style={{
+                    background: 'rgba(34,197,94,0.12)',
+                    border: '1px solid rgba(34,197,94,0.45)',
+                    color: '#86efac',
+                  }}>
+                  ✅ Запомних
+                </button>
+              </div>
+
+              {!flipped && (
+                <p className="mt-6 text-slate-600 text-xs">Кликни върху картата, за да видиш отговора</p>
+              )}
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    /* ======================================================
+       DEMO PLAYGROUND
+    ====================================================== */
+
+    function Demo() {
+      const [pat, setPat]         = useState(MISSIONS[0].pattern);
+      const [txt, setTxt]         = useState(MISSIONS[0].text);
+      const [flags, setFlags]     = useState('gi');
+      const [activeMission, setAM] = useState(0);
+
+      const loadMission = i => {
+        setAM(i);
+        setPat(MISSIONS[i].pattern);
+        setTxt(MISSIONS[i].text);
+      };
+
+      const result = useMemo(() => buildHighlightedHtml(txt, pat, flags), [txt, pat, flags]);
+
+      const insertMeta = sym => setPat(p => p + sym);
+
+      return (
+        <div className="min-h-screen px-4 pb-16" style={{paddingTop: '80px'}}>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-9 fade-in">
+              <h2 className="text-3xl font-bold text-white mb-1">⚡ The Pattern Breaker</h2>
+              <p className="text-slate-400">Тествай регулярни изрази в реално време</p>
+            </div>
+
+            {/* Missions */}
+            <div className="flex flex-wrap gap-3 mb-6 justify-center">
+              {MISSIONS.map((m, i) => (
+                <button key={m.id} onClick={() => loadMission(i)}
+                  className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                  style={{
+                    background: activeMission === i ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.04)',
+                    border: activeMission === i ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.08)',
+                    color: activeMission === i ? '#4ade80' : '#94a3b8',
+                  }}>
+                  🎯 {m.title}
+                </button>
+              ))}
+            </div>
+
+            {/* Mission info */}
+            <div className="mb-6 p-4 rounded-xl"
+              style={{background: 'rgba(6,182,212,0.06)', border: '1px solid rgba(6,182,212,0.18)'}}>
+              <p className="text-cyan-300 text-sm">{MISSIONS[activeMission].desc}</p>
+              <p className="text-slate-600 text-xs mt-1 font-code">
+                💡 Подсказка: {MISSIONS[activeMission].hint}
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5 mb-5">
+              {/* Pattern */}
+              <div>
+                <label className="block text-slate-300 text-sm font-medium mb-2">🔍 Регулярен Израз</label>
+                <div className="flex gap-2">
+                  <div className="flex-1 flex items-center rounded-xl px-3 gap-1"
+                    style={{
+                      background: 'rgba(30,41,59,0.8)',
+                      border: result.error ? '1px solid rgba(239,68,68,0.5)' : '1px solid rgba(34,197,94,0.3)',
+                    }}>
+                    <span className="font-code text-green-400 text-lg">/</span>
+                    <input value={pat} onChange={e => setPat(e.target.value)}
+                      placeholder="въведи шаблон…"
+                      className="flex-1 bg-transparent py-3 text-white font-code text-sm outline-none"
+                    />
+                    <span className="font-code text-green-400 text-lg">/</span>
+                  </div>
+                  <input value={flags} onChange={e => setFlags(e.target.value.replace(/[^gimsuy]/g,''))}
+                    placeholder="gi"
+                    className="w-12 text-center rounded-xl font-code text-sm outline-none py-3"
+                    style={{background: 'rgba(234,179,8,0.08)', border: '1px solid rgba(234,179,8,0.3)', color: '#fde68a'}}
+                  />
+                </div>
+                {result.error && (
+                  <p className="text-red-400 text-xs mt-1.5 font-code">⚠ {result.error}</p>
+                )}
+              </div>
+
+              {/* Test text */}
+              <div>
+                <label className="block text-slate-300 text-sm font-medium mb-2">📝 Тестов Текст</label>
+                <textarea value={txt} onChange={e => setTxt(e.target.value)} rows={3}
+                  className="w-full rounded-xl px-4 py-3 text-sm text-white font-code outline-none resize-none"
+                  style={{background: 'rgba(30,41,59,0.8)', border: '1px solid rgba(255,255,255,0.09)'}}
+                />
+              </div>
+            </div>
+
+            {/* Result */}
+            <div className="rounded-2xl overflow-hidden mb-6"
+              style={{border: '1px solid rgba(34,197,94,0.18)'}}>
+              <div className="flex items-center justify-between px-5 py-3"
+                style={{background: 'rgba(34,197,94,0.07)', borderBottom: '1px solid rgba(34,197,94,0.13)'}}>
+                <span className="text-slate-400 text-sm font-medium">Резултат</span>
+                <div className="flex items-center gap-3">
+                  {result.count > 0 && (
+                    <span className="px-3 py-1 rounded-full text-xs font-bold pulse-ring"
+                      style={{background: 'rgba(34,197,94,0.2)', color: '#4ade80'}}>
+                      ✓ {result.count} {result.count === 1 ? 'съвпадение' : 'съвпадения'}
+                    </span>
+                  )}
+                  {!result.error && result.count === 0 && pat && (
+                    <span className="px-3 py-1 rounded-full text-xs"
+                      style={{background: 'rgba(239,68,68,0.12)', color: '#f87171'}}>
+                      ✗ Няма съвпадения
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div
+                className="p-5 font-code text-sm leading-loose"
+                style={{
+                  background: 'rgba(13,18,32,0.9)', minHeight: '80px',
+                  color: '#cbd5e1', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+                }}
+                dangerouslySetInnerHTML={{ __html: result.html }}
+              />
+            </div>
+
+            {/* Quick insert */}
+            <div className="p-5 rounded-2xl"
+              style={{background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)'}}>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                ⚡ Кликни за вмъкване в шаблона
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ['\\d','цифра'], ['\\D','нецифра'], ['\\w','буква/_'], ['\\W','специален'],
+                  ['\\s','интервал'], ['.','всеки'], ['*','0+'], ['+','1+'], ['?','0 или 1'],
+                  ['{n}','точно n'], ['[a-z]','a до z'], ['^','начало'], ['$','край'], ['|','или'],
+                ].map(([sym, desc]) => (
+                  <button key={sym} onClick={() => insertMeta(sym)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all hover:scale-105"
+                    style={{
+                      background: 'rgba(34,197,94,0.07)',
+                      border: '1px solid rgba(34,197,94,0.18)',
+                    }}>
+                    <span className="font-code text-green-400 font-bold">{sym}</span>
+                    <span className="text-slate-500">{desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ======================================================
+       QUIZ
+    ====================================================== */
+
+    function Quiz() {
+      const [answers,   setAnswers]   = useState({});
+      const [submitted, setSubmitted] = useState(false);
+      const [cur,       setCur]       = useState(0);
+
+      const select = (qId, opt) => {
+        if (!submitted) {
+          setAnswers(a => ({ ...a, [qId]: opt }));
+        }
+      };
+
+      const score = useMemo(() =>
+        QUIZ.reduce((s, q) => s + (answers[q.id] === q.ans ? 1 : 0), 0),
+      [answers]);
+
+      const allDone = Object.keys(answers).length === QUIZ.length;
+      const reset   = () => { setAnswers({}); setSubmitted(false); setCur(0); };
+
+      const feedback = s => {
+        if (s >= 9) return { emoji: '🏆', msg: 'Отличен! Истински RegEx майстор!',       color: '#4ade80' };
+        if (s >= 7) return { emoji: '⭐', msg: 'Много добър! Много добре разбираш материала.', color: '#67e8f9' };
+        if (s >= 5) return { emoji: '👍', msg: 'Добър! Повтори материала за по-добър резултат.', color: '#fcd34d' };
+        return           { emoji: '📖', msg: 'Прегледай отново презентацията и флаш картите.', color: '#f87171' };
+      };
+
+      const q = QUIZ[cur];
+      const fb = feedback(score);
+
+      return (
+        <div className="min-h-screen px-4 pb-16" style={{paddingTop: '80px'}}>
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-8 fade-in">
+              <h2 className="text-3xl font-bold text-white mb-1">🏆 Куиз</h2>
+              <p className="text-slate-400">10 въпроса — провери знанията си</p>
+            </div>
+
+            {submitted ? (
+              /* ---- Results ---- */
+              <div className="fade-in">
+                <div className="text-center p-8 rounded-2xl mb-8"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(6,182,212,0.08))',
+                    border: '1px solid rgba(34,197,94,0.28)',
+                    boxShadow: '0 0 40px rgba(34,197,94,0.1)',
+                  }}>
+                  <div className="text-7xl mb-4">{fb.emoji}</div>
+                  <div className="text-5xl font-bold font-code mb-3" style={{color: fb.color}}>
+                    {score} / 10
+                  </div>
+                  <p className="text-lg text-slate-300 mb-5">{fb.msg}</p>
+                  <div className="flex justify-center gap-3 flex-wrap">
+                    <span className="px-3 py-1.5 rounded-full text-sm font-medium"
+                      style={{background: 'rgba(34,197,94,0.18)', color: '#4ade80'}}>
+                      ✓ {score} верни
+                    </span>
+                    <span className="px-3 py-1.5 rounded-full text-sm font-medium"
+                      style={{background: 'rgba(239,68,68,0.15)', color: '#f87171'}}>
+                      ✗ {10 - score} грешни
+                    </span>
+                  </div>
+                </div>
+
+                {/* Review */}
+                <div className="space-y-3 mb-8">
+                  {QUIZ.map((q, i) => {
+                    const ok = answers[q.id] === q.ans;
+                    return (
+                      <div key={q.id} className="p-4 rounded-xl"
+                        style={{
+                          background: ok ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)',
+                          border: `1px solid ${ok ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
+                        }}>
+                        <div className="flex gap-3">
+                          <span className="text-lg shrink-0">{ok ? '✅' : '❌'}</span>
+                          <div>
+                            <p className="text-white text-sm font-medium">{i + 1}. {q.q}</p>
+                            <p className="text-xs mt-1" style={{color: ok ? '#4ade80' : '#f87171'}}>
+                              Твоят отговор: <em>{q.opts[answers[q.id]] ?? '—'}</em>
+                              {!ok && ` · Правилно: ${q.opts[q.ans]}`}
+                            </p>
+                            <p className="text-slate-500 text-xs mt-1 italic">{q.exp}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="text-center">
+                  <button onClick={reset}
+                    className="px-8 py-3 rounded-xl font-semibold text-white transition-all hover:scale-105"
+                    style={{
+                      background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                      boxShadow: '0 0 24px rgba(34,197,94,0.35)',
+                    }}>
+                    🔄 Пробвай отново
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* ---- Questions ---- */
+              <div>
+                {/* Progress */}
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="font-code text-green-400 text-sm shrink-0">
+                    {cur + 1} / {QUIZ.length}
+                  </span>
+                  <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-300"
+                      style={{
+                        width: `${((cur + 1) / QUIZ.length) * 100}%`,
+                        background: 'linear-gradient(90deg, #22c55e, #06b6d4)',
+                      }} />
+                  </div>
+                  <span className="font-code text-slate-500 text-sm shrink-0">{score} т.</span>
+                </div>
+
+                {/* Dot nav */}
+                <div className="flex gap-1.5 mb-6 flex-wrap">
+                  {QUIZ.map((qx, i) => {
+                    const answered = answers[qx.id] !== undefined;
+                    return (
+                      <button key={i} onClick={() => setCur(i)}
+                        className="w-7 h-7 rounded-full text-xs font-bold font-code transition-all"
+                        style={{
+                          background: answered
+                            ? 'rgba(34,197,94,0.3)'
+                            : i === cur ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.04)',
+                          border: i === cur ? '1px solid rgba(34,197,94,0.6)' : '1px solid rgba(255,255,255,0.08)',
+                          color: i === cur ? '#4ade80' : answered ? '#86efac' : '#64748b',
+                          transform: i === cur ? 'scale(1.15)' : 'scale(1)',
+                        }}>
+                        {i + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Question card */}
+                <div key={cur} className="slide-enter rounded-2xl p-6 mb-5"
+                  style={{background: 'rgba(30,41,59,0.6)', border: '1px solid rgba(255,255,255,0.09)'}}>
+                  <h3 className="text-lg font-semibold text-white mb-6 leading-relaxed">
+                    {cur + 1}. {q.q}
+                  </h3>
+                  <div className="space-y-3">
+                    {q.opts.map((opt, i) => (
+                      <button key={i} onClick={() => { select(q.id, i); }}
+                        className="w-full text-left p-4 rounded-xl text-sm transition-all duration-150 hover:scale-[1.01]"
+                        style={{
+                          background: answers[q.id] === i ? 'rgba(34,197,94,0.13)' : 'rgba(255,255,255,0.03)',
+                          border: answers[q.id] === i
+                            ? '1px solid rgba(34,197,94,0.5)'
+                            : '1px solid rgba(255,255,255,0.07)',
+                          color: answers[q.id] === i ? '#fff' : '#cbd5e1',
+                        }}>
+                        <span className="font-code font-bold text-green-400 mr-3">
+                          {String.fromCharCode(65 + i)}.
+                        </span>
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom nav */}
+                <div className="flex items-center justify-between gap-3">
+                  <button onClick={() => setCur(c => Math.max(0, c - 1))} disabled={cur === 0}
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-25"
+                    style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', color: '#94a3b8'}}>
+                    ← Назад
+                  </button>
+
+                  {cur < QUIZ.length - 1 ? (
+                    <button onClick={() => setCur(c => c + 1)}
+                      className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
+                      style={{background: 'rgba(34,197,94,0.13)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80'}}>
+                      Следващ →
+                    </button>
+                  ) : (
+                    <button onClick={() => setSubmitted(true)} disabled={!allDone}
+                      className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-105 disabled:opacity-40"
+                      style={{
+                        background: allDone ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 'rgba(34,197,94,0.15)',
+                        boxShadow: allDone ? '0 0 20px rgba(34,197,94,0.3)' : 'none',
+                      }}>
+                      🏁 Провери резултата
+                    </button>
+                  )}
+                </div>
+
+                {!allDone && (
+                  <p className="text-center text-slate-700 text-xs mt-3">
+                    Отговори на всички {QUIZ.length} въпроса преди да провериш
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ======================================================
+       SUMMARY
+    ====================================================== */
+
+    function Summary() {
+      return (
+        <div className="min-h-screen px-4 pb-20" style={{paddingTop: '80px'}}>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12 fade-in">
+              <h2 className="text-3xl font-bold text-white mb-2">📋 Обобщение</h2>
+              <p className="text-slate-400">Ключови термини, факти и cheat sheet</p>
+            </div>
+
+            {/* Key terms */}
+            <section className="mb-14">
+              <h3 className="flex items-center gap-2 text-xl font-semibold text-green-400 mb-6">
+                <span>🔑</span> Ключови Термини
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {SUMMARY_TERMS.map((t, i) => (
+                  <div key={i} className="p-4 rounded-xl fade-in"
+                    style={{background: 'rgba(30,41,59,0.55)', border: '1px solid rgba(255,255,255,0.07)'}}>
+                    <div className="font-code text-green-400 font-semibold text-sm mb-1.5">{t.term}</div>
+                    <div className="text-slate-400 text-xs leading-relaxed">{t.def}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Chomsky facts */}
+            <section className="mb-14">
+              <h3 className="flex items-center gap-2 text-xl font-semibold text-cyan-400 mb-6">
+                <span>🧠</span> Факти за Ноам Чомски и произхода на RegEx
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {CHOMSKY_FACTS.map((f, i) => (
+                  <div key={i} className="p-6 rounded-2xl fade-in"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(6,182,212,0.07), rgba(168,85,247,0.07))',
+                      border: '1px solid rgba(6,182,212,0.18)',
+                    }}>
+                    <div className="text-4xl mb-3">{f.icon}</div>
+                    <h4 className="font-semibold text-cyan-300 mb-2 text-sm">{f.title}</h4>
+                    <p className="text-slate-400 text-sm leading-relaxed">{f.text}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Cheat sheet */}
+            <section>
+              <h3 className="flex items-center gap-2 text-xl font-semibold text-purple-400 mb-6">
+                <span>📄</span> RegEx Cheat Sheet
+              </h3>
+              <div className="rounded-2xl overflow-hidden"
+                style={{border: '1px solid rgba(168,85,247,0.22)'}}>
+                <div className="px-6 py-3"
+                  style={{background: 'rgba(168,85,247,0.08)', borderBottom: '1px solid rgba(168,85,247,0.18)'}}>
+                  <span className="font-code text-purple-400 text-sm">// Запази тази справка!</span>
+                </div>
+                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                  {[
+                    {
+                      label: 'Метазнаци',
+                      color: '#4ade80',
+                      items: [['\\d','[0-9]'],['\\D','нецифра'],['\\w','[A-Za-z0-9_]'],['\\W','специален'],['\\s','интервал'],['.',  'всеки знак']],
+                    },
+                    {
+                      label: 'Квантификатори',
+                      color: '#67e8f9',
+                      items: [['*','0 или повече'],['+',' 1 или повече'],['?','0 или 1'],['{n}','точно n'],[ '{n,m}','от n до m'],['{n,}', 'n или повече']],
+                    },
+                    {
+                      label: 'Котви и Групи',
+                      color: '#fcd34d',
+                      items: [['^','начало на низ'],['$','край на низ'],['(…)','група/капчур'],['(?:…)','незаписваща'],['a|b','a или b'],['\\b','граница на дума']],
+                    },
+                    {
+                      label: 'Класове',
+                      color: '#c4b5fd',
+                      items: [['[abc]','a, b или c'],['[^abc]','не a, b, c'],['[a-z]','a до z'],['[A-Z]','A до Z'],['[0-9]','0 до 9'],['[\\w\\s]','буква или интервал']],
+                    },
+                  ].map(group => (
+                    <div key={group.label}>
+                      <p className="text-xs font-semibold uppercase tracking-wider mb-3"
+                        style={{color: 'rgba(148,163,184,0.6)'}}>
+                        {group.label}
+                      </p>
+                      <div className="space-y-1.5">
+                        {group.items.map(([sym, desc]) => (
+                          <div key={sym} className="flex items-center gap-2">
+                            <span className="font-code font-bold text-sm w-16 shrink-0"
+                              style={{color: group.color}}>
+                              {sym}
+                            </span>
+                            <span className="text-slate-500 text-xs">{desc}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Footer CTA */}
+            <div className="mt-14 text-center p-8 rounded-2xl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(34,197,94,0.07), rgba(6,182,212,0.07))',
+                border: '1px solid rgba(34,197,94,0.18)',
+              }}>
+              <div className="text-3xl mb-3">🚀</div>
+              <p className="text-white font-semibold text-lg mb-1">Готов за следващото ниво?</p>
+              <p className="text-slate-400 text-sm">
+                Практикувай с реални задачи в секцията <strong className="text-green-400">Демо</strong>, или провери знанията си в <strong className="text-green-400">Куиза</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ======================================================
+       APP ROOT
+    ====================================================== */
+
+    function App() {
+      const [section, setSection] = useState('presentation');
+
+      return (
+        <div className="bg-grid" style={{minHeight: '100vh'}}>
+          <Nav active={section} setActive={setSection} />
+          {section === 'presentation' && <Presentation />}
+          {section === 'flashcards'   && <FlashCards />}
+          {section === 'demo'         && <Demo />}
+          {section === 'quiz'         && <Quiz />}
+          {section === 'summary'      && <Summary />}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
