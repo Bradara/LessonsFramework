@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Проектиране и Програмиране на ИС</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <script src="../../../libs/tailwind.cdn.js"></script>
+  <link rel="stylesheet" href="../../../libs/reveal/dist/reveal.css" />
+  <link rel="stylesheet" href="../../../libs/reveal/dist/theme/black.css" />
+  <script src="../../../libs/react.production.min.js"></script>
+  <script src="../../../libs/react-dom.production.min.js"></script>
+  <script src="../../../libs/babel.min.js"></script>
+  <script src="../../../libs/reveal/dist/reveal.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night:   "#060b14",
+            panel:   "#0c1526",
+            surface: "#111d2e",
+            border:  "#1c2e47",
+            cyan:    "#06b6d4",
+            purple:  "#a855f7",
+            emerald: "#10b981",
+            amber:   "#f59e0b",
+            rose:    "#f43f5e"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          },
+          backgroundImage: {
+            "grad-c":  "linear-gradient(135deg,#06b6d4,#a855f7)",
+            "grad-cp": "linear-gradient(135deg,rgba(6,182,212,0.15),rgba(168,85,247,0.15))"
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* ── Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Inter", sans-serif;
+      background: #060b14;
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Tech background */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background-image: url("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80");
+      background-size: cover; background-position: center;
+      opacity: 0.05; z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed; inset: 0;
+      background: linear-gradient(150deg,rgba(6,11,20,0.98) 0%,rgba(12,21,38,0.95) 100%);
+      z-index: -1;
+    }
+
+    /* ── Reveal.js ────────────────────────────────────── */
+    #reveal-container { height: 520px; }
+    @media (max-width: 768px) { #reveal-container { height: 380px; } }
+    .reveal { height: 100%; }
+    .reveal .slides section { text-align: left; color: #e2e8f0; padding: 2rem 2.5rem; }
+    .reveal .slides section h2 { color: #06b6d4; font-size: clamp(1.3rem,3vw,2rem); font-weight: 700; margin-bottom: 0.75rem; }
+    .reveal .slides section .slide-tag { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.35em; color: #a855f7; margin-bottom: 0.5rem; font-family: "JetBrains Mono", monospace; }
+    .reveal .slides section .slide-sub { color: #94a3b8; font-size: 0.95rem; margin-bottom: 1rem; }
+    .reveal .slides section ul { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+    .reveal .slides section li { margin-bottom: 0.55rem; padding-left: 1.4rem; position: relative; font-size: 0.95rem; line-height: 1.55; }
+    .reveal .slides section li::before { content: "◆"; color: #a855f7; position: absolute; left: 0; font-size: 0.6rem; top: 0.35rem; }
+    .reveal .controls { color: #06b6d4; }
+    .reveal .progress { color: #06b6d4; }
+
+    /* ── Flip Card ────────────────────────────────────── */
+    .fc-wrap { perspective: 1100px; cursor: pointer; }
+    .fc-inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+    }
+    .fc-wrap.fc-flipped .fc-inner { transform: rotateY(180deg); }
+    .fc-front, .fc-back {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 1rem;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 1.3rem; text-align: center;
+    }
+    .fc-back { transform: rotateY(180deg); }
+
+    /* ── Drag & Drop ──────────────────────────────────── */
+    .dz-hover { border-color: #06b6d4 !important; background: rgba(6,182,212,0.08) !important; }
+    [draggable="true"] { user-select: none; }
+
+    /* ── Utility ──────────────────────────────────────── */
+    .glow-c  { box-shadow: 0 0 32px rgba(6,182,212,0.18); }
+    .glow-p  { box-shadow: 0 0 32px rgba(168,85,247,0.18); }
+    .text-grad { background: linear-gradient(135deg,#06b6d4,#a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .btn-primary { background: rgba(6,182,212,0.2); color: #06b6d4; border: 1px solid rgba(6,182,212,0.45); border-radius: 0.75rem; padding: 0.6rem 1.5rem; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+    .btn-primary:hover { background: rgba(6,182,212,0.35); }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-ghost  { background: transparent; color: #94a3b8; border: 1px solid #1c2e47; border-radius: 0.75rem; padding: 0.6rem 1.5rem; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+    .btn-ghost:hover  { border-color: #94a3b8; color: #e2e8f0; }
+    .btn-purple { background: rgba(168,85,247,0.2); color: #a855f7; border: 1px solid rgba(168,85,247,0.45); border-radius: 0.75rem; padding: 0.6rem 1.5rem; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+    .btn-purple:hover { background: rgba(168,85,247,0.35); }
+    .btn-purple:disabled { opacity: 0.35; cursor: not-allowed; }
+    .card { background: rgba(12,21,38,0.7); border: 1px solid #1c2e47; border-radius: 1rem; padding: 1.5rem; }
+    .tag { font-family: "JetBrains Mono",monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; }
+
+    /* ── Scrollbar ────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0c1526; }
+    ::-webkit-scrollbar-thumb { background: #1c2e47; border-radius: 3px; }
+
+    /* ── Animations ───────────────────────────────────── */
+    @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes fc-slide-in-right { from { opacity: 0; transform: translateX(60px) scale(0.96); } to { opacity: 1; transform: none; } }
+    @keyframes fc-slide-in-left  { from { opacity: 0; transform: translateX(-60px) scale(0.96); } to { opacity: 1; transform: none; } }
+    .fc-anim-right { animation: fc-slide-in-right 0.38s cubic-bezier(0.4,0,0.2,1) both; }
+    .fc-anim-left  { animation: fc-slide-in-left  0.38s cubic-bezier(0.4,0,0.2,1) both; }
+    .fade-up { animation: fade-up 0.4s ease both; }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* ══════════════════════════════════════════
+       DATA
+    ══════════════════════════════════════════ */
+
+    const SLIDES = [
+      {
+        id: "s0", tag: "Модул 26", bg: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1920&q=80",
+        title: "Проектиране и Програмиране на ИС",
+        sub: "Анализ, проектиране и реализиране на информационни системи",
+        bullets: ["Фази на изграждане на ИС","Роли и участници","Архитектурни подходи","UI/UX принципи"]
+      },
+      {
+        id: "s1", tag: "Фази", bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80",
+        title: "Фази при изграждане на ИС",
+        sub: "Изграждането е цикъл, провокиран от реален бизнес казус",
+        bullets: ["1. Стартиране (Initiation)","2. Разработване (Development)","3. Реализация (Implementation)","4. Функциониране и поддръжка (Operation & Maintenance)"]
+      },
+      {
+        id: "s2", tag: "Участници", bg: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1920&q=80",
+        title: "Участниците в разработката",
+        sub: "Три ключови групи в разработването на ИС",
+        bullets: ["Клиенти — финансират дейностите (заявители)","Потребители — използват системата","Разработчици — проектират и изграждат системата"]
+      },
+      {
+        id: "s3", tag: "Роли", bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80",
+        title: "Роли в разработката",
+        sub: "Кой участва в кои фази",
+        bullets: ["Аналитик — фази 1 и 2","Проектант — фази 1, 2 и 3","Програмист — фази 3 и 4","QA Тестер — фаза 2","Project Manager — всички фази (1–4)","Tech Writer — документира (1–4)"]
+      },
+      {
+        id: "s4", tag: "8 Стъпки", bg: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1920&q=80",
+        title: "Осем стъпки на проектирането",
+        sub: "Последователният процес от идея до поддръжка",
+        bullets: ["1. Обхват → Техническо задание","2. Анализ → Доклад за реализуемост","3. Логическо моделиране → Логически модел","4. Системно проектиране (БД + Архитектура)","5. Детайлно проектиране (Алгоритми + UI)","6. Реализация (Кодиране + Тестване)","7. Внедряване (паралелно / директно / поетапно)","8. Поддръжка и оценка"]
+      },
+      {
+        id: "s5", tag: "Архитектура", bg: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1920&q=80",
+        title: "Софтуерни архитектури",
+        sub: "Шаблони, наложени в практиката",
+        bullets: ["Client-Server — класически двустепенен модел","Three-Tier / n-Tier — слоеста структура","Peer-to-Peer — равноправни възли","Event-Driven — управлявана от събития","Load Balancing — разпределяне на товара","SOA — ориентирана към услуги (Service-Oriented Architecture)","Agile, Waterfall, Spiral, Prototype, Iterative..."]
+      },
+      {
+        id: "s6", tag: "UI/UX", bg: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1920&q=80",
+        title: "Дизайн на графичен интерфейс",
+        sub: "Принципи на добрия потребителски интерфейс",
+        bullets: ["Контраст и подравняване — нечетни стойности за margins","Групиране на функционално свързани елементи","Скриване — показвай сложни функции само при нужда","Консистентност — едно действие = един и същ резултат","Простота — само необходимите функции са видими изначално"]
+      },
+      {
+        id: "s7", tag: "Програмиране", bg: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1920&q=80",
+        title: "Стил на програмиране",
+        sub: "Характеристики на добрия код",
+        bullets: ["Top-Down подход: от абстрактното към детайлното","Документация: автор, версия, статус, дата","Ясни имена за променливи, функции и класове","Коментарите са на естествен разбираем език","Добра структурираност и преносимост"]
+      }
+    ];
+
+    const QUIZ = [
+      { q:"Кой е документът, завършващ Етап 1 от проектирането?",
+        opts:["Доклад за реализуемост","Техническо задание","Логически модел","Спецификация на класовете"],
+        a:1, exp:"Етап 1 (Стартиране) завършва с Техническо задание — описва целите, вида и обхвата на ИС." },
+      { q:"Коя роля е 'мост' между клиента и програмирането?",
+        opts:["QA Тестер","Tech Writer","Бизнес анализатор","Системен администратор"],
+        a:2, exp:"Бизнес анализаторът посредничи между клиентите и разработчиците, създавайки спецификация." },
+      { q:"Какво означава съкращението QA?",
+        opts:["Quick Access","Query Algorithm","Quality Assurance","Quantified Analysis"],
+        a:2, exp:"QA = Quality Assurance — осигуряване на качеството. QA специалистите са тестерите на системата." },
+      { q:"Кой модел на разработка прилича на водопад?",
+        opts:["Agile","Waterfall Model","Spiral Model","Prototype Model"],
+        a:1, exp:"Моделът на водопада (Waterfall) е последователен — всяка фаза приключва преди следващата." },
+      { q:"Какъв е методът 'Top-down програмиране'?",
+        opts:["Отдолу нагоре","Постъпково усъвършенстване","Тестване на единици","Директно кодиране"],
+        a:1, exp:"Top-down = постъпково усъвършенстване. Започваш с абстрактни имена, после ги заменяш с код." },
+      { q:"Коя архитектура е специализирана за балансиране на товара?",
+        opts:["Client-Server","Three-Tier","Peer-to-Peer","Load Balancing"],
+        a:3, exp:"Load Balancing архитектурата разпределя заявките между множество сървъри за по-добра производителност." },
+      { q:"Кое е ключово за добрия UI дизайн според урока?",
+        opts:["Максимален брой функции","Групиране и подравняване на елементи","Ярки мигащи цветове","Минимален брой екрани"],
+        a:1, exp:"Добрият UI групира функционално свързани елементи и спазва принципа на подравняването." },
+      { q:"В кой етап се изготвя 'Доклад за реализуемост'?",
+        opts:["Етап 1 — Стартиране","Етап 2 — Анализ","Етап 4 — Системно проектиране","Етап 6 — Реализация"],
+        a:1, exp:"Етап 2 е 'Изследване на системата'. Резултатът е Доклад за реализуемост с оценки на решенията." },
+      { q:"Какъв трябва да е маржинът (margin) при добрия UI стил?",
+        opts:["Нулева стойност","Четна стойност","Нечетна стойност","Максимална стойност"],
+        a:2, exp:"Нечетните стойности за margins (3px, 5px, 7px) създават по-естествено оптично подравняване." },
+      { q:"Кой етап включва корекция на грешки след дълга употреба на ИС?",
+        opts:["Етап 5 — Детайлно проектиране","Етап 6 — Реализация","Етап 7 — Внедряване","Етап 8 — Поддръжка и оценка"],
+        a:3, exp:"Етап 8 (Поддръжка) включва коригиране на грешки, открити след дълъг период на ползване." }
+    ];
+
+    const FLASHCARDS = [
+      { term:"Waterfall Model", sub:"Модел на водопада",  icon:"💧",
+        def:"Последователен процес — всяка фаза приключва преди следващата. Ясна структура, но трудно се адаптира към промени.",
+        from:"#164e63", to:"#1e3a5f" },
+      { term:"Top-Down", sub:"Постъпково усъвършенстване", icon:"⬇️",
+        def:"Подход при програмиране: стартира се с абстрактни имена и операции. Коментарите постепенно се заменят с реален код.",
+        from:"#3b0764", to:"#1e1b4b" },
+      { term:"Feasibility Report", sub:"Доклад за реализуемост", icon:"📋",
+        def:"Резултат от Етап 2. Съдържа оценка на технически решения, разходи, ползи и рискове на различни варианти.",
+        from:"#064e3b", to:"#0f3460" },
+      { term:"Technical Spec.", sub:"Техническо задание", icon:"📝",
+        def:"Документ завършващ Етап 1. Описва целите, обхвата, стратегията за създаване и необходимите ресурси на ИС.",
+        from:"#78350f", to:"#7c2d12" },
+      { term:"QA — Quality Assurance", sub:"Осигуряване на качеството", icon:"🔍",
+        def:"Роля, свързана с тестването на качеството. QA специалистите проверяват дали системата работи правилно и без грешки.",
+        from:"#7f1d1d", to:"#4c0519" },
+      { term:"SOA", sub:"Service-Oriented Architecture", icon:"⚙️",
+        def:"Архитектура, ориентирана към услуги. Изгражда се от независими услуги с стандартни интерфейси — гъвкава и мащабируема.",
+        from:"#2e1065", to:"#1a103f" },
+      { term:"Agile", sub:"Гъвкав подход", icon:"🔄",
+        def:"Итеративен модел. Работи се на кратки спринтове с постоянна обратна връзка. Лесно се адаптира към нови изисквания.",
+        from:"#0c4a6e", to:"#082f49" },
+      { term:"Software Architect", sub:"Софтуерен архитект", icon:"🏗️",
+        def:"Специалист, проектиращ архитектурата на голяма система — компоненти, технологии и начина им на взаимодействие.",
+        from:"#1e293b", to:"#0f172a" }
+    ];
+
+    const ROLES = [
+      { id:"pm",         name:"Project Manager",       emoji:"🎯", phases:[1,2,3,4] },
+      { id:"analyst",    name:"Бизнес Анализатор",     emoji:"📊", phases:[1,2]     },
+      { id:"architect",  name:"Соф. Архитект",          emoji:"🏗️", phases:[1,2,3]   },
+      { id:"programmer", name:"Програмист",             emoji:"💻", phases:[3,4]     },
+      { id:"qa",         name:"QA Тестер",              emoji:"🔍", phases:[2]       },
+      { id:"techwriter", name:"Tech Writer",            emoji:"✍️", phases:[1,2,3,4] },
+      { id:"sysadmin",   name:"Сист. Администратор",   emoji:"🖥️", phases:[4]       }
+    ];
+
+    const PHASES = [
+      { id:1, name:"Стартиране",   icon:"🚀", accent:"#06b6d4", border:"rgba(6,182,212,0.5)"   },
+      { id:2, name:"Разработване", icon:"⚙️", accent:"#a855f7", border:"rgba(168,85,247,0.5)"  },
+      { id:3, name:"Реализация",   icon:"💡", accent:"#10b981", border:"rgba(16,185,129,0.5)"  },
+      { id:4, name:"Поддръжка",    icon:"🛡️", accent:"#f59e0b", border:"rgba(245,158,11,0.5)"  }
+    ];
+
+    /* ══════════════════════════════════════════
+       COMPONENTS
+    ══════════════════════════════════════════ */
+
+    /* ── Presentation ─────────────────────────────────── */
+    function PresentationView() {
+      useEffect(() => {
+        if (!window.Reveal) return;
+        const container = document.querySelector("#reveal-container .reveal");
+        if (!container) return;
+        const deck = new window.Reveal(container, {
+          embedded: true, hash: false,
+          slideNumber: "c/t",
+          transition: "fade",
+          backgroundTransition: "fade",
+          controls: true, progress: true,
+          width: "100%", height: "100%"
+        });
+        deck.initialize();
+        return () => { try { if (deck && deck.destroy) deck.destroy(); } catch(e){} };
+      }, []);
+
+      return (
+        <div className="fade-up">
+          <p className="text-xs font-mono text-purple-400 mb-3 opacity-80">← → стрелки за навигация &nbsp;|&nbsp; Space = следващ слайд</p>
+          <div id="reveal-container" className="rounded-2xl overflow-hidden glow-c"
+               style={{border:"1px solid rgba(6,182,212,0.25)"}}>
+            <div className="reveal">
+              <div className="slides">
+                {SLIDES.map(s => (
+                  <section key={s.id}
+                    data-background-image={s.bg}
+                    data-background-opacity="0.07">
+                    <div className="slide-tag">{s.tag}</div>
+                    <h2>{s.title}</h2>
+                    {s.sub && <p className="slide-sub">{s.sub}</p>}
+                    <ul>
+                      {s.bullets.map((b,i) => <li key={i}>{b}</li>)}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Role Matcher ─────────────────────────────────── */
+    function RoleMatcher() {
+      const [placed,   setPlaced]   = useState({});   // roleId → phaseId
+      const [dragId,   setDragId]   = useState(null);
+      const [hoverDz,  setHoverDz]  = useState(null);
+      const [checked,  setChecked]  = useState(false);
+      const [score,    setScore]    = useState(0);
+
+      const unplaced = ROLES.filter(r => placed[r.id] === undefined);
+      const inPhase  = (ph) => ROLES.filter(r => placed[r.id] === ph);
+
+      const onDragStart = (id)    => { setDragId(id); };
+      const onDragOver  = (e,ph)  => { e.preventDefault(); setHoverDz(ph); };
+      const onDragLeave = ()      => { setHoverDz(null); };
+      const onDrop      = (ph)    => {
+        if (!dragId) return;
+        setPlaced(p => ({...p, [dragId]: ph}));
+        setDragId(null); setHoverDz(null); setChecked(false);
+      };
+      const removeRole  = (id)    => {
+        setPlaced(p => { const n={...p}; delete n[id]; return n; });
+        setChecked(false);
+      };
+      const check = () => {
+        let s = 0;
+        ROLES.forEach(r => { if (placed[r.id] !== undefined && r.phases.includes(placed[r.id])) s++; });
+        setScore(s); setChecked(true);
+      };
+      const reset = () => { setPlaced({}); setChecked(false); setScore(0); };
+
+      const resultOf = (roleId, phaseId) => {
+        if (!checked) return null;
+        const r = ROLES.find(x => x.id === roleId);
+        return r.phases.includes(phaseId) ? "ok" : "no";
+      };
+
+      return (
+        <div className="fade-up">
+          <p className="text-sm text-slate-400 mb-6">
+            Провлачете ролите към тяхната фаза на участие.{" "}
+            <span className="text-cyan-400">Внимание</span> — някои роли работят в повече от една фаза!
+          </p>
+
+          {/* Palette */}
+          <div className="card mb-5" style={{minHeight:"76px"}}>
+            <div className="tag text-purple-400 mb-3">Налични роли</div>
+            <div className="flex flex-wrap gap-2">
+              {unplaced.map(r => (
+                <div key={r.id} draggable="true"
+                  onDragStart={() => onDragStart(r.id)}
+                  style={{opacity: dragId === r.id ? 0.45 : 1}}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium select-none cursor-grab
+                             bg-slate-700/50 border border-slate-600 hover:border-cyan-400 hover:bg-slate-700 transition">
+                  {r.emoji} {r.name}
+                </div>
+              ))}
+              {unplaced.length === 0 && (
+                <span className="text-slate-500 text-sm italic">Всички роли са поставени ✓</span>
+              )}
+            </div>
+          </div>
+
+          {/* Drop zones */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+            {PHASES.map(ph => (
+              <div key={ph.id}
+                onDragOver={e => onDragOver(e, ph.id)}
+                onDragLeave={onDragLeave}
+                onDrop={() => onDrop(ph.id)}
+                className="rounded-xl p-4 transition-all"
+                style={{
+                  minHeight:"180px",
+                  border: `2px dashed ${hoverDz === ph.id ? ph.accent : ph.border}`,
+                  background: hoverDz === ph.id ? `${ph.accent}10` : "rgba(12,21,38,0.5)"
+                }}>
+                <div className="text-center mb-3">
+                  <div className="text-2xl">{ph.icon}</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-0.5">Фаза {ph.id}</div>
+                  <div className="text-sm font-semibold text-white">{ph.name}</div>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {inPhase(ph.id).map(r => {
+                    const res = resultOf(r.id, ph.id);
+                    return (
+                      <div key={r.id}
+                        className="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-sm border transition"
+                        style={{
+                          borderColor: res==="ok" ? "#10b981" : res==="no" ? "#f43f5e" : "#1c2e47",
+                          background:  res==="ok" ? "rgba(16,185,129,0.12)" : res==="no" ? "rgba(244,63,94,0.12)" : "rgba(28,46,71,0.6)"
+                        }}>
+                        <span style={{color: res==="ok" ? "#6ee7b7" : res==="no" ? "#fda4af" : "#e2e8f0"}}>
+                          {r.emoji} {r.name}
+                        </span>
+                        {!checked && (
+                          <button onClick={() => removeRole(r.id)}
+                            className="ml-2 text-slate-500 hover:text-white transition text-xs leading-none">✕</button>
+                        )}
+                        {res==="ok" && <span className="ml-1">✅</span>}
+                        {res==="no" && <span className="ml-1">❌</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <button className="btn-primary" onClick={check}
+              disabled={Object.keys(placed).length === 0}>
+              Провери отговорите
+            </button>
+            <button className="btn-ghost" onClick={reset}>Нулиране</button>
+            {checked && (
+              <div className="ml-auto text-sm font-medium">
+                Резултат:{" "}
+                <span style={{color:"#06b6d4", fontSize:"1.25rem", fontWeight:800}}>{score}</span>
+                <span className="text-slate-500"> / {ROLES.length}</span>
+                {score === ROLES.length && <span className="ml-2 text-emerald-400">🎉 Перфектно!</span>}
+              </div>
+            )}
+          </div>
+
+          {/* Answer key */}
+          {checked && (
+            <div className="card mt-5 text-sm">
+              <div className="font-semibold text-slate-200 mb-3">📌 Правилни отговори:</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                {ROLES.map(r => (
+                  <div key={r.id} className="flex items-center gap-2">
+                    <span>{r.emoji}</span>
+                    <span className="text-slate-400">{r.name}:</span>
+                    <span className="font-mono text-cyan-400 text-xs">Фази {r.phases.join(", ")}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ── Flashcards ───────────────────────────────────── */
+    function FlashcardsView() {
+      const [idx,        setIdx]        = useState(0);
+      const [flipped,    setFlipped]    = useState(false);
+      const [remembered, setRemembered] = useState(new Set());
+      const [animClass,  setAnimClass]  = useState("fc-anim-right");
+      const [animKey,    setAnimKey]    = useState(0);  // forces re-mount for animation
+      const [done,       setDone]       = useState(false);
+
+      const c = FLASHCARDS[idx];
+      const total     = FLASHCARDS.length;
+      const remCount  = remembered.size;
+
+      const go = (dir) => {
+        const next = idx + dir;
+        if (next < 0 || next >= total) return;
+        setAnimClass(dir > 0 ? "fc-anim-right" : "fc-anim-left");
+        setAnimKey(k => k + 1);
+        setFlipped(false);
+        setIdx(next);
+      };
+
+      const markRemembered = () => {
+        setRemembered(prev => {
+          const n = new Set(prev);
+          n.add(idx);
+          return n;
+        });
+        // auto-advance if not last
+        if (idx < total - 1) {
+          go(1);
+        } else {
+          setDone(true);
+        }
+      };
+
+      const markForgot = () => {
+        setRemembered(prev => {
+          const n = new Set(prev);
+          n.delete(idx);
+          return n;
+        });
+        if (idx < total - 1) go(1);
+      };
+
+      const reset = () => {
+        setIdx(0); setFlipped(false);
+        setRemembered(new Set()); setDone(false);
+        setAnimClass("fc-anim-right"); setAnimKey(k => k+1);
+      };
+
+      /* ── Completion screen ── */
+      if (done && idx === total - 1 && remembered.size > 0) {
+        const pct = Math.round((remCount / total) * 100);
+        return (
+          <div className="fade-up max-w-lg mx-auto text-center py-8">
+            <div className="text-6xl mb-4">{pct === 100 ? "🏆" : pct >= 60 ? "👍" : "📖"}</div>
+            <h3 className="text-2xl font-bold text-white mb-2">Сесията е завършена!</h3>
+            <div className="text-5xl font-black my-4" style={{color:"#10b981"}}>
+              {remCount}<span className="text-2xl text-slate-500">/{total}</span>
+            </div>
+            <p className="text-slate-400 mb-2">термина маркирани като запомнени ({pct}%)</p>
+            {pct < 100 && (
+              <p className="text-sm text-amber-400 mb-6">
+                Остават <strong>{total - remCount}</strong> термина за повторение.
+              </p>
+            )}
+            {pct === 100 && (
+              <p className="text-emerald-400 font-semibold mb-6">🎉 Запомни всичко! Перфектно!</p>
+            )}
+            <div className="flex justify-center gap-3">
+              <button className="btn-primary" onClick={reset}>Започни отначало</button>
+              <button className="btn-ghost" onClick={() => { setDone(false); setIdx(0); setFlipped(false); setAnimKey(k=>k+1); }}>
+                Прегледай пак
+              </button>
+            </div>
+
+            {/* Summary of remembered */}
+            <div className="mt-8 text-left space-y-2">
+              {FLASHCARDS.map((fc, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl text-sm"
+                     style={{background: remembered.has(i) ? "rgba(16,185,129,0.1)" : "rgba(244,63,94,0.08)",
+                             border: `1px solid ${remembered.has(i) ? "rgba(16,185,129,0.3)" : "rgba(244,63,94,0.2)"}`}}>
+                  <span className="text-lg">{fc.icon}</span>
+                  <span className={remembered.has(i) ? "text-emerald-300" : "text-rose-300"}>{fc.term}</span>
+                  <span className="ml-auto">{remembered.has(i) ? "✅" : "❌"}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      /* ── Card view ── */
+      const isRemembered = remembered.has(idx);
+
+      return (
+        <div className="fade-up">
+
+          {/* ── Header stats ── */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-slate-400">
+                Карта <strong className="text-white">{idx + 1}</strong> от {total}
+              </span>
+              <span className="text-xs font-mono px-2.5 py-1 rounded-full"
+                    style={{background:"rgba(16,185,129,0.12)", border:"1px solid rgba(16,185,129,0.3)", color:"#6ee7b7"}}>
+                ✅ Запомнени: {remCount}/{total}
+              </span>
+            </div>
+            <button className="btn-ghost text-xs" onClick={reset}>Нулирай</button>
+          </div>
+
+          {/* ── Progress bar ── */}
+          <div className="rounded-full h-1.5 mb-7" style={{background:"#1c2e47"}}>
+            <div className="h-1.5 rounded-full transition-all duration-500"
+                 style={{width:`${((idx + 1) / total) * 100}%`,
+                         background:"linear-gradient(90deg,#06b6d4,#a855f7)"}} />
+          </div>
+
+          {/* ── Dot indicators ── */}
+          <div className="flex justify-center gap-1.5 mb-6 flex-wrap">
+            {FLASHCARDS.map((_, i) => (
+              <button key={i} onClick={() => { setAnimClass(i > idx ? "fc-anim-right" : "fc-anim-left"); setAnimKey(k=>k+1); setIdx(i); setFlipped(false); }}
+                style={{
+                  width:"10px", height:"10px", borderRadius:"50%", transition:"all 0.2s",
+                  background: i === idx ? "#06b6d4"
+                            : remembered.has(i) ? "#10b981"
+                            : "#1c2e47",
+                  transform: i === idx ? "scale(1.4)" : "scale(1)",
+                  border: "none", cursor:"pointer"
+                }} />
+            ))}
+          </div>
+
+          {/* ── The card ── */}
+          <div className="flex justify-center mb-8">
+            <div key={animKey}
+              className={`fc-wrap ${flipped ? "fc-flipped" : ""} ${animClass}`}
+              style={{width:"100%", maxWidth:"520px", height:"280px"}}
+              onClick={() => setFlipped(f => !f)}>
+              <div className="fc-inner">
+                {/* Front */}
+                <div className="fc-front"
+                  style={{background:`linear-gradient(145deg,${c.from},${c.to})`,
+                          border:"1px solid rgba(255,255,255,0.1)"}}>
+                  <div className="text-6xl mb-4">{c.icon}</div>
+                  <div className="font-bold text-white text-center text-xl leading-tight mb-1">{c.term}</div>
+                  <div className="text-slate-400 text-sm text-center">{c.sub}</div>
+                  <div className="absolute bottom-4 flex items-center gap-1.5 text-xs text-slate-500 font-mono">
+                    <span className="pulse-dot w-1.5 h-1.5 rounded-full inline-block" style={{background:"#475569"}}></span>
+                    кликни за определение
+                  </div>
+                </div>
+                {/* Back */}
+                <div className="fc-back"
+                  style={{background:`linear-gradient(145deg,${c.to},${c.from})`,
+                          border:"1px solid rgba(255,255,255,0.13)"}}>
+                  <div className="text-3xl mb-3">{c.icon}</div>
+                  <div className="text-sm font-bold mb-3" style={{color:"#67e8f9"}}>{c.term}</div>
+                  <p className="text-slate-300 text-sm leading-relaxed text-center max-w-xs">{c.def}</p>
+                  <div className="absolute bottom-4 text-xs text-slate-500 font-mono">кликни → обратно</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Action buttons ── */}
+          <div className="flex flex-col items-center gap-4">
+            {/* Remember / Forgot  — only shown after flip */}
+            {flipped && (
+              <div className="flex gap-3 fade-up">
+                <button onClick={markForgot}
+                  className="px-6 py-3 rounded-xl font-semibold text-sm transition"
+                  style={{background:"rgba(244,63,94,0.15)", border:"1px solid rgba(244,63,94,0.4)", color:"#fda4af",
+                          cursor:"pointer"}}>
+                  ❌ Не го знам
+                </button>
+                <button onClick={markRemembered}
+                  className="px-6 py-3 rounded-xl font-semibold text-sm transition"
+                  style={{background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.4)", color:"#6ee7b7",
+                          cursor:"pointer"}}>
+                  ✅ Знам го!
+                </button>
+              </div>
+            )}
+            {!flipped && (
+              <p className="text-xs text-slate-500 font-mono">← Кликни картата за да видиш определението →</p>
+            )}
+
+            {/* Prev / Next */}
+            <div className="flex items-center gap-4">
+              <button className="btn-ghost" onClick={() => go(-1)} disabled={idx === 0}
+                style={{padding:"0.6rem 1.2rem"}}>
+                ← Назад
+              </button>
+              <span className="text-slate-600 text-sm font-mono">{idx+1}/{total}</span>
+              <button className="btn-primary" onClick={() => go(1)} disabled={idx === total - 1}
+                style={{padding:"0.6rem 1.2rem"}}>
+                Напред →
+              </button>
+            </div>
+
+            {/* Already-remembered badge */}
+            {isRemembered && (
+              <div className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                <span>✅</span> Маркирана като запомнена
+              </div>
+            )}
+          </div>
+
+        </div>
+      );
+    }
+
+    /* ── Quiz Master ──────────────────────────────────── */
+    function QuizMaster() {
+      const [idx,      setIdx]      = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [score,    setScore]    = useState(0);
+      const [done,     setDone]     = useState(false);
+      const [log,      setLog]      = useState([]);  // {correct: bool}
+
+      const q   = QUIZ[idx];
+      const pct = (idx / QUIZ.length) * 100;
+
+      // Capture idx in a ref so pick() always reads the current question,
+      // even if the closure was formed during a batched state transition.
+      const idxRef = useRef(idx);
+      idxRef.current = idx;
+
+      const pick = (optIdx) => {
+        if (selected !== null) return;
+        const currentQ = QUIZ[idxRef.current];   // always up-to-date
+        const ok = optIdx === currentQ.a;
+        setSelected(optIdx);
+        if (ok) setScore(s => s + 1);
+        setLog(l => [...l, {correct: ok}]);
+      };
+
+      const next = () => {
+        const currentIdx = idxRef.current;
+        if (currentIdx === QUIZ.length - 1) { setDone(true); return; }
+        setSelected(null);
+        setIdx(currentIdx + 1);
+      };
+
+      const reset = () => { setIdx(0); setSelected(null); setScore(0); setDone(false); setLog([]); };
+
+      /* ── Results screen ── */
+      if (done) {
+        const finalPct = Math.round((score / QUIZ.length) * 100);
+        const grade = finalPct >= 90 ? {label:"🏆 Отличен!", color:"#10b981"}
+                    : finalPct >= 70 ? {label:"👍 Много добър!", color:"#06b6d4"}
+                    : finalPct >= 50 ? {label:"📚 Добър", color:"#f59e0b"}
+                    :                  {label:"🔄 Нужна е повече практика", color:"#f43f5e"};
+        return (
+          <div className="fade-up max-w-2xl mx-auto text-center">
+            <div className="text-6xl mb-4">{finalPct >= 70 ? "🎉" : "📖"}</div>
+            <h3 className="text-2xl font-bold mb-1">Тестът е завършен!</h3>
+            <div className="text-5xl font-black mt-3 mb-1"
+                 style={{color:"#06b6d4"}}>
+              {score}<span className="text-2xl" style={{color:"#475569"}}>/{QUIZ.length}</span>
+            </div>
+            <div className="text-lg font-semibold mb-1" style={{color: grade.color}}>{grade.label}</div>
+            <div className="text-slate-400 text-sm mb-6">{finalPct}% правилни отговора</div>
+
+            <div className="w-full rounded-full h-2.5 mb-8" style={{background:"#1c2e47"}}>
+              <div className="h-2.5 rounded-full transition-all"
+                   style={{width:`${finalPct}%`, background:"linear-gradient(90deg,#06b6d4,#a855f7)"}}/>
+            </div>
+
+            {/* Per-question review */}
+            <div className="text-left space-y-2 mb-8">
+              {QUIZ.map((qq,i) => (
+                <div key={i} className="flex items-start gap-3 p-3 rounded-xl text-sm"
+                     style={{background: log[i]?.correct ? "rgba(16,185,129,0.1)" : "rgba(244,63,94,0.1)",
+                             border: `1px solid ${log[i]?.correct ? "rgba(16,185,129,0.3)" : "rgba(244,63,94,0.3)"}`}}>
+                  <span>{log[i]?.correct ? "✅" : "❌"}</span>
+                  <div>
+                    <div className="text-slate-200">{qq.q}</div>
+                    {!log[i]?.correct && (
+                      <div className="text-emerald-400 text-xs mt-0.5">✓ {qq.opts[qq.a]}</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="btn-primary" onClick={reset} style={{padding:"0.75rem 2.5rem",fontSize:"1rem"}}>
+              Опитай отново
+            </button>
+          </div>
+        );
+      }
+
+      /* ── Question screen ── */
+      return (
+        <div key={idx} className="fade-up max-w-2xl mx-auto">
+          {/* Progress header */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm text-slate-400">Въпрос <strong className="text-white">{idx+1}</strong> от {QUIZ.length}</span>
+            <span className="font-mono text-sm" style={{color:"#06b6d4"}}>⭐ {score} т.</span>
+          </div>
+          <div className="rounded-full h-2 mb-6" style={{background:"#1c2e47"}}>
+            <div className="h-2 rounded-full transition-all duration-500"
+                 style={{width:`${pct}%`, background:"linear-gradient(90deg,#06b6d4,#a855f7)"}}/>
+          </div>
+
+          {/* Question card */}
+          <div className="card mb-4">
+            <p className="text-lg font-semibold text-white leading-relaxed">{q.q}</p>
+          </div>
+
+          {/* Options */}
+          <div className="space-y-3 mb-5">
+            {q.opts.map((opt, i) => {
+              const isCorrect  = i === q.a;
+              const isSelected = selected === i;
+              const base = "w-full text-left px-5 py-4 rounded-xl border font-medium text-sm transition cursor-pointer";
+              let style = {};
+              if (selected === null) {
+                style = {borderColor:"#1c2e47", background:"rgba(17,29,46,0.6)", color:"#e2e8f0"};
+              } else if (isCorrect) {
+                style = {borderColor:"#10b981", background:"rgba(16,185,129,0.12)", color:"#6ee7b7"};
+              } else if (isSelected) {
+                style = {borderColor:"#f43f5e", background:"rgba(244,63,94,0.12)", color:"#fda4af"};
+              } else {
+                style = {borderColor:"#1c2e47", background:"rgba(17,29,46,0.4)", color:"#64748b", opacity:0.7};
+              }
+
+              return (
+                <button key={`q${idx}-opt${i}`}
+                  onClick={() => pick(i)}
+                  className={base} style={style}>
+                  <span className="text-slate-500 mr-3 font-mono">{String.fromCharCode(65+i)}.</span>
+                  {opt}
+                  {selected !== null && isCorrect  && <span className="float-right">✅</span>}
+                  {selected !== null && isSelected && !isCorrect && <span className="float-right">❌</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Explanation */}
+          {selected !== null && (
+            <div className="p-4 rounded-xl text-sm mb-5"
+                 style={{background:"rgba(28,46,71,0.5)", border:"1px solid #1c2e47"}}>
+              <span className="font-semibold text-slate-200">💡 </span>
+              <span className="text-slate-300">{q.exp}</span>
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button className="btn-purple" onClick={next} disabled={selected === null}>
+              {idx === QUIZ.length - 1 ? "Виж резултата →" : "Следващ →"}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Summary ──────────────────────────────────────── */
+    function SummaryView() {
+      return (
+        <div className="fade-up space-y-10">
+
+          {/* Fun facts */}
+          <section>
+            <h3 className="text-lg font-bold mb-1" style={{color:"#06b6d4"}}>💡 Знаете ли, че?</h3>
+            <p className="text-slate-500 text-sm mb-4">Интересни факти от света на разработката</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { e:"🐛", title:"Истинският бъг",
+                  text:'Първият "бъг" е истинска молец (пеперуда), заседнала в реле на компютъра Mark II на ВМС на САЩ (1947 г.). Грейс Хопър го залепила в дневника с надпис "First actual case of bug being found."' },
+                { e:"⏱️", title:"60% проектиране, 15% кодиране",
+                  text:"Проектирането и анализът отнемат около 60% от времето на проекта, а самото кодиране — само 15%. Добре планираното е наполовина направено!" },
+                { e:"🌊", title:"Waterfall и НАСА",
+                  text:"Моделът на водопада е използван при разработката на системите за космическата програма на НАСА — твърдите изисквания го правят подходящ за такива проекти." },
+                { e:"🔁", title:"Agile манифестът",
+                  text:"Манифестът за Agile разработка е написан от 17 разработчика на ски курорт в Юта, САЩ (2001 г.). Днес над 71% от ИТ компаниите го прилагат." }
+              ].map((f,i) => (
+                <div key={i} className="p-5 rounded-2xl transition hover:scale-[1.02] duration-200"
+                     style={{background:"rgba(12,21,38,0.6)", border:"1px solid #1c2e47"}}>
+                  <div className="text-3xl mb-2">{f.e}</div>
+                  <div className="font-bold text-white mb-1.5">{f.title}</div>
+                  <p className="text-slate-400 text-sm leading-relaxed">{f.text}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Key definitions */}
+          <section>
+            <h3 className="text-lg font-bold mb-1" style={{color:"#a855f7"}}>📖 Ключови понятия</h3>
+            <p className="text-slate-500 text-sm mb-4">Термини, нужни за отговор на въпросите</p>
+            <div className="space-y-2.5">
+              {[
+                { t:"Информационна система (ИС)", d:"Съвкупност от хора, данни, процеси и ИТ за събиране, обработка, съхранение и предоставяне на информация." },
+                { t:"Архитектура на ИС",          d:"Описание на основните компоненти на системата, техните структури и как взаимодействат помежду си." },
+                { t:"Техническо задание",         d:"Документ, завършващ Етап 1. Описва целите, обхвата, вида и стратегията за създаване на ИС." },
+                { t:"Доклад за реализуемост",     d:"Резултат от Етап 2. Съдържа технически и програмни решения с оценка на разходи, ползи и риск." },
+                { t:"Top-down програмиране",      d:"Метод: стартира се с абстрактни имена (коментари), постепенно заменяни с реален код до краен вариант." },
+                { t:"Логически модел",            d:"Описва процесите и потоците от данни, необходими за изпълнение на системните функции." },
+                { t:"Модул (Системен компонент)", d:"Отделна част от системата — функция, процедура, клас или обект от данни — с дефинирана сигнатура." }
+              ].map((item,i) => (
+                <div key={i} className="flex flex-col sm:flex-row gap-3 sm:gap-5 p-4 rounded-xl"
+                     style={{background:"rgba(12,21,38,0.5)", border:"1px solid #1c2e47"}}>
+                  <div className="font-semibold text-cyan-400 text-sm shrink-0 sm:w-52">{item.t}</div>
+                  <div className="text-slate-300 text-sm leading-relaxed">{item.d}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 8 steps quick-ref */}
+          <section>
+            <h3 className="text-lg font-bold mb-1" style={{color:"#10b981"}}>⚡ Осемте стъпки — бърза справка</h3>
+            <p className="text-slate-500 text-sm mb-4">Всяка стъпка → резултат</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { n:"1", t:"Обхват",              doc:"Техническо задание",         accent:"#06b6d4" },
+                { n:"2", t:"Анализ",              doc:"Доклад за реализуемост",      accent:"#a855f7" },
+                { n:"3", t:"Лог. моделиране",     doc:"Логически модел",            accent:"#10b981" },
+                { n:"4", t:"Сист. проектиране",   doc:"БД + Архитектура",           accent:"#f59e0b" },
+                { n:"5", t:"Детайлно проект.",     doc:"Алгоритми + UI план",        accent:"#f97316" },
+                { n:"6", t:"Реализация",          doc:"Код + Документация",          accent:"#ef4444" },
+                { n:"7", t:"Внедряване",          doc:"Паралелно / Директно",        accent:"#ec4899" },
+                { n:"8", t:"Поддръжка",           doc:"Корекции + Обновления",       accent:"#8b5cf6" }
+              ].map(step => (
+                <div key={step.n} className="p-4 rounded-xl"
+                     style={{background:`${step.accent}12`,
+                             border:`1px solid ${step.accent}40`}}>
+                  <div className="font-black text-2xl mb-1" style={{color:`${step.accent}50`}}>#{step.n}</div>
+                  <div className="font-bold text-white text-sm leading-tight mb-1">{step.t}</div>
+                  <div className="text-xs" style={{color:step.accent}}>📄 {step.doc}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* IT roles quick list */}
+          <section>
+            <h3 className="text-lg font-bold mb-1" style={{color:"#f59e0b"}}>👥 IT Роли — кои фази</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+              {ROLES.map(r => (
+                <div key={r.id} className="flex items-center gap-3 p-3 rounded-xl"
+                     style={{background:"rgba(12,21,38,0.5)", border:"1px solid #1c2e47"}}>
+                  <span className="text-xl">{r.emoji}</span>
+                  <div>
+                    <div className="text-sm font-semibold text-white">{r.name}</div>
+                    <div className="text-xs font-mono" style={{color:"#06b6d4"}}>Фази: {r.phases.join(", ")}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+        </div>
+      );
+    }
+
+    /* ── Dashboard ────────────────────────────────────── */
+    function Dashboard({ setView }) {
+      const cards = [
+        { id:"presentation", icon:"📊", title:"Презентация",       desc:"Слайдове с цялото учебно съдържание",         badge:`${SLIDES.length} слайда`,       accent:"#06b6d4" },
+        { id:"demo",         icon:"🎮", title:"Игра: Роли → Фази", desc:"Провлачи ролите към правилните фази",         badge:`${ROLES.length} роли`,          accent:"#a855f7" },
+        { id:"flashcards",   icon:"🃏", title:"Флашкарти",         desc:"Кликни и обърни — учи дефиниции",            badge:`${FLASHCARDS.length} термина`,  accent:"#10b981" },
+        { id:"quiz",         icon:"🧠", title:"Тест",              desc:"10 въпроса с незабавна обратна връзка",       badge:`${QUIZ.length} въпроса`,        accent:"#f59e0b" },
+        { id:"summary",      icon:"📋", title:"Cheat Sheet",       desc:"Ключови понятия, 8 стъпки и интересни факти", badge:"Бърза справка",                  accent:"#f43f5e" }
+      ];
+
+      return (
+        <div className="fade-up">
+          {/* Hero */}
+          <div className="text-center mb-12">
+            <span className="inline-block tag text-purple-400 px-4 py-1 rounded-full mb-4"
+                  style={{background:"rgba(168,85,247,0.1)", border:"1px solid rgba(168,85,247,0.25)"}}>
+              Модул 26 — Урок комбиниран
+            </span>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
+              Проектиране и<br/>
+              <span className="text-grad">Програмиране на ИС</span>
+            </h1>
+            <p className="text-slate-400 max-w-xl mx-auto text-sm md:text-base">
+              Интерактивна учебна платформа — фази, роли, архитектури и UI принципи
+              на информационните системи.
+            </p>
+          </div>
+
+          {/* Module cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {cards.map(c => (
+              <button key={c.id} onClick={() => setView(c.id)}
+                className="text-left p-6 rounded-2xl transition-all duration-200 hover:scale-[1.025] group"
+                style={{background:`${c.accent}0d`, border:`1px solid ${c.accent}33`}}>
+                <div className="flex items-start justify-between mb-4">
+                  <span className="text-4xl">{c.icon}</span>
+                  <span className="tag px-2.5 py-1 rounded-full text-slate-400"
+                        style={{background:"rgba(28,46,71,0.7)", border:"1px solid #1c2e47"}}>
+                    {c.badge}
+                  </span>
+                </div>
+                <h3 className="font-bold text-white text-lg mb-1 group-hover:transition-colors"
+                    style={{}}>
+                  {c.title}
+                </h3>
+                <p className="text-slate-400 text-sm">{c.desc}</p>
+                <div className="mt-4 flex items-center gap-1 text-xs font-semibold"
+                     style={{color: c.accent}}>
+                  Отвори <span className="ml-1">→</span>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              {label:"Фази",       value:"4",  icon:"🔄", color:"#06b6d4"},
+              {label:"Стъпки",     value:"8",  icon:"📌", color:"#a855f7"},
+              {label:"Роли",       value:"7+", icon:"👥", color:"#10b981"},
+              {label:"Архитектури",value:"8+", icon:"🏗️", color:"#f59e0b"}
+            ].map((s,i) => (
+              <div key={i} className="p-4 rounded-xl text-center"
+                   style={{background:"rgba(12,21,38,0.6)", border:"1px solid #1c2e47"}}>
+                <div className="text-2xl mb-1">{s.icon}</div>
+                <div className="text-2xl font-black" style={{color:s.color}}>{s.value}</div>
+                <div className="text-xs text-slate-400 mt-0.5">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── App Shell ────────────────────────────────────── */
+    const VIEW_META = {
+      menu:         {label:"Начало",                icon:"🏠"},
+      presentation: {label:"Презентация",           icon:"📊"},
+      demo:         {label:"Игра: Роли → Фази",     icon:"🎮"},
+      flashcards:   {label:"Флашкарти",             icon:"🃏"},
+      quiz:         {label:"Тест",                  icon:"🧠"},
+      summary:      {label:"Cheat Sheet",           icon:"📋"}
+    };
+
+    const NAV_ITEMS = ["presentation","demo","flashcards","quiz","summary"];
+
+    function App() {
+      const [view, setView] = useState("menu");
+      const meta = VIEW_META[view];
+
+      return (
+        <div style={{minHeight:"100vh"}}>
+
+          {/* ── Top navigation ── */}
+          <nav style={{
+            position:"sticky", top:0, zIndex:50,
+            background:"rgba(6,11,20,0.92)",
+            backdropFilter:"blur(14px)",
+            borderBottom:"1px solid #1c2e47"
+          }}>
+            <div style={{maxWidth:"1280px", margin:"0 auto", padding:"0 1rem"}}
+                 className="flex items-center gap-3 flex-wrap py-3">
+
+              {/* Logo */}
+              <button onClick={() => setView("menu")}
+                className="font-bold text-sm shrink-0 flex items-center gap-2 transition"
+                style={{color:"#06b6d4"}}>
+                <span className="pulse-dot w-2 h-2 rounded-full inline-block"
+                      style={{background:"#06b6d4"}}></span>
+                ІС Дизайн
+              </button>
+
+              <div style={{width:"1px", height:"16px", background:"#1c2e47"}} className="hidden md:block"/>
+
+              {/* Nav links */}
+              <div className="flex items-center gap-1 flex-wrap">
+                {NAV_ITEMS.map(v => {
+                  const m = VIEW_META[v];
+                  const active = view === v;
+                  return (
+                    <button key={v} onClick={() => setView(v)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition"
+                      style={{
+                        background: active ? "rgba(6,182,212,0.18)" : "transparent",
+                        color:      active ? "#06b6d4" : "#64748b",
+                        border:     active ? "1px solid rgba(6,182,212,0.4)" : "1px solid transparent"
+                      }}>
+                      {m.icon} {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </nav>
+
+          {/* ── Content ── */}
+          <main style={{maxWidth:"1280px", margin:"0 auto", padding:"2rem 1rem 4rem"}}>
+            {view !== "menu" && (
+              <div className="mb-6">
+                <button onClick={() => setView("menu")}
+                  className="text-xs text-slate-500 hover:text-slate-300 transition flex items-center gap-1 mb-2">
+                  ← Начало
+                </button>
+                <h1 className="text-2xl md:text-3xl font-bold text-white">
+                  {meta.icon} {meta.label}
+                </h1>
+              </div>
+            )}
+
+            {view === "menu"         && <Dashboard setView={setView} />}
+            {view === "presentation" && <PresentationView />}
+            {view === "demo"         && <RoleMatcher />}
+            {view === "flashcards"   && <FlashcardsView />}
+            {view === "quiz"         && <QuizMaster />}
+            {view === "summary"      && <SummaryView />}
+          </main>
+
+          {/* ── Footer ── */}
+          <footer style={{borderTop:"1px solid #1c2e47", background:"rgba(6,11,20,0.7)"}}>
+            <div style={{maxWidth:"1280px", margin:"0 auto", padding:"1rem"}}
+                 className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+              <span>Проектиране и Програмиране на ИС — Модул 26</span>
+              <span className="font-mono" style={{color:"#1c2e47"}}>React + Reveal.js + Tailwind</span>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
