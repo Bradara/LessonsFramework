@@ -97,14 +97,12 @@
             position="0 1.6 3"
             look-controls="pointerLockEnabled: false"
             wasd-controls="enabled: true; acceleration: 50">
-            <a-entity 
-                cursor="fuse: false; fuseTimeout: 500"
-                position="0 0 -1"
-                geometry="primitive: ring; radiusInner: 0.015; radiusOuter: 0.025"
-                material="color: #00ff00; shader: flat; opacity: 0.8"
-                raycaster="objects: .clickable; far: 20"
-                animation__click="property: scale; startEvents: click; from: 0.02 0.02 0.02; to: 0.03 0.03 0.03; dur: 100; dir: alternate; loop: 1">
-            </a-entity>
+            <a-cursor
+                cursor="rayOrigin: mouse"
+                raycaster="objects: .clickable; far: 30"
+                geometry="primitive: ring; radiusInner: 0.008; radiusOuter: 0.016"
+                material="color: #00ff00; shader: flat; opacity: 0.9">
+            </a-cursor>
         </a-camera>
 
         <!-- Navigation Arrows - Floor Markers -->
@@ -426,7 +424,7 @@
     </a-scene>
 
     <script>
-        // ========== GAME STATE ==========
+        
         const gameState = {
             isGameActive: false,
             currentQuestion: 0,
