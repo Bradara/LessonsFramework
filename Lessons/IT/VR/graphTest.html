@@ -11,15 +11,29 @@
         init: function () {
           var el = this.el;
           var originalColor = el.getAttribute('material').color;
+          var descriptionPanel = document.querySelector('#description-panel');
+          var descriptionText = document.querySelector('#description-text');
           
           el.addEventListener('mouseenter', function () {
             el.setAttribute('color', '#FF5722'); // Оранжев цвят при ховър
             el.setAttribute('scale', '1.3 1.3 1.3'); // Леко уголемяване
+            
+            // Показване на описанието
+            var description = el.getAttribute('data-description');
+            if (description && descriptionText && descriptionPanel) {
+              descriptionText.setAttribute('value', description);
+              descriptionPanel.setAttribute('visible', 'true');
+            }
           });
           
           el.addEventListener('mouseleave', function () {
             el.setAttribute('color', originalColor); // Връщане на оригиналния цвят
             el.setAttribute('scale', '1 1 1');
+            
+            // Скриване на описанието
+            if (descriptionPanel) {
+              descriptionPanel.setAttribute('visible', 'false');
+            }
           });
         }
       });
@@ -31,11 +45,11 @@
         // Данни за възлите (Пример: Градове с техните 3D координати X, Y, Z)
         // Z е отрицателно, за да бъдат обектите ПРЕД камерата
         const nodes = [
-          { id: 'Sofia', x: -2, y: 1.5, z: -4, color: '#3F51B5' },
-          { id: 'Plovdiv', x: -0.5, y: 1.0, z: -5, color: '#E91E63' },
-          { id: 'Burgas', x: 2, y: 1.2, z: -4, color: '#00BCD4' },
-          { id: 'Varna', x: 2.5, y: 2.2, z: -5, color: '#4CAF50' },
-          { id: 'Ruse', x: 0.5, y: 2.5, z: -4.5, color: '#FFEB3B' }
+          { id: 'Sofia', x: -2, y: 1.5, z: -4, color: '#3F51B5', description: 'София е столицата на България. Население около 1.2 млн. души.' },
+          { id: 'Plovdiv', x: -0.5, y: 1.0, z: -5, color: '#E91E63', description: 'Пловдив е втория по големина град. Богата древна история.' },
+          { id: 'Burgas', x: 2, y: 1.2, z: -4, color: '#00BCD4', description: 'Бургас е крупно град на Черноморския край. Туристически център.' },
+          { id: 'Varna', x: 2.5, y: 2.2, z: -5, color: '#4CAF50', description: 'Варна е кралица на черноморските плажове. Събраница на северния край.' },
+          { id: 'Ruse', x: 0.5, y: 2.5, z: -4.5, color: '#FFEB3B', description: 'Русе е град на Дунав. Важен търговски център.' }
         ];
 
         // Матрица на съседство / Свързаност (edges) между градовете
@@ -56,6 +70,7 @@
           sphere.setAttribute('radius', '0.25');
           sphere.setAttribute('color', node.color);
           sphere.setAttribute('class', 'interactive'); // Важно за raycaster-а
+          sphere.setAttribute('data-description', node.description); // Добавяме описанието
           sphere.setAttribute('node-interaction', ''); // Включваме JS компонента ни
           
           // Добавяне на текстов етикет над всяка сфера
@@ -105,6 +120,10 @@
       <a-plane position="0 3.2 -3.5" width="2.5" height="0.6" color="#161b22" opacity="0.9">
         <a-text value="Динамична мрежа (Граф)" align="center" color="#FFF" scale="0.6 0.6 0.6" position="0 0.1 0.01"></a-text>
         <a-text value="Посочете град, за да го активирате" align="center" color="#8b949e" scale="0.4 0.4 0.4" position="0 -0.1 0.01"></a-text>
+      </a-plane>
+
+      <a-plane id="description-panel" position="0 1.5 -3.5" width="3" height="1.2" color="#1c2128" opacity="0.95" visible="false">
+        <a-text id="description-text" value="" align="center" color="#e6edf3" scale="0.5 0.5 0.5" position="0 0 0.01" width="5"></a-text>
       </a-plane>
       
     </a-scene>
