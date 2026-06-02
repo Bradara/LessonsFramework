@@ -15,6 +15,11 @@
     "path": "Lessons/IT/8 клас/"
   },
   {
+    "name": "VR",
+    "type": "folder",
+    "path": "Lessons/IT/8 клас/VR/"
+  },
+  {
     "name": "data-guardian",
     "type": "file",
     "path": "Lessons/IT/8 клас/data-guardian.html"
@@ -43,6 +48,11 @@
     "name": "VR",
     "type": "folder",
     "path": "Lessons/IT/VR/"
+  },
+  {
+    "name": "csharp-string-lab",
+    "type": "file",
+    "path": "Lessons/IT/VR/csharp-string-lab.html"
   },
   {
     "name": "graphTest",

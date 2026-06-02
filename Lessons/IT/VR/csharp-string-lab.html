@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C# String Virtual Lab</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        .info-overlay {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 100;
+            max-width: 300px;
+        }
+        .hud-text {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            z-index: 100;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-overlay">
+        <div><strong>C# String Virtual Lab</strong></div>
+        <div>📍 Zones: Theory Boards (L) | String Lab (C) | Game (R) | Quiz (Back)</div>
+        <div id="game-score" style="margin-top: 10px;">Game Score: 0/0</div>
+        <div id="quiz-status" style="margin-top: 5px;">Quiz: Not Started</div>
+    </div>
+    <div class="hud-text" id="hud-message">Look around the lab. Click objects to interact.</div>
+
+    <a-scene environment="preset: contact; lighting: none">
+        <!-- Custom Lighting Setup -->
+        <a-light type="ambient" color="#ffffff" intensity="0.6"></a-light>
+        <a-light type="directional" color="#ffffff" intensity="0.8" position="5 10 5"></a-light>
+        
+        <!-- Camera with Cursor -->
+        <a-camera position="0 1.6 0">
+            <a-cursor 
+                id="cursor" 
+                color="#ffffff" 
+                scale="0.05 0.05 0.05"
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03">
+            </a-cursor>
+        </a-camera>
+
+        <!-- ZONE 1: THEORY BOARDS (Left Side) -->
+        <!-- Board 1: Basics & Memory -->
+        <a-entity 
+            id="board1" 
+            position="-6 2 0"
+            rotation="0 30 0"
+            class="theory-board">
+            <a-box 
+                width="2.5" 
+                height="3" 
+                depth="0.1"
+                color="#1a1a2e"
+                material="metalness: 0.3; roughness: 0.7">
+            </a-box>
+            <a-text 
+                value="BASICS & MEMORY&#10;&#10;• string: Sequence of chars&#10;• Reference Type (Dynamic)&#10;• Default: null (NOT &#34;&#34;)&#10;• IMMUTABLE: Changes create&#10;  new string in memory"
+                position="0 0 0.15"
+                width="4.5"
+                height="5.5"
+                color="#00ff00"
+                align="center"
+                font-size="80">
+            </a-text>
+            <a-text
+                value="[Board 1]"
+                position="0 -1.7 0.2"
+                scale="0.8 0.8 0.8"
+                color="#ffaa00"
+                align="center">
+            </a-text>
+        </a-entity>
+
+        <!-- Board 2: String Operations -->
+        <a-entity 
+            id="board2" 
+            position="-6 2 3"
+            rotation="0 15 0"
+            class="theory-board">
+            <a-box 
+                width="2.5" 
+                height="3" 
+                depth="0.1"
+                color="#1a1a2e"
+                material="metalness: 0.3; roughness: 0.7">
+            </a-box>
+            <a-text 
+                value="STRING OPERATIONS&#10;&#10;• Length: s.Length&#10;• Concatenate: s1 + s2&#10;• Case: ToLower(), ToUpper()&#10;• Search: IndexOf()&#10;• Extract: Substring()&#10;• Replace: Replace(old, new)"
+                position="0 0 0.15"
+                width="4.5"
+                height="5.5"
+                color="#00ff00"
+                align="center"
+                font-size="75">
+            </a-text>
+            <a-text
+                value="[Board 2]"
+                position="0 -1.7 0.2"
+                scale="0.8 0.8 0.8"
+                color="#ffaa00"
+                align="center">
+            </a-text>
+        </a-entity>
+
+        <!-- Board 3: Escaping & Verbatim Strings -->
+        <a-entity 
+            id="board3" 
+            position="-6 2 -3"
+            rotation="0 -15 0"
+            class="theory-board">
+            <a-box 
+                width="2.5" 
+                height="3" 
+                depth="0.1"
+                color="#1a1a2e"
+                material="metalness: 0.3; roughness: 0.7">
+            </a-box>
+            <a-text 
+                value="ESCAPING & VERBATIM&#10;&#10;Standard Escaping:&#10;  \&#34; (quote)&#10;  \\ (backslash)&#10;  \n (newline)&#10;&#10;Verbatim String (@):&#10;  string s = @&#34;C:\path\to\file&#34;;&#10;  Symbols are literal"
+                position="0 0 0.15"
+                width="4.5"
+                height="5.5"
+                color="#00ff00"
+                align="center"
+                font-size="72">
+            </a-text>
+            <a-text
+                value="[Board 3]"
+                position="0 -1.7 0.2"
+                scale="0.8 0.8 0.8"
+                color="#ffaa00"
+                align="center">
+            </a-text>
+        </a-entity>
+
+        <!-- ZONE 2: INTERACTIVE LAB - String "HELLO, C#!" Visualization (Center) -->
+        <a-entity id="lab-zone" position="0 1.5 0">
+            <!-- Title -->
+            <a-text
+                value="STRING LAB: &#34;HELLO, C#!&#34;"
+                position="0 2 0"
+                scale="1.5 1.5 1.5"
+                color="#00ffff"
+                align="center">
+            </a-text>
+            
+            <!-- Character boxes for HELLO, C#! (11 characters) -->
+            <!-- H at index 0 -->
+            <a-entity
+                class="char-box"
+                data-index="0"
+                data-char="H"
+                position="-5 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#ff6b6b" material="metalness: 0.5"></a-box>
+                <a-text value="H" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="0" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- E at index 1 -->
+            <a-entity
+                class="char-box"
+                data-index="1"
+                data-char="E"
+                position="-4.4 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#4ecdc4" material="metalness: 0.5"></a-box>
+                <a-text value="E" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="1" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- L at index 2 -->
+            <a-entity
+                class="char-box"
+                data-index="2"
+                data-char="L"
+                position="-3.8 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#95e1d3" material="metalness: 0.5"></a-box>
+                <a-text value="L" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="2" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- L at index 3 -->
+            <a-entity
+                class="char-box"
+                data-index="3"
+                data-char="L"
+                position="-3.2 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#f38181" material="metalness: 0.5"></a-box>
+                <a-text value="L" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="3" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- O at index 4 -->
+            <a-entity
+                class="char-box"
+                data-index="4"
+                data-char="O"
+                position="-2.6 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#aa96da" material="metalness: 0.5"></a-box>
+                <a-text value="O" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="4" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- , at index 5 -->
+            <a-entity
+                class="char-box"
+                data-index="5"
+                data-char=","
+                position="-2 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#fcbad3" material="metalness: 0.5"></a-box>
+                <a-text value="," position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="5" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- (space) at index 6 -->
+            <a-entity
+                class="char-box"
+                data-index="6"
+                data-char=" "
+                position="-1.4 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#a8d8ea" material="metalness: 0.5"></a-box>
+                <a-text value="SP" position="0 0.05 0.25" color="#000000" font-size="60" align="center"></a-text>
+                <a-text value="6" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- C at index 7 -->
+            <a-entity
+                class="char-box"
+                data-index="7"
+                data-char="C"
+                position="-0.8 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#ffffd2" material="metalness: 0.5"></a-box>
+                <a-text value="C" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="7" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- # at index 8 -->
+            <a-entity
+                class="char-box"
+                data-index="8"
+                data-char="#"
+                position="-0.2 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#ffb7b2" material="metalness: 0.5"></a-box>
+                <a-text value="#" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="8" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+            
+            <!-- ! at index 9 -->
+            <a-entity
+                class="char-box"
+                data-index="9"
+                data-char="!"
+                position="0.4 0 0">
+                <a-box width="0.4" height="0.5" depth="0.4" color="#e0aaff" material="metalness: 0.5"></a-box>
+                <a-text value="!" position="0 0.05 0.25" color="#000000" font-size="80" align="center"></a-text>
+                <a-text value="9" position="0 -0.4 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- Output panel for character info -->
+            <a-entity
+                id="char-output-panel"
+                position="0 -1.5 0">
+                <a-box 
+                    width="2" 
+                    height="0.8" 
+                    depth="0.1"
+                    color="#0d0d0d"
+                    material="metalness: 0.3;">
+                </a-box>
+                <a-text
+                    id="char-output-text"
+                    value="Click a character to see its index"
+                    position="0 0 0.15"
+                    width="3.8"
+                    color="#00ff00"
+                    align="center"
+                    font-size="60">
+                </a-text>
+            </a-entity>
+
+            <!-- Immutability warning button -->
+            <a-entity
+                id="immutability-warning"
+                position="0 -1.5 -1.5"
+                class="warning-button">
+                <a-box 
+                    width="1.5" 
+                    height="0.6" 
+                    depth="0.1"
+                    color="#ff3333"
+                    material="metalness: 0.3;">
+                </a-box>
+                <a-text
+                    value="⚠ IMMUTABLE"
+                    position="0 0 0.15"
+                    width="2.8"
+                    color="#ffff00"
+                    align="center"
+                    font-size="50">
+                </a-text>
+            </a-entity>
+        </a-entity>
+
+        <!-- ZONE 3: MINI-GAME "Catch the Index" (Right Side) -->
+        <a-entity id="game-zone" position="6 2 0">
+            <!-- Game Title -->
+            <a-text
+                value="🎮 CATCH THE INDEX"
+                position="0 2.5 0"
+                scale="1.2 1.2 1.2"
+                color="#ff00ff"
+                align="center">
+            </a-text>
+
+            <!-- Question Display -->
+            <a-entity
+                id="game-question-panel"
+                position="0 1.5 0">
+                <a-box 
+                    width="2.5" 
+                    height="1" 
+                    depth="0.1"
+                    color="#1a1a2e"
+                    material="metalness: 0.3;">
+                </a-box>
+                <a-text
+                    id="game-question"
+                    value="What is the length of 'ABC'?"
+                    position="0 0 0.15"
+                    width="4.8"
+                    color="#00ffff"
+                    align="center"
+                    font-size="55">
+                </a-text>
+            </a-entity>
+
+            <!-- Answer Buttons -->
+            <!-- Button A -->
+            <a-entity
+                class="game-answer"
+                data-answer="A"
+                data-correct="false"
+                position="-1 0 0">
+                <a-sphere radius="0.3" color="#3366ff" material="metalness: 0.5;"></a-sphere>
+                <a-text
+                    value="A"
+                    position="0 0 0.35"
+                    color="#ffffff"
+                    align="center"
+                    font-size="120">
+                </a-text>
+                <a-text
+                    class="game-option-text"
+                    value="2"
+                    position="0 -0.6 0"
+                    color="#ffff00"
+                    align="center"
+                    font-size="50">
+                </a-text>
+            </a-entity>
+
+            <!-- Button B -->
+            <a-entity
+                class="game-answer"
+                data-answer="B"
+                data-correct="true"
+                position="0 0 0">
+                <a-sphere radius="0.3" color="#33ff33" material="metalness: 0.5;"></a-sphere>
+                <a-text
+                    value="B"
+                    position="0 0 0.35"
+                    color="#000000"
+                    align="center"
+                    font-size="120">
+                </a-text>
+                <a-text
+                    class="game-option-text"
+                    value="3"
+                    position="0 -0.6 0"
+                    color="#ffff00"
+                    align="center"
+                    font-size="50">
+                </a-text>
+            </a-entity>
+
+            <!-- Button C -->
+            <a-entity
+                class="game-answer"
+                data-answer="C"
+                data-correct="false"
+                position="1 0 0">
+                <a-sphere radius="0.3" color="#ff6633" material="metalness: 0.5;"></a-sphere>
+                <a-text
+                    value="C"
+                    position="0 0 0.35"
+                    color="#ffffff"
+                    align="center"
+                    font-size="120">
+                </a-text>
+                <a-text
+                    class="game-option-text"
+                    value="4"
+                    position="0 -0.6 0"
+                    color="#ffff00"
+                    align="center"
+                    font-size="50">
+                </a-text>
+            </a-entity>
+
+            <!-- Start Button -->
+            <a-entity
+                id="game-start-button"
+                position="0 -1.5 0">
+                <a-box 
+                    width="1.2" 
+                    height="0.6" 
+                    depth="0.1"
+                    color="#00aa00"
+                    material="metalness: 0.3;">
+                </a-box>
+                <a-text
+                    value="START"
+                    position="0 0 0.15"
+                    width="2.2"
+                    color="#ffffff"
+                    align="center"
+                    font-size="70">
+                </a-text>
+            </a-entity>
+        </a-entity>
+
+        <!-- ZONE 4: QUIZ KIOSK (Back) -->
+        <a-entity id="quiz-zone" position="0 2 -7" rotation="0 0 0">
+            <!-- Kiosk Structure -->
+            <a-box
+                id="quiz-kiosk-base"
+                width="3"
+                height="2.5"
+                depth="0.3"
+                color="#2a2a4a"
+                material="metalness: 0.4;">
+            </a-box>
+
+            <!-- Quiz Title -->
+            <a-text
+                value="📚 KNOWLEDGE KIOSK"
+                position="0 1.8 0.2"
+                scale="1 1 1"
+                color="#ffff00"
+                align="center">
+            </a-text>
+
+            <!-- Question -->
+            <a-text
+                id="quiz-question"
+                value="Q1: Which is valid?"
+                position="0 0.9 0.2"
+                width="5.5"
+                color="#00ffff"
+                align="center"
+                font-size="60"
+                wrap-count="50">
+            </a-text>
+
+            <!-- Answer Choice A -->
+            <a-entity
+                class="quiz-choice"
+                data-choice="A"
+                position="-1 0.2 0.2">
+                <a-box width="0.8" height="0.5" depth="0.05" color="#ff3333"></a-box>
+                <a-text
+                    value="A"
+                    position="0 0 0.08"
+                    color="#ffffff"
+                    align="center"
+                    font-size="80">
+                </a-text>
+                <a-text
+                    class="quiz-choice-text"
+                    value="Option A"
+                    position="0 -0.7 0.2"
+                    width="1.5"
+                    color="#ffff00"
+                    align="center"
+                    font-size="40">
+                </a-text>
+            </a-entity>
+
+            <!-- Answer Choice B -->
+            <a-entity
+                class="quiz-choice"
+                data-choice="B"
+                position="0 0.2 0.2">
+                <a-box width="0.8" height="0.5" depth="0.05" color="#33ff33"></a-box>
+                <a-text
+                    value="B"
+                    position="0 0 0.08"
+                    color="#000000"
+                    align="center"
+                    font-size="80">
+                </a-text>
+                <a-text
+                    class="quiz-choice-text"
+                    value="Option B"
+                    position="0 -0.7 0.2"
+                    width="1.5"
+                    color="#ffff00"
+                    align="center"
+                    font-size="40">
+                </a-text>
+            </a-entity>
+
+            <!-- Answer Choice C -->
+            <a-entity
+                class="quiz-choice"
+                data-choice="C"
+                position="1 0.2 0.2">
+                <a-box width="0.8" height="0.5" depth="0.05" color="#3366ff"></a-box>
+                <a-text
+                    value="C"
+                    position="0 0 0.08"
+                    color="#ffffff"
+                    align="center"
+                    font-size="80">
+                </a-text>
+                <a-text
+                    class="quiz-choice-text"
+                    value="Option C"
+                    position="0 -0.7 0.2"
+                    width="1.5"
+                    color="#ffff00"
+                    align="center"
+                    font-size="40">
+                </a-text>
+            </a-entity>
+
+            <!-- Quiz Start Button -->
+            <a-entity
+                id="quiz-start-button"
+                position="0 -0.8 0.2">
+                <a-box width="1" height="0.5" depth="0.05" color="#00aa00"></a-box>
+                <a-text
+                    value="BEGIN"
+                    position="0 0 0.1"
+                    color="#ffffff"
+                    align="center"
+                    font-size="70">
+                </a-text>
+            </a-entity>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        // ========== GAME STATE ==========
+        const gameState = {
+            isGameActive: false,
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 5,
+            questions: [
+                {
+                    question: "What is the length of 'ABC'?",
+                    options: { A: "2", B: "3", C: "4" },
+                    correct: "B"
+                },
+                {
+                    question: "What is s[0] if s = 'Hello'?",
+                    options: { A: "e", B: "H", C: "o" },
+                    correct: "B"
+                },
+                {
+                    question: "IndexOf('l') in 'Hello'?",
+                    options: { A: "1", B: "2", C: "3" },
+                    correct: "B"
+                },
+                {
+                    question: "Which operation is valid?",
+                    options: { A: "s[0] = 'x'", B: "s.ToLower()", C: "Both A and B" },
+                    correct: "B"
+                },
+                {
+                    question: "What does Replace() return?",
+                    options: { A: "Modifies s", B: "Returns new string", C: "Throws error" },
+                    correct: "B"
+                }
+            ]
+        };
+
+        const quizState = {
+            isQuizActive: false,
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 3,
+            questions: [
+                {
+                    question: "Q1: Which declaration is correct?",
+                    options: { 
+                        A: "string 1s;", 
+                        B: "string s = \"123\";", 
+                        C: "abcde;" 
+                    },
+                    correct: "B",
+                    explanation: "Variable names cannot start with digits"
+                },
+                {
+                    question: "Q2: What is the result of s.Substring(1, 3) if s = 'Плевен'?",
+                    options: { 
+                        A: "Пле", 
+                        B: "лев", 
+                        C: "евен" 
+                    },
+                    correct: "B",
+                    explanation: "Starting at index 1, taking 3 characters"
+                },
+                {
+                    question: "Q3: Does Replace() modify the original string?",
+                    options: { 
+                        A: "Yes, it alters s directly", 
+                        B: "No, returns new string", 
+                        C: "Only if s is mutable" 
+                    },
+                    correct: "B",
+                    explanation: "Strings are immutable in C#"
+                }
+            ]
+        };
+
+        // ========== UTILITY FUNCTIONS ==========
+        function updateHUD(message) {
+            document.getElementById('hud-message').textContent = message;
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('game-score').textContent = 
+                `Game Score: ${gameState.score}/${gameState.totalQuestions}`;
+        }
+
+        function updateQuizStatus() {
+            if (quizState.isQuizActive) {
+                document.getElementById('quiz-status').textContent = 
+                    `Quiz: Q${quizState.currentQuestion + 1}/${quizState.totalQuestions} (${quizState.score} correct)`;
+            }
+        }
+
+        // ========== ZONE 2: CHARACTER BOX INTERACTION ==========
+        document.querySelectorAll('.char-box').forEach(box => {
+            box.addEventListener('click', function(e) {
+                const index = this.dataset.index;
+                const char = this.dataset.char;
+                const displayChar = char === ' ' ? '[SPACE]' : char;
+                
+                // Update output panel
+                const outputText = document.getElementById('char-output-text');
+                outputText.setAttribute('value', `s[${index}] → '${displayChar}'`);
+                
+                // Flash the clicked box
+                this.querySelector('a-box').setAttribute('color', '#ffff00');
+                setTimeout(() => {
+                    this.querySelector('a-box').setAttribute('color', getColorForIndex(index));
+                }, 200);
+                
+                updateHUD(`✓ Clicked index ${index}: '${displayChar}'`);
+            });
+        });
+
+        function getColorForIndex(index) {
+            const colors = ['#ff6b6b', '#4ecdc4', '#95e1d3', '#f38181', '#aa96da', 
+                          '#fcbad3', '#a8d8ea', '#ffffd2', '#ffb7b2', '#e0aaff'];
+            return colors[index] || '#cccccc';
+        }
+
+        // Immutability warning
+        document.getElementById('immutability-warning').addEventListener('click', function() {
+            updateHUD('⚠️ ERROR: Cannot assign to array indexer. Strings are IMMUTABLE!');
+        });
+
+        // ========== ZONE 3: MINI-GAME ==========
+        document.getElementById('game-start-button').addEventListener('click', function() {
+            gameState.isGameActive = true;
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            updateScoreDisplay();
+            displayGameQuestion();
+            updateHUD('🎮 Game Started! Click the correct answer.');
+        });
+
+        function displayGameQuestion() {
+            if (gameState.currentQuestion >= gameState.totalQuestions) {
+                endGame();
+                return;
+            }
+            
+            const q = gameState.questions[gameState.currentQuestion];
+            document.getElementById('game-question').setAttribute('value', q.question);
+            
+            // Reset answer buttons
+            document.querySelectorAll('.game-answer').forEach(btn => {
+                const answer = btn.dataset.answer;
+                btn.querySelector('a-sphere').setAttribute('color', 
+                    answer === 'A' ? '#3366ff' : answer === 'B' ? '#33ff33' : '#ff6633');
+                btn.setAttribute('data-answered', 'false');
+            });
+
+            // Update option texts
+            const options = ['A', 'B', 'C'];
+            options.forEach(opt => {
+                const btn = document.querySelector(`[data-answer="${opt}"]`);
+                if (btn && q.options[opt]) {
+                    btn.querySelector('.game-option-text').setAttribute('value', q.options[opt]);
+                }
+            });
+        }
+
+        document.querySelectorAll('.game-answer').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!gameState.isGameActive || this.dataset.answered === 'true') return;
+                
+                this.setAttribute('data-answered', 'true');
+                const isCorrect = this.dataset.correct === 'true';
+                
+                if (isCorrect) {
+                    gameState.score++;
+                    this.querySelector('a-sphere').setAttribute('color', '#00ff00');
+                    updateHUD('✓ Correct!');
+                } else {
+                    this.querySelector('a-sphere').setAttribute('color', '#ff0000');
+                    updateHUD('✗ Wrong answer');
+                }
+                
+                updateScoreDisplay();
+                
+                setTimeout(() => {
+                    gameState.currentQuestion++;
+                    displayGameQuestion();
+                }, 1500);
+            });
+        });
+
+        function endGame() {
+            gameState.isGameActive = false;
+            const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
+            updateHUD(`🏆 Game Over! Score: ${gameState.score}/${gameState.totalQuestions} (${percentage}%)`);
+        }
+
+        // ========== ZONE 4: QUIZ ==========
+        document.getElementById('quiz-start-button').addEventListener('click', function() {
+            quizState.isQuizActive = true;
+            quizState.currentQuestion = 0;
+            quizState.score = 0;
+            updateQuizStatus();
+            displayQuizQuestion();
+            updateHUD('📚 Quiz Started! Answer the questions.');
+        });
+
+        function displayQuizQuestion() {
+            if (quizState.currentQuestion >= quizState.totalQuestions) {
+                endQuiz();
+                return;
+            }
+            
+            const q = quizState.questions[quizState.currentQuestion];
+            document.getElementById('quiz-question').setAttribute('value', q.question);
+            
+            // Reset choice buttons
+            document.querySelectorAll('.quiz-choice').forEach(btn => {
+                const choice = btn.dataset.choice;
+                btn.querySelector('a-box').setAttribute('color',
+                    choice === 'A' ? '#ff3333' : choice === 'B' ? '#33ff33' : '#3366ff');
+                btn.setAttribute('data-answered', 'false');
+            });
+
+            // Update choice texts
+            const choices = ['A', 'B', 'C'];
+            choices.forEach(choice => {
+                const btn = document.querySelector(`[data-choice="${choice}"]`);
+                if (btn && q.options[choice]) {
+                    btn.querySelector('.quiz-choice-text').setAttribute('value', q.options[choice]);
+                }
+            });
+        }
+
+        document.querySelectorAll('.quiz-choice').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!quizState.isQuizActive || this.dataset.answered === 'true') return;
+                
+                this.setAttribute('data-answered', 'true');
+                const choice = this.dataset.choice;
+                const q = quizState.questions[quizState.currentQuestion];
+                const isCorrect = choice === q.correct;
+                
+                if (isCorrect) {
+                    quizState.score++;
+                    this.querySelector('a-box').setAttribute('color', '#00ff00');
+                    updateHUD(`✓ Correct! ${q.explanation}`);
+                } else {
+                    this.querySelector('a-box').setAttribute('color', '#ff0000');
+                    updateHUD(`✗ Incorrect. Correct answer: ${q.correct}`);
+                }
+                
+                updateQuizStatus();
+                
+                setTimeout(() => {
+                    quizState.currentQuestion++;
+                    displayQuizQuestion();
+                }, 2000);
+            });
+        });
+
+        function endQuiz() {
+            quizState.isQuizActive = false;
+            const percentage = Math.round((quizState.score / quizState.totalQuestions) * 100);
+            updateHUD(`🏆 Quiz Complete! Score: ${quizState.score}/${quizState.totalQuestions} (${percentage}%)`);
+        }
+
+        // ========== INITIALIZATION ==========
+        window.addEventListener('load', function() {
+            updateHUD('Welcome to C# String Virtual Lab! Look around to explore all zones.');
+        });
+    </script>
+</body>
+</html>
