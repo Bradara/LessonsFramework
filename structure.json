@@ -45,6 +45,11 @@
     "path": "Lessons/IT/VR/"
   },
   {
+    "name": "graphTest",
+    "type": "file",
+    "path": "Lessons/IT/VR/graphTest.html"
+  },
+  {
     "name": "testvr",
     "type": "file",
     "path": "Lessons/IT/VR/testvr.html"

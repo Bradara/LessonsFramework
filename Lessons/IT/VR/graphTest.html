@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Тест на Динамичен 3D Граф - WebXR</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    
+    <script>
+      // 1. Компонент за интеракция (Промяна на цвета при посочване с контролера)
+      AFRAME.registerComponent('node-interaction', {
+        init: function () {
+          var el = this.el;
+          var originalColor = el.getAttribute('material').color;
+          
+          el.addEventListener('mouseenter', function () {
+            el.setAttribute('color', '#FF5722'); // Оранжев цвят при ховър
+            el.setAttribute('scale', '1.3 1.3 1.3'); // Леко уголемяване
+          });
+          
+          el.addEventListener('mouseleave', function () {
+            el.setAttribute('color', originalColor); // Връщане на оригиналния цвят
+            el.setAttribute('scale', '1 1 1');
+          });
+        }
+      });
+
+      // 2. Основна логика за генериране на графа след зареждане на сцената
+      window.addEventListener('DOMContentLoaded', (event) => {
+        const scene = document.querySelector('a-scene');
+
+        // Данни за възлите (Пример: Градове с техните 3D координати X, Y, Z)
+        // Z е отрицателно, за да бъдат обектите ПРЕД камерата
+        const nodes = [
+          { id: 'Sofia', x: -2, y: 1.5, z: -4, color: '#3F51B5' },
+          { id: 'Plovdiv', x: -0.5, y: 1.0, z: -5, color: '#E91E63' },
+          { id: 'Burgas', x: 2, y: 1.2, z: -4, color: '#00BCD4' },
+          { id: 'Varna', x: 2.5, y: 2.2, z: -5, color: '#4CAF50' },
+          { id: 'Ruse', x: 0.5, y: 2.5, z: -4.5, color: '#FFEB3B' }
+        ];
+
+        // Матрица на съседство / Свързаност (edges) между градовете
+        const links = [
+          { from: 'Sofia', to: 'Plovdiv' },
+          { from: 'Plovdiv', to: 'Burgas' },
+          { from: 'Burgas', to: 'Varna' },
+          { from: 'Varna', to: 'Ruse' },
+          { from: 'Ruse', to: 'Sofia' },
+          { from: 'Plovdiv', to: 'Ruse' } // Допълнителна връзка
+        ];
+
+        // ГЕНЕРИРАНЕ НА ВЪЗЛИТЕ (СФЕРИ)
+        nodes.forEach(node => {
+          // Създаване на сфера
+          let sphere = document.createElement('a-sphere');
+          sphere.setAttribute('position', `${node.x} ${node.y} ${node.z}`);
+          sphere.setAttribute('radius', '0.25');
+          sphere.setAttribute('color', node.color);
+          sphere.setAttribute('class', 'interactive'); // Важно за raycaster-а
+          sphere.setAttribute('node-interaction', ''); // Включваме JS компонента ни
+          
+          // Добавяне на текстов етикет над всяка сфера
+          let text = document.createElement('a-text');
+          text.setAttribute('value', node.id);
+          text.setAttribute('position', `-0.4 0.4 0`); // Малко над сферата
+          text.setAttribute('scale', '0.7 0.7 0.7');
+          text.setAttribute('color', '#FFFFFF');
+          text.setAttribute('align', 'center');
+          
+          sphere.appendChild(text);
+          scene.appendChild(sphere);
+        });
+
+        // ГЕНЕРИРАНЕ НА РЕБРАТА (ЛИНИИ / ТЪНКИ ЦИЛИНДРИ)
+        // За простота и бързина тук използваме вградения <a-entity line="..."> компонент на A-Frame
+        links.forEach(link => {
+          const startNode = nodes.find(n => n.id === link.from);
+          const endNode = nodes.find(n => n.id === link.to);
+
+          if (startNode && endNode) {
+            let line = document.createElement('a-entity');
+            line.setAttribute('line', {
+              start: `${startNode.x}, ${startNode.y}, ${startNode.z}`,
+              end: `${endNode.x}, ${endNode.y}, ${endNode.z}`,
+              color: '#888888',
+              opacity: 0.6
+            });
+            scene.appendChild(line);
+          }
+        });
+      });
+    </script>
+  </head>
+  
+  <body>
+    <a-scene>
+      <a-sky color="#0d1117"></a-sky>
+
+      <a-entity id="light" position="1 4 2" light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
+
+      <a-entity position="0 1.6 0">
+        <a-camera></a-camera>
+        <a-entity laser-controls="hand: right" raycaster="objects: .interactive"></a-entity>
+      </a-entity>
+
+      <a-plane position="0 3.2 -3.5" width="2.5" height="0.6" color="#161b22" opacity="0.9">
+        <a-text value="Динамична мрежа (Граф)" align="center" color="#FFF" scale="0.6 0.6 0.6" position="0 0.1 0.01"></a-text>
+        <a-text value="Посочете град, за да го активирате" align="center" color="#8b949e" scale="0.4 0.4 0.4" position="0 -0.1 0.01"></a-text>
+      </a-plane>
+      
+    </a-scene>
+  </body>
+</html>
