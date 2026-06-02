@@ -40,6 +40,16 @@
     "path": "Lessons/IT/IT Modul4/LawAndProperty.html"
   },
   {
+    "name": "VR",
+    "type": "folder",
+    "path": "Lessons/IT/VR/"
+  },
+  {
+    "name": "testvr",
+    "type": "file",
+    "path": "Lessons/IT/VR/testvr.html"
+  },
+  {
     "name": "Примерни уроци",
     "type": "folder",
     "path": "Lessons/IT/Примерни уроци/"
@@ -88,11 +98,6 @@
     "name": "Информатика",
     "type": "folder",
     "path": "Lessons/Информатика/"
-  },
-  {
-    "name": "Modul1",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul1/"
   },
   {
     "name": "Modul2",
@@ -168,11 +173,6 @@
     "name": "sort-search-spa",
     "type": "file",
     "path": "Lessons/Информатика/Modul2/sort-search-spa.html"
-  },
-  {
-    "name": "Modul3",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul3/"
   },
   {
     "name": "Modul4",
