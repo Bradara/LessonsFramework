@@ -9,6 +9,7 @@
         body {
             margin: 0;
             overflow: hidden;
+            background: #000;
         }
         .info-overlay {
             position: fixed;
@@ -22,6 +23,7 @@
             font-size: 12px;
             z-index: 100;
             max-width: 300px;
+            pointer-events: none;
         }
         .hud-text {
             position: fixed;
@@ -35,32 +37,693 @@
             font-family: monospace;
             z-index: 100;
             text-align: center;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <div class="info-overlay">
         <div><strong>C# String Virtual Lab</strong></div>
-        <div>📍 Zones: Theory Boards (L) | String Lab (C) | Game (R) | Quiz (Back)</div>
-        <div id="game-score" style="margin-top: 10px;">Game Score: 0/0</div>
-        <div id="quiz-status" style="margin-top: 5px;">Quiz: Not Started</div>
+        <div>📍 Drag mouse to look around | Click to interact</div>
+        <div id="game-score" style="margin-top: 10px;">🎮 Game Score: 0/0</div>
+        <div id="quiz-status" style="margin-top: 5px;">📚 Quiz: Not Started</div>
     </div>
-    <div class="hud-text" id="hud-message">Look around the lab. Click objects to interact.</div>
+    <div class="hud-text" id="hud-message">Drag to look around. Click shiny objects to interact.</div>
 
-    <a-scene environment="preset: contact; lighting: none">
+    <a-scene>
+        <!-- Custom Sky -->
+        <a-sky color="#0a0a2e"></a-sky>
+
+        <!-- Simple Floor -->
+        <a-plane 
+            position="0 0 0" 
+            rotation="-90 0 0" 
+            width="30" 
+            height="30" 
+            color="#1a1a3e"
+            material="metalness: 0.1; roughness: 0.8;">
+        </a-plane>
+
+        <!-- Grid lines on floor for lab feel -->
+        <a-entity 
+            position="0 0.01 0"
+            rotation="-90 0 0"
+            line="start: -15 0 0; end: 15 0 0; color: #3333aa; opacity: 0.5">
+        </a-entity>
+        <a-entity 
+            position="0 0.01 0"
+            rotation="-90 0 0"
+            line="start: 0 0 -15; end: 0 0 15; color: #3333aa; opacity: 0.5">
+        </a-entity>
+
+        <!-- Back wall -->
+        <a-plane 
+            position="0 3 -12" 
+            width="30" 
+            height="6"
+            color="#0d0d25"
+            material="metalness: 0.2; roughness: 0.9;">
+        </a-plane>
+
         <!-- Custom Lighting Setup -->
-        <a-light type="ambient" color="#ffffff" intensity="0.6"></a-light>
-        <a-light type="directional" color="#ffffff" intensity="0.8" position="5 10 5"></a-light>
-        
-        <!-- Camera with Cursor -->
-        <a-camera position="0 1.6 0">
-            <a-cursor 
-                id="cursor" 
-                color="#ffffff" 
-                scale="0.05 0.05 0.05"
-                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03">
-            </a-cursor>
+        <a-light type="ambient" color="#aaaaaa" intensity="0.8"></a-light>
+        <a-light type="directional" color="#ffffff" intensity="0.6" position="0 8 5"></a-light>
+        <a-light type="point" color="#00ffff" intensity="0.4" position="-6 3 0"></a-light>
+        <a-light type="point" color="#ff00ff" intensity="0.4" position="6 3 0"></a-light>
+        <a-light type="point" color="#ffff00" intensity="0.3" position="0 3 -7"></a-light>
+
+        <!-- Camera with Proper Cursor -->
+        <a-camera 
+            position="0 1.6 3"
+            look-controls="pointerLockEnabled: false"
+            wasd-controls="enabled: true; acceleration: 50">
+            <a-entity 
+                cursor="fuse: false; fuseTimeout: 500"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.015; radiusOuter: 0.025"
+                material="color: #00ff00; shader: flat; opacity: 0.8"
+                raycaster="objects: .clickable; far: 20"
+                animation__click="property: scale; startEvents: click; from: 0.02 0.02 0.02; to: 0.03 0.03 0.03; dur: 100; dir: alternate; loop: 1">
+            </a-entity>
         </a-camera>
+
+        <!-- Navigation Arrows - Floor Markers -->
+        <!-- Center marker -->
+        <a-ring position="0 0.02 0" rotation="-90 0 0" radius-inner="0.15" radius-outer="0.3" color="#00ffff" opacity="0.6"></a-ring>
+
+        <!-- ============ ZONE 1: THEORY BOARDS (Left Side) ============ -->
+        <!-- Board 1: Basics & Memory -->
+        <a-entity 
+            id="board1" 
+            position="-7 2.2 2"
+            rotation="0 20 0">
+            <!-- Board frame -->
+            <a-box width="3" height="3.5" depth="0.15" color="#222244" class="clickable" material="metalness: 0.4;"></a-box>
+            <!-- Board glow border -->
+            <a-entity position="0 0 0.1">
+                <a-box width="3.1" height="3.6" depth="0.02" color="#00aaff" opacity="0.4"></a-box>
+            </a-entity>
+            <!-- Text -->
+            <a-text 
+                value="BASICS & MEMORY\n\n• string: sequence of chars\n• Reference type (dynamic)\n• Default: null (NOT \"\")\n• IMMUTABLE: changes create\n  new string in memory"
+                position="0 0 0.2"
+                width="5.5"
+                height="6.5"
+                color="#00ff00"
+                align="center"
+                font-size="90"
+                shader="msdf"
+                font="https://cdn.aframe.io/fonts/DejaVuSans-Bold.fnt"
+                negate="true">
+            </a-text>
+            <a-text
+                value="[Board 1: Basics]"
+                position="0 -2 0.2"
+                scale="0.9 0.9 0.9"
+                color="#ffaa00"
+                align="center"
+                negate="true">
+            </a-text>
+        </a-entity>
+
+        <!-- Board 2: String Operations -->
+        <a-entity 
+            id="board2" 
+            position="-7 2.2 -2"
+            rotation="0 -20 0">
+            <a-box width="3" height="3.5" depth="0.15" color="#222244" class="clickable" material="metalness: 0.4;"></a-box>
+            <a-entity position="0 0 0.1">
+                <a-box width="3.1" height="3.6" depth="0.02" color="#00aaff" opacity="0.4"></a-box>
+            </a-entity>
+            <a-text 
+                value="STRING OPERATIONS\n\n• Length: s.Length\n• Concat: s1 + s2, Concat()\n• Case: ToLower(), ToUpper()\n• Search: IndexOf(),\n  LastIndexOf()\n• Substring(start, len)\n• Replace(old, new)"
+                position="0 0 0.2"
+                width="5.5"
+                height="6.5"
+                color="#00ff00"
+                align="center"
+                font-size="85"
+                shader="msdf"
+                font="https://cdn.aframe.io/fonts/DejaVuSans-Bold.fnt"
+                negate="true">
+            </a-text>
+            <a-text
+                value="[Board 2: Operations]"
+                position="0 -2 0.2"
+                scale="0.9 0.9 0.9"
+                color="#ffaa00"
+                align="center"
+                negate="true">
+            </a-text>
+        </a-entity>
+
+        <!-- Board 3: Escaping & Verbatim Strings -->
+        <a-entity 
+            id="board3" 
+            position="-7 2.2 0"
+            rotation="0 0 0">
+            <a-box width="3" height="3.5" depth="0.15" color="#222244" class="clickable" material="metalness: 0.4;"></a-box>
+            <a-entity position="0 0 0.1">
+                <a-box width="3.1" height="3.6" depth="0.02" color="#00aaff" opacity="0.4"></a-box>
+            </a-entity>
+            <a-text 
+                value="ESCAPING & VERBATIM\n\nStandard Escaping:\n  \\\" (quote)\n  \\\\ (backslash)\n  \\n (newline)\n\nVerbatim string (@):\n  C:\\path\\to\\file\n  Symbols are literal"
+                position="0 0 0.2"
+                width="5.5"
+                height="6.5"
+                color="#00ff00"
+                align="center"
+                font-size="82"
+                shader="msdf"
+                font="https://cdn.aframe.io/fonts/DejaVuSans-Bold.fnt"
+                negate="true">
+            </a-text>
+            <a-text
+                value="[Board 3: Escaping]"
+                position="0 -2 0.2"
+                scale="0.9 0.9 0.9"
+                color="#ffaa00"
+                align="center"
+                negate="true">
+            </a-text>
+        </a-entity>
+
+        <!-- ============ ZONE 2: INTERACTIVE LAB - String "HELLO, C#!" Visualization (Center) ============ -->
+        <a-entity id="lab-zone" position="0 1.2 -3">
+            <!-- Title Banner -->
+            <a-entity position="0 2.5 0">
+                <a-plane width="5" height="0.6" color="#1a1a4e" position="0 0 -0.01"></a-plane>
+                <a-text
+                    value="STRING LAB: \"HELLO, C#!\""
+                    position="0 0 0"
+                    scale="1.3 1.3 1.3"
+                    color="#00ffff"
+                    align="center">
+                </a-text>
+            </a-entity>
+
+            <!-- Character boxes -->
+            <!-- H at index 0 -->
+            <a-entity data-index="0" data-char="H" position="-2.7 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#ff6b6b" material="metalness: 0.4;"></a-box>
+                <a-text value="H" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="0" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- E at index 1 -->
+            <a-entity data-index="1" data-char="E" position="-2.1 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#4ecdc4" material="metalness: 0.4;"></a-box>
+                <a-text value="E" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="1" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- L at index 2 -->
+            <a-entity data-index="2" data-char="L" position="-1.5 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#95e1d3" material="metalness: 0.4;"></a-box>
+                <a-text value="L" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="2" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- L at index 3 -->
+            <a-entity data-index="3" data-char="L" position="-0.9 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#f38181" material="metalness: 0.4;"></a-box>
+                <a-text value="L" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="3" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- O at index 4 -->
+            <a-entity data-index="4" data-char="O" position="-0.3 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#aa96da" material="metalness: 0.4;"></a-box>
+                <a-text value="O" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="4" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- , at index 5 -->
+            <a-entity data-index="5" data-char="," position="0.3 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#fcbad3" material="metalness: 0.4;"></a-box>
+                <a-text value="," position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="5" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- SP at index 6 -->
+            <a-entity data-index="6" data-char=" " position="0.9 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#a8d8ea" material="metalness: 0.4;"></a-box>
+                <a-text value="SP" position="0 0.05 0.28" color="#000" align="center" font-size="55"></a-text>
+                <a-text value="6" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- C at index 7 -->
+            <a-entity data-index="7" data-char="C" position="1.5 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#ffffd2" material="metalness: 0.4;"></a-box>
+                <a-text value="C" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="7" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- # at index 8 -->
+            <a-entity data-index="8" data-char="#" position="2.1 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#ffb7b2" material="metalness: 0.4;"></a-box>
+                <a-text value="#" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="8" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- ! at index 9 -->
+            <a-entity data-index="9" data-char="!" position="2.7 0 0" class="clickable char-box">
+                <a-box width="0.45" height="0.55" depth="0.45" color="#e0aaff" material="metalness: 0.4;"></a-box>
+                <a-text value="!" position="0 0.05 0.28" color="#000" align="center" font-size="80"></a-text>
+                <a-text value="9" position="0 -0.5 0" scale="0.7 0.7 0.7" color="#ffff00" align="center"></a-text>
+            </a-entity>
+
+            <!-- Output panel for character info -->
+            <a-entity id="char-output-panel" position="0 -1.3 0">
+                <a-box width="3" height="0.7" depth="0.1" color="#0f0f2e" material="metalness: 0.3;"></a-box>
+                <a-text
+                    id="char-output-text"
+                    value="Click a cube to see its index"
+                    position="0 0 0.12"
+                    width="5.5"
+                    color="#00ff00"
+                    align="center"
+                    font-size="55">
+                </a-text>
+            </a-entity>
+
+            <!-- Immutability warning button -->
+            <a-entity id="immutability-warning" position="0 -2.2 0" class="clickable">
+                <a-box width="2" height="0.5" depth="0.12" color="#cc0000" material="metalness: 0.3;"></a-box>
+                <a-text value="⚠ IMMUTABLE: Click for error info" position="0 0 0.12" width="3.8" color="#ffff00" align="center" font-size="40"></a-text>
+            </a-entity>
+        </a-entity>
+
+        <!-- ============ ZONE 3: MINI-GAME (Right Side) ============ -->
+        <a-entity id="game-zone" position="7 1.8 0">
+            <!-- Game Title -->
+            <a-entity position="0 2.8 0">
+                <a-plane width="4" height="0.5" color="#2a0040" position="0 0 -0.01"></a-plane>
+                <a-text value="🎮 CATCH THE INDEX" position="0 0 0" scale="1.1 1.1 1.1" color="#ff00ff" align="center"></a-text>
+            </a-entity>
+
+            <!-- Question Display -->
+            <a-entity id="game-question-panel" position="0 1.8 0">
+                <a-box width="3" height="0.9" depth="0.1" color="#1a1a3e" material="metalness: 0.3;"></a-box>
+                <a-text id="game-question" value="Press START to play" position="0 0 0.12" width="5.5" color="#00ffff" align="center" font-size="55"></a-text>
+            </a-entity>
+
+            <!-- Answer Buttons -->
+            <a-entity class="clickable game-answer" data-answer="A" data-correct="false" position="-1.2 0.5 0">
+                <a-sphere radius="0.35" color="#3366ff" material="metalness: 0.5;"></a-sphere>
+                <a-text value="A" position="0 0.1 0.4" color="#fff" align="center" font-size="110"></a-text>
+                <a-text class="game-option-text" value="-" position="0 -0.6 0" color="#ffff00" align="center" font-size="45"></a-text>
+            </a-entity>
+
+            <a-entity class="clickable game-answer" data-answer="B" data-correct="true" position="0 0.5 0">
+                <a-sphere radius="0.35" color="#33ff33" material="metalness: 0.5;"></a-sphere>
+                <a-text value="B" position="0 0.1 0.4" color="#000" align="center" font-size="110"></a-text>
+                <a-text class="game-option-text" value="-" position="0 -0.6 0" color="#ffff00" align="center" font-size="45"></a-text>
+            </a-entity>
+
+            <a-entity class="clickable game-answer" data-answer="C" data-correct="false" position="1.2 0.5 0">
+                <a-sphere radius="0.35" color="#ff6633" material="metalness: 0.5;"></a-sphere>
+                <a-text value="C" position="0 0.1 0.4" color="#fff" align="center" font-size="110"></a-text>
+                <a-text class="game-option-text" value="-" position="0 -0.6 0" color="#ffff00" align="center" font-size="45"></a-text>
+            </a-entity>
+
+            <!-- Start Button -->
+            <a-entity id="game-start-button" position="0 -1 0" class="clickable">
+                <a-box width="1.3" height="0.55" depth="0.1" color="#00aa00" material="metalness: 0.3;"></a-box>
+                <a-text value="▶ START GAME" position="0 0 0.12" width="2.5" color="#fff" align="center" font-size="50"></a-text>
+            </a-entity>
+
+            <!-- Score Display -->
+            <a-text id="game-score-3d" value="Score: 0/0" position="0 -2 0" scale="1.2 1.2 1.2" color="#ffaa00" align="center"></a-text>
+        </a-entity>
+
+        <!-- ============ ZONE 4: QUIZ KIOSK (Back Center) ============ -->
+        <a-entity id="quiz-zone" position="0 1.8 -7" rotation="0 0 0">
+            <!-- Kiosk pillar -->
+            <a-box width="0.4" height="3" depth="0.4" color="#333366" position="0 -1.5 0" material="metalness: 0.3;"></a-box>
+
+            <!-- Kiosk top structure -->
+            <a-box width="3.5" height="3" depth="0.25" color="#2a2a5a" position="0 0.8 0" material="metalness: 0.4;"></a-box>
+
+            <!-- Quiz Title -->
+            <a-text value="📚 KNOWLEDGE KIOSK" position="0 2.6 0.2" scale="1 1 1" color="#ffff00" align="center"></a-text>
+
+            <!-- Question Display -->
+            <a-box width="3.2" height="0.7" depth="0.05" color="#0a0a30" position="0 1.5 0.2"></a-box>
+            <a-text id="quiz-question" value="Press BEGIN to start" position="0 1.5 0.28" width="6" color="#00ffff" align="center" font-size="55"></a-text>
+
+            <!-- Choice A -->
+            <a-entity class="clickable quiz-choice" data-choice="A" position="-1.1 0.5 0.2">
+                <a-box width="0.9" height="0.55" depth="0.06" color="#cc3333" material="metalness: 0.3;"></a-box>
+                <a-text value="A" position="0 0 0.08" color="#fff" align="center" font-size="70"></a-text>
+                <a-text class="quiz-choice-text" value="-" position="0 -0.7 0.2" width="1.8" color="#ffff00" align="center" font-size="38"></a-text>
+            </a-entity>
+
+            <!-- Choice B -->
+            <a-entity class="clickable quiz-choice" data-choice="B" position="0 0.5 0.2">
+                <a-box width="0.9" height="0.55" depth="0.06" color="#33cc33" material="metalness: 0.3;"></a-box>
+                <a-text value="B" position="0 0 0.08" color="#000" align="center" font-size="70"></a-text>
+                <a-text class="quiz-choice-text" value="-" position="0 -0.7 0.2" width="1.8" color="#ffff00" align="center" font-size="38"></a-text>
+            </a-entity>
+
+            <!-- Choice C -->
+            <a-entity class="clickable quiz-choice" data-choice="C" position="1.1 0.5 0.2">
+                <a-box width="0.9" height="0.55" depth="0.06" color="#3366cc" material="metalness: 0.3;"></a-box>
+                <a-text value="C" position="0 0 0.08" color="#fff" align="center" font-size="70"></a-text>
+                <a-text class="quiz-choice-text" value="-" position="0 -0.7 0.2" width="1.8" color="#ffff00" align="center" font-size="38"></a-text>
+            </a-entity>
+
+            <!-- Begin Button -->
+            <a-entity id="quiz-start-button" position="0 -0.8 0.2" class="clickable">
+                <a-box width="1.2" height="0.5" depth="0.06" color="#00aa00" material="metalness: 0.3;"></a-box>
+                <a-text value="▶ BEGIN QUIZ" position="0 0 0.1" color="#fff" align="center" font-size="45"></a-text>
+            </a-entity>
+
+            <!-- Quiz Result -->
+            <a-text id="quiz-result-3d" value="" position="0 -1.6 0.2" scale="0.8 0.8 0.8" color="#ffaa00" align="center"></a-text>
+        </a-entity>
+
+        <!-- ============ DECORATIVE ELEMENTS ============ -->
+        <!-- Ceiling lights -->
+        <a-entity position="-7 4.5 0">
+            <a-cylinder radius="0.3" height="0.1" color="#00ccff" opacity="0.6"></a-cylinder>
+            <a-cylinder radius="0.05" height="0.8" color="#888" position="0 -0.4 0"></a-cylinder>
+        </a-entity>
+        <a-entity position="0 4.5 -3">
+            <a-cylinder radius="0.3" height="0.1" color="#ffff00" opacity="0.6"></a-cylinder>
+            <a-cylinder radius="0.05" height="0.8" color="#888" position="0 -0.4 0"></a-cylinder>
+        </a-entity>
+        <a-entity position="7 4.5 0">
+            <a-cylinder radius="0.3" height="0.1" color="#ff66ff" opacity="0.6"></a-cylinder>
+            <a-cylinder radius="0.05" height="0.8" color="#888" position="0 -0.4 0"></a-cylinder>
+        </a-entity>
+
+        <!-- Zone labels on floor -->
+        <a-text value="← THEORY" position="-7 0.03 2.5" rotation="-90 0 0" color="#00aaff" align="center" width="4" font-size="100" opacity="0.5"></a-text>
+        <a-text value="STRINGS LAB ↓" position="0 0.03 -1" rotation="-90 0 0" color="#00ffff" align="center" width="5" font-size="100" opacity="0.5"></a-text>
+        <a-text value="GAME →" position="7 0.03 2.5" rotation="-90 0 0" color="#ff00ff" align="center" width="4" font-size="100" opacity="0.5"></a-text>
+        <a-text value="QUIZ ↓" position="0 0.03 -5.5" rotation="-90 0 0" color="#ffff00" align="center" width="4" font-size="100" opacity="0.5"></a-text>
+    </a-scene>
+
+    <script>
+        // ========== GAME STATE ==========
+        const gameState = {
+            isGameActive: false,
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 5,
+            questions: [
+                {
+                    question: "What is the length of 'ABC'?",
+                    options: { A: "2", B: "3", C: "4" },
+                    correct: "B"
+                },
+                {
+                    question: "What is s[0] if s = 'Hello'?",
+                    options: { A: "e", B: "H", C: "o" },
+                    correct: "B"
+                },
+                {
+                    question: "IndexOf('l') in 'Hello'?",
+                    options: { A: "1", B: "2", C: "3" },
+                    correct: "B"
+                },
+                {
+                    question: "Which operation is valid?",
+                    options: { A: "s[0] = 'x'", B: "s.ToLower()", C: "Both" },
+                    correct: "B"
+                },
+                {
+                    question: "What does Replace() return?",
+                    options: { A: "Modifies s", B: "New string", C: "Throws error" },
+                    correct: "B"
+                }
+            ]
+        };
+
+        const quizState = {
+            isQuizActive: false,
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 3,
+            questions: [
+                {
+                    question: "Q1: Which declaration is correct?",
+                    options: {
+                        A: "string 1s;",
+                        B: "string s = \"123\";",
+                        C: "abcde;"
+                    },
+                    correct: "B",
+                    explanation: "Variable names cannot start with digits"
+                },
+                {
+                    question: "Q2: Substring(1,3) on 'Плевен'?",
+                    options: {
+                        A: "\"Пле\"",
+                        B: "\"лев\"",
+                        C: "\"евен\""
+                    },
+                    correct: "B",
+                    explanation: "Starting at index 1, taking 3 chars"
+                },
+                {
+                    question: "Q3: Does Replace() modify s?",
+                    options: {
+                        A: "Yes, alters s directly",
+                        B: "No, returns new string",
+                        C: "Only if mutable"
+                    },
+                    correct: "B",
+                    explanation: "Strings are immutable"
+                }
+            ]
+        };
+
+        // ========== UTILITY FUNCTIONS ==========
+        function updateHUD(message) {
+            document.getElementById('hud-message').textContent = message;
+        }
+
+        function updateGameScoreDisplay() {
+            document.getElementById('game-score').textContent =
+                '🎮 Game Score: ' + gameState.score + '/' + gameState.totalQuestions;
+            var score3d = document.getElementById('game-score-3d');
+            if (score3d) score3d.setAttribute('value', 'Score: ' + gameState.score + '/' + gameState.totalQuestions);
+        }
+
+        function updateQuizStatusDisplay() {
+            if (quizState.isQuizActive) {
+                document.getElementById('quiz-status').textContent =
+                    '📚 Quiz: Q' + (quizState.currentQuestion + 1) + '/' + quizState.totalQuestions +
+                    ' (' + quizState.score + ' correct)';
+            } else if (quizState.currentQuestion >= quizState.totalQuestions) {
+                document.getElementById('quiz-status').textContent =
+                    '📚 Quiz: Done (' + quizState.score + '/' + quizState.totalQuestions + ')';
+            } else {
+                document.getElementById('quiz-status').textContent = '📚 Quiz: Not Started';
+            }
+        }
+
+        function getColorForIndex(index) {
+            var colors = ['#ff6b6b', '#4ecdc4', '#95e1d3', '#f38181', '#aa96da',
+                          '#fcbad3', '#a8d8ea', '#ffffd2', '#ffb7b2', '#e0aaff'];
+            return colors[index] || '#cccccc';
+        }
+
+        // ========== ZONE 2: CHARACTER BOX INTERACTION ==========
+        document.querySelectorAll('.char-box').forEach(function(box) {
+            box.addEventListener('click', function(e) {
+                var index = this.getAttribute('data-index');
+                var char = this.getAttribute('data-char');
+                var displayChar = char === ' ' ? '[SPACE]' : char;
+
+                var outputText = document.getElementById('char-output-text');
+                outputText.setAttribute('value', "s[" + index + "] → '" + displayChar + "'");
+
+                // Flash the clicked box
+                var boxEl = this.querySelector('a-box');
+                boxEl.setAttribute('color', '#ffff00');
+                setTimeout(function() {
+                    boxEl.setAttribute('color', getColorForIndex(parseInt(index)));
+                }, 200);
+
+                updateHUD('✓ Clicked index ' + index + ": '" + displayChar + "'");
+            });
+        });
+
+        // Immutability warning
+        document.getElementById('immutability-warning').addEventListener('click', function() {
+            var msg = '⚠ ERROR: Cannot assign to array indexer. Strings are IMMUTABLE!\n' +
+                      'Trying s[1] = \'a\' causes a Compilation Error.\n' +
+                      'Accessing s[50] throws IndexOutOfRangeException!';
+            updateHUD('⚠ Strings are IMMUTABLE! Compilation Error if you try to assign.');
+        });
+
+        // ========== ZONE 3: MINI-GAME ==========
+        document.getElementById('game-start-button').addEventListener('click', function() {
+            gameState.isGameActive = true;
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            updateGameScoreDisplay();
+            displayGameQuestion();
+            updateHUD('🎮 Game Started! Click the correct answer sphere.');
+        });
+
+        function displayGameQuestion() {
+            if (gameState.currentQuestion >= gameState.totalQuestions) {
+                endGame();
+                return;
+            }
+
+            var q = gameState.questions[gameState.currentQuestion];
+            document.getElementById('game-question').setAttribute('value', q.question);
+
+            // Reset answer buttons
+            document.querySelectorAll('.game-answer').forEach(function(btn) {
+                var answer = btn.getAttribute('data-answer');
+                var sphere = btn.querySelector('a-sphere');
+                sphere.setAttribute('color',
+                    answer === 'A' ? '#3366ff' : answer === 'B' ? '#33ff33' : '#ff6633');
+                btn.setAttribute('data-answered', 'false');
+            });
+
+            // Update option texts
+            ['A', 'B', 'C'].forEach(function(opt) {
+                var btn = document.querySelector('[data-answer="' + opt + '"]');
+                if (btn && q.options[opt]) {
+                    var txt = btn.querySelector('.game-option-text');
+                    txt.setAttribute('value', q.options[opt]);
+                }
+            });
+        }
+
+        document.querySelectorAll('.game-answer').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (!gameState.isGameActive || this.getAttribute('data-answered') === 'true') return;
+
+                this.setAttribute('data-answered', 'true');
+                var isCorrect = this.getAttribute('data-correct') === 'true';
+                var sphere = this.querySelector('a-sphere');
+
+                if (isCorrect) {
+                    gameState.score++;
+                    sphere.setAttribute('color', '#00ff00');
+                    updateHUD('✓ Correct! Great job!');
+                } else {
+                    sphere.setAttribute('color', '#ff0000');
+                    updateHUD('✗ Wrong answer. Try again next round.');
+                }
+
+                updateGameScoreDisplay();
+
+                setTimeout(function() {
+                    gameState.currentQuestion++;
+                    displayGameQuestion();
+                }, 1500);
+            });
+        });
+
+        function endGame() {
+            gameState.isGameActive = false;
+            var pct = Math.round((gameState.score / gameState.totalQuestions) * 100);
+            updateHUD('🏆 Game Over! ' + gameState.score + '/' + gameState.totalQuestions + ' (' + pct + '%)');
+            document.getElementById('game-question').setAttribute('value', 'GAME OVER! ' + pct + '%');
+        }
+
+        // ========== ZONE 4: QUIZ ==========
+        document.getElementById('quiz-start-button').addEventListener('click', function() {
+            quizState.isQuizActive = true;
+            quizState.currentQuestion = 0;
+            quizState.score = 0;
+            updateQuizStatusDisplay();
+            displayQuizQuestion();
+            updateHUD('📚 Quiz Started! Answer the questions.');
+        });
+
+        function displayQuizQuestion() {
+            if (quizState.currentQuestion >= quizState.totalQuestions) {
+                endQuiz();
+                return;
+            }
+
+            var q = quizState.questions[quizState.currentQuestion];
+            document.getElementById('quiz-question').setAttribute('value', q.question);
+
+            // Reset choice buttons
+            document.querySelectorAll('.quiz-choice').forEach(function(btn) {
+                var choice = btn.getAttribute('data-choice');
+                var box = btn.querySelector('a-box');
+                box.setAttribute('color',
+                    choice === 'A' ? '#cc3333' : choice === 'B' ? '#33cc33' : '#3366cc');
+                btn.setAttribute('data-answered', 'false');
+            });
+
+            // Update choice texts
+            ['A', 'B', 'C'].forEach(function(choice) {
+                var btn = document.querySelector('[data-choice="' + choice + '"]');
+                if (btn && q.options[choice]) {
+                    var txt = btn.querySelector('.quiz-choice-text');
+                    txt.setAttribute('value', q.options[choice]);
+                }
+            });
+
+            // Clear result
+            var resultEl = document.getElementById('quiz-result-3d');
+            if (resultEl) resultEl.setAttribute('value', '');
+        }
+
+        document.querySelectorAll('.quiz-choice').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (!quizState.isQuizActive || this.getAttribute('data-answered') === 'true') return;
+
+                this.setAttribute('data-answered', 'true');
+                var choice = this.getAttribute('data-choice');
+                var q = quizState.questions[quizState.currentQuestion];
+                var isCorrect = choice === q.correct;
+                var box = this.querySelector('a-box');
+
+                if (isCorrect) {
+                    quizState.score++;
+                    box.setAttribute('color', '#00ff00');
+                    updateHUD('✓ Correct! ' + q.explanation);
+                } else {
+                    box.setAttribute('color', '#ff0000');
+                    updateHUD('✗ Incorrect. Correct: ' + q.correct + '. ' + q.explanation);
+                }
+
+                updateQuizStatusDisplay();
+
+                // Show result
+                var resultEl = document.getElementById('quiz-result-3d');
+                if (resultEl) {
+                    resultEl.setAttribute('value', isCorrect ? '✓ Correct!' : '✗ Wrong! Ans: ' + q.correct);
+                }
+
+                setTimeout(function() {
+                    quizState.currentQuestion++;
+                    displayQuizQuestion();
+                }, 2000);
+            });
+        });
+
+        function endQuiz() {
+            quizState.isQuizActive = false;
+            var pct = Math.round((quizState.score / quizState.totalQuestions) * 100);
+            updateHUD('🏆 Quiz Complete! ' + quizState.score + '/' + quizState.totalQuestions + ' (' + pct + '%)');
+            document.getElementById('quiz-question').setAttribute('value', 'QUIZ COMPLETE! ' + pct + '%');
+            var resultEl = document.getElementById('quiz-result-3d');
+            if (resultEl) resultEl.setAttribute('value', 'Score: ' + quizState.score + '/' + quizState.totalQuestions);
+            updateQuizStatusDisplay();
+        }
+
+        // ========== INITIALIZATION ==========
+        window.addEventListener('load', function() {
+            updateHUD('🖱 Drag to look around | WASD to move | Click objects to interact');
+        });
+    </script>
+</body>
+</html>
 
         <!-- ZONE 1: THEORY BOARDS (Left Side) -->
         <!-- Board 1: Basics & Memory -->
