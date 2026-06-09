@@ -50,6 +50,11 @@
     "path": "Lessons/IT/VR/"
   },
   {
+    "name": "29graphs",
+    "type": "file",
+    "path": "Lessons/IT/VR/29graphs.html"
+  },
+  {
     "name": "csharp-string-lab",
     "type": "file",
     "path": "Lessons/IT/VR/csharp-string-lab.html"

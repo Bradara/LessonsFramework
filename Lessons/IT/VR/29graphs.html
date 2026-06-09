@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 29: Графи — 3D/VR визуализация</title>
+
+    <!-- A-Frame for 3D/VR -->
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: #1f2937;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.4em;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            margin: 0;
+        }
+        .vr-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
+        }
+        .vr-badge i { margin-right: 6px; }
+
+        .content { padding: 40px; }
+        .content h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: #4c1d95;
+            border-bottom: 3px solid #a78bfa;
+            padding-bottom: 8px;
+            margin-top: 40px;
+            font-size: 1.65em;
+        }
+        .content h2 i { margin-right: 10px; color: #7c3aed; }
+        .content h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: #5b21b6;
+            margin-top: 30px;
+        }
+        .content p { margin: 14px 0; font-size: 1.05em; }
+        .content ul, .content ol { font-size: 1.05em; }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .highlight-box i.icon { color: #d97706; margin-right: 8px; }
+
+        .definition-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .definition-box i.icon { color: #1d4ed8; margin-right: 8px; }
+
+        .vr-scene-container {
+            position: relative;
+            margin: 30px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: #0f172a;
+        }
+        .vr-scene-container .scene-label {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+        .vr-scene-container .scene-controls {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+        .vr-scene-container .scene-controls kbd {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        a-scene {
+            height: 500px !important;
+            display: block;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92em;
+            margin: 20px 0;
+            line-height: 1.5;
+        }
+        .code-block code { color: inherit; background: none; padding: 0; }
+
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #6d28d9;
+        }
+
+        .exercise {
+            background: #f5f3ff;
+            border: 2px solid #a78bfa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .exercise h4 {
+            margin-top: 0;
+            color: #5b21b6;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .exercise h4 i { color: #7c3aed; margin-right: 8px; }
+
+        .formula {
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 1.1em;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>Урок 29: Графи</h1>
+        <p>Абстрактни нелинейни структури в 3D пространство</p>
+        <span class="vr-badge"><i class="fas fa-vr-cardboard"></i>VR-съвместим урок</span>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <h2><i class="fas fa-landmark"></i>Малко история</h2>
+        <p>Основите на математическата теория на графите са положени от швейцарския математик <strong>Леонард Ойлер</strong> (1707–1783), който на 19-годишна възраст вече е бил професор в Санктпетербургската академия на науките.</p>
+
+        <p>През 1736 г. Ойлер публикува статия, в която обсъжда решението на класическата <em>Задача за мостовете на Кьонигсберг</em>. Градът Кьонигсберг (днес Калининград в Руската федерация) е разположен на двата бряга на река Прегел и на два острова. <strong>Седем моста</strong> свързват парчетата суша. Задачата: <em>Може ли да се обиколи градът, така че да се мине по всеки мост точно по веднъж и да се завърши там, откъдето е започнало?</em></p>
+
+        <!-- 3D Scene 1: Königsberg bridges -->
+        <div class="vr-scene-container">
+            <div class="scene-label"><i class="fas fa-cube"></i> 3D модел: Мостовете на Кьонигсберг</div>
+            <a-scene embedded vr-mode-ui="enabled: true" background="color: #0c1d3a">
+                <a-entity camera position="0 10 14" rotation="-35 0 0" look-controls wasd-controls="acceleration: 30"></a-entity>
+
+                <!-- River (water plane) -->
+                <a-plane position="0 0 0" rotation="-90 0 0" width="22" height="22" color="#1e40af" opacity="0.85"></a-plane>
+
+                <!-- Land masses: North (A), South (B), Island 1 (C, west), Island 2 (D, east) -->
+                <a-box position="-7 0.4 0" width="5" height="0.8" depth="3.5" color="#65a30d"></a-box>
+                <a-box position="7 0.4 0" width="5" height="0.8" depth="3.5" color="#65a30d"></a-box>
+                <a-box position="0 0.4 -3.5" width="3.5" height="0.8" depth="2.5" color="#84cc16"></a-box>
+                <a-box position="0 0.4 3.5" width="3.5" height="0.8" depth="2.5" color="#84cc16"></a-box>
+
+                <!-- 7 bridges (brown wooden) -->
+                <!-- A↔C (2 bridges) -->
+                <a-box position="-3.5 0.7 -2.5" width="3" height="0.25" depth="0.6" color="#92400e"></a-box>
+                <a-box position="-3.5 0.7 -1.0" width="3" height="0.25" depth="0.6" color="#92400e"></a-box>
+                <!-- A↔D (2 bridges) -->
+                <a-box position="-3.5 0.7 1.0" width="3" height="0.25" depth="0.6" color="#92400e"></a-box>
+                <a-box position="-3.5 0.7 2.5" width="3" height="0.25" depth="0.6" color="#92400e"></a-box>
+                <!-- B↔C (1 bridge) -->
+                <a-box position="3.5 0.7 -2" width="3" height="0.25" depth="0.6" color="#92400e"></a-box>
+                <!-- B↔D (1 bridge) -->
+                <a-box position="3.5 0.7 2" width="3" height="0.25" depth="0.6" color="#92400e"></a-box>
+                <!-- C↔D (1 bridge between islands) -->
+                <a-box position="0 0.7 0" width="0.6" height="0.25" depth="4.5" color="#92400e"></a-box>
+
+                <!-- Labels for land masses -->
+                <a-text value="A (Север)" position="-7 1.6 0" align="center" color="#fef3c7" width="8"></a-text>
+                <a-text value="B (Юг)" position="7 1.6 0" align="center" color="#fef3c7" width="8"></a-text>
+                <a-text value="C" position="0 1.6 -3.5" align="center" color="#fef3c7" width="8"></a-text>
+                <a-text value="D" position="0 1.6 3.5" align="center" color="#fef3c7" width="8"></a-text>
+
+                <!-- Lights -->
+                <a-light type="ambient" color="#ffffff" intensity="0.6"></a-light>
+                <a-light type="directional" position="3 8 4" intensity="0.9"></a-light>
+                <a-sky color="#020617"></a-sky>
+            </a-scene>
+            <div class="scene-controls">
+                <i class="fas fa-mouse"></i> Завъртете с мишката · <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> за движение · <i class="fas fa-vr-cardboard"></i> бутон долу вдясно за VR
+            </div>
+        </div>
+
+        <p>Ойлер доказва, че <strong>такава обиколка е невъзможна</strong>. За да го направи, той създава абстрактен модел: четирите парчета суша стават <em>върхове</em>, а седемте моста стават <em>ребра</em>. Така се ражда теорията на графите.</p>
+
+        <h2><i class="fas fa-project-diagram"></i>Дефиниции</h2>
+
+        <div class="definition-box">
+            <i class="fas fa-info-circle icon"></i><strong>Граф</strong> се дефинира с две крайни множества: <code>V = {v₁, v₂, ..., vₙ}</code> (върхове) и <code>E = {e₁, e₂, ..., eₘ}</code> (ребра). Записваме <code>G(V, E)</code>. Всяко ребро <code>eₖ</code> съпоставя два от върховете.
+        </div>
+
+        <p>Видовете графи зависят от това:</p>
+        <ul>
+            <li>дали двойката върхове на реброто е <strong>наредена</strong> (ориентиран) или <strong>ненаредена</strong> (неориентиран);</li>
+            <li>дали се <strong>допуска повторение</strong> на ребра (мултиграф) или не (прост граф).</li>
+        </ul>
+
+        <p>Така получаваме четири вида: <strong>ориентиран мултиграф</strong>, <strong>неориентиран мултиграф</strong>, <strong>ориентиран граф</strong> и <strong>неориентиран граф</strong> (наричан просто <em>граф</em>).</p>
+
+        <!-- 3D Scene 2: Types of graphs comparison -->
+        <div class="vr-scene-container">
+            <div class="scene-label"><i class="fas fa-cube"></i> 3D: Сравнение на видове графи</div>
+            <a-scene embedded vr-mode-ui="enabled: true" background="color: #1e1b4b">
+                <a-entity camera position="0 1.5 7" look-controls wasd-controls></a-entity>
+
+                <!-- Simple graph (left) -->
+                <a-text value="Прост граф" position="-4 3.2 0" align="center" color="#fbbf24" width="6"></a-text>
+                <a-sphere position="-5 1.8 0" radius="0.25" color="#3b82f6"></a-sphere>
+                <a-sphere position="-3 1.8 0" radius="0.25" color="#3b82f6"></a-sphere>
+                <a-sphere position="-4 0.3 0" radius="0.25" color="#3b82f6"></a-sphere>
+                <a-entity line="start: -5 1.8 0; end: -3 1.8 0; color: #e5e7eb"></a-entity>
+                <a-entity line="start: -5 1.8 0; end: -4 0.3 0; color: #e5e7eb"></a-entity>
+                <a-entity line="start: -3 1.8 0; end: -4 0.3 0; color: #e5e7eb"></a-entity>
+
+                <!-- Multigraph (center) -->
+                <a-text value="Мултиграф" position="0 3.2 0" align="center" color="#fbbf24" width="6"></a-text>
+                <a-sphere position="-1 1.5 0" radius="0.25" color="#10b981"></a-sphere>
+                <a-sphere position="1 1.5 0" radius="0.25" color="#10b981"></a-sphere>
+                <a-sphere position="0 0.2 0" radius="0.25" color="#10b981"></a-sphere>
+                <!-- Multiple edges between same vertices -->
+                <a-torus position="0 1.5 0" radius="1" radius-tubular="0.025" color="#e5e7eb" arc="180" rotation="0 0 0"></a-torus>
+                <a-torus position="0 1.5 0" radius="1" radius-tubular="0.025" color="#e5e7eb" arc="180" rotation="180 0 0"></a-torus>
+                <a-entity line="start: -1 1.5 0; end: 0 0.2 0; color: #e5e7eb"></a-entity>
+                <a-entity line="start: 1 1.5 0; end: 0 0.2 0; color: #e5e7eb"></a-entity>
+
+                <!-- Directed graph (right) -->
+                <a-text value="Ориентиран граф" position="4 3.2 0" align="center" color="#fbbf24" width="6"></a-text>
+                <a-sphere position="3 1.8 0" radius="0.25" color="#ef4444"></a-sphere>
+                <a-sphere position="5 1.8 0" radius="0.25" color="#ef4444"></a-sphere>
+                <a-sphere position="4 0.3 0" radius="0.25" color="#ef4444"></a-sphere>
+                <!-- Arrows with cones -->
+                <a-entity line="start: 3 1.8 0; end: 4.7 1.8 0; color: #e5e7eb"></a-entity>
+                <a-cone position="4.85 1.8 0" rotation="0 0 -90" radius-bottom="0.1" radius-top="0" height="0.3" color="#fde047"></a-cone>
+                <a-entity line="start: 5 1.8 0; end: 4.15 0.45 0; color: #e5e7eb"></a-entity>
+                <a-cone position="4.05 0.3 0" rotation="0 0 30" radius-bottom="0.1" radius-top="0" height="0.3" color="#fde047"></a-cone>
+                <a-entity line="start: 4 0.3 0; end: 3.15 1.65 0; color: #e5e7eb"></a-entity>
+                <a-cone position="3.05 1.8 0" rotation="0 0 -150" radius-bottom="0.1" radius-top="0" height="0.3" color="#fde047"></a-cone>
+
+                <a-light type="ambient" color="#ffffff" intensity="0.85"></a-light>
+                <a-light type="point" position="0 4 3" intensity="0.5"></a-light>
+                <a-sky color="#0c1024"></a-sky>
+            </a-scene>
+            <div class="scene-controls">
+                Завъртете камерата, за да видите трите вида графи отблизо и от различни ъгли
+            </div>
+        </div>
+
+        <h3>Степен на връх</h3>
+        <p>За неориентиран граф <strong>степента на връх v</strong>, означена <code>d(v)</code>, е броят на съседите му (т.е. броят на ребрата, инцидентни с него).</p>
+
+        <div class="highlight-box">
+            <i class="fas fa-lightbulb icon"></i><strong>Теорема:</strong> Сумата от степените на всички върхове в граф е <strong>равна на два пъти броя на ребрата</strong>. Причината: всяко ребро се брои два пъти — по веднъж за всеки от двата си края.
+        </div>
+
+        <div class="formula">
+            ∑ d(vᵢ) = 2 · |E|
+        </div>
+
+        <h2><i class="fas fa-route"></i>Пътища и цикли</h2>
+
+        <p>Редицата от върхове <code>ρ = u₀, u₁, ..., uₗ</code> се нарича <strong>път в графа</strong> <code>G(V, E)</code>, ако всеки два съседни в редицата върха са свързани с ребро. Числото <code>l</code> е <strong>дължина на пътя</strong>.</p>
+
+        <p>Ако <code>u₀ = uₗ</code>, пътят се нарича <strong>цикъл</strong>. Когато в редицата няма повтарящ се връх (освен началния и крайния при цикъл), пътят се нарича <strong>прост</strong>.</p>
+
+        <div class="definition-box">
+            <i class="fas fa-info-circle icon"></i><strong>Свързан граф:</strong> граф, в който за всеки два върха съществува път, който ги свързва. Несвързан граф се състои от <strong>свързани компоненти</strong>.
+        </div>
+
+        <!-- 3D Scene 3: Interactive graph with 7 vertices -->
+        <div class="vr-scene-container">
+            <div class="scene-label"><i class="fas fa-cube"></i> 3D: Граф със 7 върха — намерете прост път</div>
+            <a-scene embedded vr-mode-ui="enabled: true" background="color: #0f172a">
+                <a-entity camera position="0 1.5 8" look-controls wasd-controls></a-entity>
+
+                <!-- 7 vertices arranged in 3D -->
+                <a-sphere position="0 2.5 0" radius="0.3" color="#f59e0b"></a-sphere>
+                <a-text value="1" position="0 3.1 0" align="center" color="white" width="8"></a-text>
+
+                <a-sphere position="2.5 1.2 0" radius="0.3" color="#f59e0b"></a-sphere>
+                <a-text value="2" position="2.5 1.8 0" align="center" color="white" width="8"></a-text>
+
+                <a-sphere position="2 -1.5 0" radius="0.3" color="#f59e0b"></a-sphere>
+                <a-text value="3" position="2 -0.9 0" align="center" color="white" width="8"></a-text>
+
+                <a-sphere position="-2 -1.5 0" radius="0.3" color="#f59e0b"></a-sphere>
+                <a-text value="4" position="-2 -0.9 0" align="center" color="white" width="8"></a-text>
+
+                <a-sphere position="-2.5 1.2 0" radius="0.3" color="#f59e0b"></a-sphere>
+                <a-text value="5" position="-2.5 1.8 0" align="center" color="white" width="8"></a-text>
+
+                <a-sphere position="0 0 2" radius="0.3" color="#f59e0b"></a-sphere>
+                <a-text value="6" position="0 0.6 2" align="center" color="white" width="8"></a-text>
+
+                <a-sphere position="0 0 -2" radius="0.3" color="#f59e0b"></a-sphere>
+                <a-text value="7" position="0 0.6 -2" align="center" color="white" width="8"></a-text>
+
+                <!-- Edges -->
+                <a-entity line="start: 0 2.5 0; end: 2.5 1.2 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: 2.5 1.2 0; end: 2 -1.5 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: 2 -1.5 0; end: -2 -1.5 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: -2 -1.5 0; end: -2.5 1.2 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: -2.5 1.2 0; end: 0 2.5 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: 0 2.5 0; end: 0 0 2; color: #94a3b8"></a-entity>
+                <a-entity line="start: 0 0 2; end: 2 -1.5 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: 0 0 2; end: -2 -1.5 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: 0 0 -2; end: 0 2.5 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: 0 0 -2; end: 2.5 1.2 0; color: #94a3b8"></a-entity>
+                <a-entity line="start: 0 0 -2; end: -2.5 1.2 0; color: #94a3b8"></a-entity>
+
+                <a-light type="ambient" color="#ffffff" intensity="0.85"></a-light>
+                <a-light type="point" position="0 4 3" intensity="0.5"></a-light>
+                <a-sky color="#020617"></a-sky>
+            </a-scene>
+            <div class="scene-controls">
+                Завъртете графа. Опитайте се да намерите прост път от връх <strong>1</strong> до връх <strong>4</strong>.
+            </div>
+        </div>
+
+        <h2><i class="fas fa-table"></i>Представяне на графи</h2>
+
+        <p>За да работим с граф в програма, го разполагаме в компютърната памет по един от два начина:</p>
+
+        <h3>1. Списък на съседите</h3>
+        <p>За всеки връх съхраняваме списък на върховете, с които е свързан с ребро. Подходящо за <strong>разредени графи</strong> (малко ребра).</p>
+
+        <div class="code-block"><code>static void Main(string[] args)
+{
+    int n, m, u, v, i;
+    n = int.Parse(Console.ReadLine());
+    m = int.Parse(Console.ReadLine());
+    List&lt;int&gt;[] Gr = new List&lt;int&gt;[n + 1];
+    for (i = 1; i &lt;= n; i++) Gr[i] = new List&lt;int&gt;();
+    for (i = 1; i &lt;= m; i++)
+    {
+        u = int.Parse(Console.ReadLine());
+        v = int.Parse(Console.ReadLine());
+        Gr[u].Add(v); Gr[v].Add(u);
+    }
+    for (i = 1; i &lt;= n; i++)
+    {
+        Console.Write(i + ": ");
+        for (int j = 0; j &lt; Gr[i].Count; j++)
+            Console.Write(Gr[i][j] + " ");
+        Console.WriteLine();
+    }
+}</code></div>
+
+        <h3>2. Матрица на съседствата</h3>
+        <p>Таблица <code>n × n</code>, в която клетката от ред <code>i</code> и стълб <code>j</code> съдържа <code>1</code>, ако има ребро <code>(vᵢ, vⱼ)</code>, иначе <code>0</code>. Подходяща за <strong>плътни графи</strong>.</p>
+
+        <div class="highlight-box">
+            <i class="fas fa-lightbulb icon"></i><strong>Кога кое?</strong> Матрицата прави <code>O(1)</code> проверка „има ли ребро между u и v", но изисква <code>O(n²)</code> памет. Списъкът заема памет <code>O(n + m)</code> и е по-бърз за обхождане на съседите, но проверка за ребро е <code>O(d(v))</code>.
+        </div>
+
+        <h2><i class="fas fa-vr-cardboard"></i>Изследване във VR</h2>
+        <p>За да навлезете напълно в 3D пространството на графа:</p>
+        <ol>
+            <li><strong>На VR очила (Meta Quest и др.):</strong> Намерете бутона <i class="fas fa-vr-cardboard"></i> в долния десен ъгъл на 3D сцена и го натиснете. Браузърът ще премине в immersive режим.</li>
+            <li><strong>На компютър:</strong> Кликнете в сцената, използвайте мишката за гледане и <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> за движение.</li>
+            <li><strong>На мобилно устройство:</strong> Накланяйте телефона — камерата следва ориентацията.</li>
+        </ol>
+
+        <h2><i class="fas fa-pencil-ruler"></i>Въпроси и задачи</h2>
+
+        <div class="exercise">
+            <h4><i class="fas fa-check-circle"></i>Задача 1</h4>
+            <p>Кой е максималният възможен брой ребра на граф с <code>n</code> върха?</p>
+            <p><em>Упътване:</em> ребрата на графа са 2-елементни подмножества на множеството от върховете.</p>
+        </div>
+
+        <div class="exercise">
+            <h4><i class="fas fa-check-circle"></i>Задача 2</h4>
+            <p>Обосновете твърдението, че сумата от степените на върховете в граф е равна на два пъти броя на ребрата.</p>
+        </div>
+
+        <div class="exercise">
+            <h4><i class="fas fa-vr-cardboard"></i>Задача 3 (VR-практическа)</h4>
+            <p>Влезте в 3D сцената с мостовете на Кьонигсберг по-горе. Опитайте се да обиколите всички четири парчета суша, минавайки по всеки от 7-те моста точно по веднъж. Защо това е невъзможно? Свържете отговора със степените на върховете в съответния граф.</p>
+        </div>
+
+        <div class="exercise">
+            <h4><i class="fas fa-check-circle"></i>Задача 4</h4>
+            <p>Напишете функции за трансформация на граф, зададен със списъци на съседите, в представяне с матрица на съседствата и обратно.</p>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
