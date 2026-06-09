@@ -65,6 +65,11 @@
     "path": "Lessons/IT/VR/testvr.html"
   },
   {
+    "name": "vr_ws",
+    "type": "folder",
+    "path": "Lessons/IT/VR/vr_ws/"
+  },
+  {
     "name": "Примерни уроци",
     "type": "folder",
     "path": "Lessons/IT/Примерни уроци/"
