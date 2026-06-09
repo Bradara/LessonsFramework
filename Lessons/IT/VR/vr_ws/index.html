@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  </head>
+  <body>
+    hello
+    <a-scene>
+      <a-assets>
+        <img id="localSky" src="bs.jpg">
+      </a-assets>
+
+      <a-scene>
+  <a-plane src="front.jpg" position="0 0 -5" rotation="0 0 0" width="10" height="10"></a-plane>
+  <a-plane src="back.jpg" position="0 0 5" rotation="0 180 0" width="10" height="10"></a-plane>
+  <a-plane src="left.jpg" position="-5 0 0" rotation="0 90 0" width="10" height="10"></a-plane>
+  <a-plane src="right.jpg" position="5 0 0" rotation="0 -90 0" width="10" height="10"></a-plane>
+  <a-plane src="up.jpg" position="0 5 0" rotation="90 0 0" width="10" height="10"></a-plane>
+  <a-plane src="down.jpg" position="0 -5 0" rotation="-90 0 0" width="10" height="10"></a-plane>
+</a-scene>
+    </a-scene>
+  </body>
+</html>
