@@ -164,12 +164,22 @@
             `Блок ${n}: Невалиден ред "${lines[5]}". Очаква се "ANSWER: X" (X ∈ A–D).`
           );
         }
-        const answer = am[1].toUpperCase();
-        if (!options[answer]) {
-          throw new Error(`Блок ${n}: Отговор "${answer}" не отговаря на нито една опция.`);
+        const origAnswer = am[1].toUpperCase();
+        if (!options[origAnswer]) {
+          throw new Error(`Блок ${n}: Отговор "${origAnswer}" не отговаря на нито една опция.`);
         }
 
-        questions.push({ question: questionText, options, optionOrder, answer });
+        // Shuffle display order: remap option texts to new random letters
+        const shuffledOrder = [...optionOrder].sort(() => Math.random() - 0.5);
+        const shuffledOptions = {};
+        let newAnswer = origAnswer;
+        shuffledOrder.forEach((origLetter, i) => {
+          const newLetter = optionOrder[i]; // A, B, C, D in original positions
+          shuffledOptions[newLetter] = options[origLetter];
+          if (origLetter === origAnswer) newAnswer = newLetter;
+        });
+
+        questions.push({ question: questionText, options: shuffledOptions, optionOrder, answer: newAnswer });
       });
 
       return questions;
