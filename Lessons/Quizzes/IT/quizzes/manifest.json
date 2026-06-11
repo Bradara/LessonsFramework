@@ -83,6 +83,12 @@
       "title": "Уеб дизайн — планиране",
       "file": "WebDesign-Planning-All-Quizes.aiken",
       "description": "117 въпроса: целева аудитория, структура на сайт, UX, HTML/CSS основи"
+    },
+    {
+      "id": "alex-ivanov-informatika-11",
+      "title": "Информатика 11 клас — Александър Иванов",
+      "file": "alex-ivanov-informatika-11.aiken",
+      "description": "76 въпроса: графи, дървета, C#, ООП, сортиране, рекурсия, колекции"
     }
   ]
 }
