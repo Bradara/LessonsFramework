@@ -1,0 +1,89 @@
+{
+  "categories": [
+    {
+      "id": "sample-algorithms",
+      "title": "Алгоритми — основи",
+      "file": "sample-algorithms.aiken",
+      "description": "15 въпроса за основни алгоритмични концепции: сложност, сортиране, рекурсия, структури от данни"
+    },
+    {
+      "id": "python-basics",
+      "title": "Python — основи",
+      "file": "python-basics.aiken",
+      "description": "10 въпроса за основни концепции в Python"
+    },
+    {
+      "id": "pregovor",
+      "title": "Преговор — основи на компютрите",
+      "file": "pregovor.aiken",
+      "description": "109 въпроса: хардуер, софтуер, операционни системи, мрежи и основни понятия"
+    },
+    {
+      "id": "all-before-loops",
+      "title": "C# — основи (преди цикли)",
+      "file": "AllBeforeLoops.aiken",
+      "description": "89 въпроса: типове данни, оператори, условни конструкции и основи на C#"
+    },
+    {
+      "id": "loops",
+      "title": "C# — цикли",
+      "file": "Loops.aiken",
+      "description": "20 въпроса за for, while, do-while цикли в C#"
+    },
+    {
+      "id": "arrays",
+      "title": "C# — масиви",
+      "file": "Arrays.aiken",
+      "description": "15 въпроса за едномерни и многомерни масиви в C#"
+    },
+    {
+      "id": "modul2-01-04",
+      "title": "Информатика Модул 2 — уроци 1–4",
+      "file": "01-04 - Modul2.aiken",
+      "description": "94 въпроса: многомерни масиви, стекове, опашки, свързани списъци"
+    },
+    {
+      "id": "modul2-05-09",
+      "title": "Информатика Модул 2 — уроци 5–9",
+      "file": "05-09 - Modul2.aiken",
+      "description": "158 въпроса: асоциативни масиви, множества, стрингове, файлове, рекурсия"
+    },
+    {
+      "id": "encapsulation",
+      "title": "ООП — Капсулация",
+      "file": "Encapsulation.aiken",
+      "description": "10 въпроса за капсулация, модификатори за достъп и скриване на имплементация"
+    },
+    {
+      "id": "oop-all",
+      "title": "ООП — Всички въпроси",
+      "file": "OOP_ALL_Questions_Labeled.aiken",
+      "description": "159 въпроса: наследяване, полиморфизъм, абстракция, интерфейси, виртуални методи в C#"
+    },
+    {
+      "id": "networks-intro",
+      "title": "Мрежи — до междинно ниво",
+      "file": "Междинно ниво All.aiken",
+      "description": "70 въпроса: TCP/IP, OSI модел, мрежови протоколи и адресиране"
+    },
+    {
+      "id": "networks-advanced",
+      "title": "Мрежи — след междинно ниво",
+      "file": "Мрежи всички след междинно.aiken",
+      "description": "72 въпроса: мрежова сигурност, маршрутизиране, защита на информацията"
+    },
+    {
+      "id": "all-q",
+      "title": "Информационни системи — всички",
+      "file": "All q.aiken",
+      "description": "178 въпроса: информационни системи, бази данни, анализ и проектиране"
+    },
+    {
+      "id": "web-design",
+      "title": "Уеб дизайн — планиране",
+      "file": "WebDesign-Planning-All-Quizes.aiken",
+      "description": "117 въпроса: целева аудитория, структура на сайт, UX, HTML/CSS основи"
+    }
+  ]
+}
+

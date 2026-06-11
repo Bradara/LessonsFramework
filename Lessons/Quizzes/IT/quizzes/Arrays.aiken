@@ -1,0 +1,104 @@
+Как се декларира едномерен масив от цели числа в C#?
+A. int[] numbers = new int[5];
+B. int numbers[] = new int[5];
+C. int numbers = new int[5];
+D. int[] numbers = int[5];
+ANSWER: A
+
+Как се достъпва първият елемент на масив в C#?
+A. array[0]
+B. array[1]
+C. array.first()
+D. array.getElement(0)
+ANSWER: A
+
+Какъв е резултатът от nums.Length за масив nums с 10 елемента?
+A. 10
+B. 9
+C. 11
+D. nums.Count
+ANSWER: A
+
+Как се инициализира масив с конкретни стойности?
+A. int[] arr = {1, 2, 3};
+B. int[] arr = new int(1, 2, 3);
+C. int[] arr = [1, 2, 3];
+D. int arr = {1, 2, 3};
+ANSWER: A
+
+Как се обхожда масив с foreach в C#?
+A. foreach (int x in arr) { ... }
+B. for (int x in arr) { ... }
+C. foreach (int x : arr) { ... }
+D. foreach (arr as int x) { ... }
+ANSWER: A
+
+Как се намира сумата на елементите в масив nums?
+A. int sum = nums.Sum();
+B. int sum = nums.Total();
+C. int sum = nums.Aggregate();
+D. int sum = nums.SumAll();
+ANSWER: A
+
+Как се обръща редът на елементите в масив?
+A. Array.Reverse(nums);
+B. nums.Reverse();
+C. Array.Sort(nums, reverse: true);
+D. nums.OrderByDescending();
+ANSWER: A
+
+Как се закръглят елементите на масив от double към int с Math.Round?
+A. (int)Math.Round(nums[i], MidpointRounding.AwayFromZero)
+B. Math.Round(nums[i], Round.AwayFromZero)
+C. (int)nums[i].Round()
+D. Math.Floor(nums[i])
+ANSWER: A
+
+Как се съединяват елементите на масив в низ с разделител?
+A. string.Join(",", arr)
+B. arr.ToString(",")
+C. string.Concat(",", arr)
+D. arr.Join(",")
+ANSWER: A
+
+Как се намира минималният елемент в масив?
+A. nums.Min()
+B. nums.Lowest()
+C. Array.Min(nums)
+D. nums.FindMin()
+ANSWER: A
+
+Как се проверява дали масив е празен?
+A. nums.Length == 0
+B. nums.IsEmpty()
+C. nums == null
+D. nums.Count == 0
+ANSWER: A
+
+Как се копира масив в нов масив?
+A. int[] newArr = nums.ToArray();
+B. int[] newArr = nums.Copy();
+C. int[] newArr = nums.CloneArray();
+D. int[] newArr = Array.Duplicate(nums);
+ANSWER: A
+
+Как се сортира масив във възходящ ред?
+A. Array.Sort(nums);
+B. nums.Sort();
+C. nums.OrderBy();
+D. Array.Order(nums);
+ANSWER: A
+
+Как се намира индексът на елемент в масив?
+A. Array.IndexOf(nums, value)
+B. nums.FindIndex(value)
+C. nums.Index(value)
+D. Array.GetIndex(nums, value)
+ANSWER: A
+
+Как се проверява дали елемент съществува в масив?
+A. nums.Contains(value)
+B. nums.Has(value)
+C. Array.Exists(nums, value)
+D. nums.Find(value) != null
+ANSWER: A

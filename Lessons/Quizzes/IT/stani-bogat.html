@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Стани Отличник — Образователен Куиз</title>
+
+  <!-- Tailwind CSS -->
+  <script src="../../../libs/tailwind.cdn.js"></script>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- React & ReactDOM -->
+  <script crossorigin src="../../../libs/react.production.min.js"></script>
+  <script crossorigin src="../../../libs/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for JSX -->
+  <script src="../../../libs/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a1a;
+      min-height: 100vh;
+      color: white;
+    }
+
+    @keyframes goldPulse {
+      0%, 100% { box-shadow: 0 0 8px 2px rgba(250, 204, 21, 0.45); }
+      50%       { box-shadow: 0 0 20px 6px rgba(250, 204, 21, 0.15); }
+    }
+    .pulse-gold { animation: goldPulse 1.8s ease-in-out infinite; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeInUp 0.35s ease-out both; }
+
+    @keyframes countUp {
+      from { transform: scale(1.15); opacity: 0.4; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .count-anim { animation: countUp 0.4s ease-out both; }
+
+    /* reveal: flash yellow → correct/wrong */
+    @keyframes revealFlash {
+      0%   { background-color: #1e3a5f; }
+      40%  { background-color: #ca8a04; }
+      100% { background-color: inherit; }
+    }
+    .revealing { animation: revealFlash 1.6s ease-in-out forwards; }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #111; }
+    ::-webkit-scrollbar-thumb { background: #ca8a04; border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* =========================================================
+       GAME CONFIG
+       ========================================================= */
+    // Grade scale: starts at 2.00 (Слаб), steps decrease towards 6.00 (Отличен)
+    // First guaranteed: level 3 → 3.00 (Среден)
+    // Second guaranteed: level 8 → 4.50 (Добър+)
+    const FULL_LADDER = [
+      { level:  1, amount: '2.00',  amountNum: 2.00, guaranteed: false },  // Слаб
+      { level:  2, amount: '2.50',  amountNum: 2.50, guaranteed: false },
+      { level:  3, amount: '3.00',  amountNum: 3.00, guaranteed: true  },  // ✓ Среден
+      { level:  4, amount: '3.50',  amountNum: 3.50, guaranteed: false },
+      { level:  5, amount: '4.00',  amountNum: 4.00, guaranteed: false },  // Добър
+      { level:  6, amount: '4.25',  amountNum: 4.25, guaranteed: false },
+      { level:  7, amount: '4.50',  amountNum: 4.50, guaranteed: false },
+      { level:  8, amount: '4.75',  amountNum: 4.75, guaranteed: true  },  // ✓ Добър+
+      { level:  9, amount: '5.00',  amountNum: 5.00, guaranteed: false },  // Много добър
+      { level: 10, amount: '5.20',  amountNum: 5.20, guaranteed: false },
+      { level: 11, amount: '5.40',  amountNum: 5.40, guaranteed: false },
+      { level: 12, amount: '5.60',  amountNum: 5.60, guaranteed: false },
+      { level: 13, amount: '5.70',  amountNum: 5.70, guaranteed: false },
+      { level: 14, amount: '5.80',  amountNum: 5.80, guaranteed: false },
+      { level: 15, amount: '6.00',  amountNum: 6.00, guaranteed: false },  // Отличен
+    ];
+
+    function buildLadder(count) {
+      if (count <= 0) return [];
+      if (count >= 15) return FULL_LADDER;
+
+      const ladder = [];
+      const g1 = Math.max(1, Math.floor(count / 3));
+      const g2 = Math.max(g1 + 1, Math.floor((2 * count) / 3));
+
+      for (let i = 0; i < count; i++) {
+        const srcIdx = Math.round((i / Math.max(count - 1, 1)) * 14);
+        ladder.push({
+          level: i + 1,
+          amount: FULL_LADDER[srcIdx].amount,
+          amountNum: FULL_LADDER[srcIdx].amountNum,
+          guaranteed: (i + 1 === g1) || (i + 1 === g2),
+        });
+      }
+      return ladder;
+    }
+
+    /* =========================================================
+       AIKEN PARSER
+       ========================================================= */
+    function parseAiken(text) {
+      const blocks = text
+        .split(/\r?\n\s*\r?\n/)
+        .map(b => b.trim())
+        .filter(b => b.length > 0);
+
+      if (blocks.length === 0) throw new Error('Файлът не съдържа въпроси.');
+
+      const questions = [];
+
+      blocks.forEach((block, bi) => {
+        const lines = block
+          .split(/\r?\n/)
+          .map(l => l.trim())
+          .filter(l => l.length > 0);
+
+        const n = bi + 1; // 1-based for error messages
+
+        if (lines.length < 6) {
+          throw new Error(
+            `Блок ${n}: Очакват се 6 реда (въпрос + 4 опции + ANSWER), намерени ${lines.length}.`
+          );
+        }
+
+        const questionText = lines[0];
+        const options = {};
+        const optionOrder = [];
+
+        for (let i = 1; i <= 4; i++) {
+          const m = lines[i].match(/^([A-Da-d])[.)]\s*(.+)$/);
+          if (!m) {
+            throw new Error(
+              `Блок ${n}, ред ${i + 1}: Невалидна опция "${lines[i]}". Очаква се "A. текст" или "A) текст".`
+            );
+          }
+          const letter = m[1].toUpperCase();
+          if (options[letter]) {
+            throw new Error(`Блок ${n}: Дублирана опция "${letter}".`);
+          }
+          options[letter] = m[2].trim();
+          optionOrder.push(letter);
+        }
+
+        const am = lines[5].match(/^ANSWER:\s*([A-Da-d])$/i);
+        if (!am) {
+          throw new Error(
+            `Блок ${n}: Невалиден ред "${lines[5]}". Очаква се "ANSWER: X" (X ∈ A–D).`
+          );
+        }
+        const answer = am[1].toUpperCase();
+        if (!options[answer]) {
+          throw new Error(`Блок ${n}: Отговор "${answer}" не отговаря на нито една опция.`);
+        }
+
+        questions.push({ question: questionText, options, optionOrder, answer });
+      });
+
+      return questions;
+    }
+
+    /* =========================================================
+       LIFELINE LOGIC
+       ========================================================= */
+    function lifeline50(question) {
+      const { options, answer } = question;
+      const wrong = Object.keys(options).filter(k => k !== answer);
+      const keepWrong = wrong[Math.floor(Math.random() * wrong.length)];
+      return new Set([answer, keepWrong]);
+    }
+
+    function lifelineFriend(question, level) {
+      const { options, answer } = question;
+      const accuracy = level >= 11 ? 0.60 : 0.80;
+      if (Math.random() < accuracy) return { letter: answer, text: options[answer] };
+      const keys = Object.keys(options);
+      const rnd = keys[Math.floor(Math.random() * keys.length)];
+      return { letter: rnd, text: options[rnd] };
+    }
+
+    function lifelineAudience(question, level) {
+      const { options, answer } = question;
+      const keys = Object.keys(options);
+      const others = keys.filter(k => k !== answer);
+
+      let lo, hi;
+      if (level <= 5)       { lo = 60; hi = 85; }
+      else if (level <= 10) { lo = 45; hi = 65; }
+      else                  { lo = 30; hi = 50; }
+
+      const correctPct = lo + Math.random() * (hi - lo);
+      let remaining = 100 - correctPct;
+      const raw = {};
+      others.forEach((k, i) => {
+        if (i === others.length - 1) { raw[k] = remaining; }
+        else {
+          const share = Math.random() * remaining * 0.8;
+          raw[k] = share;
+          remaining -= share;
+        }
+      });
+      raw[answer] = correctPct;
+
+      // Round to integers summing to exactly 100
+      const rounded = {};
+      let total = 0;
+      keys.forEach(k => { rounded[k] = Math.round(raw[k]); total += rounded[k]; });
+      const diff = 100 - total;
+      if (diff !== 0) {
+        // Adjust the key with the largest fractional part
+        const adj = keys.reduce(
+          (best, k) => ((raw[k] % 1) > (raw[best] % 1) ? k : best),
+          keys[0]
+        );
+        rounded[adj] += diff;
+      }
+      return rounded;
+    }
+
+    /* =========================================================
+       UTILITIES
+       ========================================================= */
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getGuaranteedAmount(ladder, currentIdx) {
+      for (let i = currentIdx - 1; i >= 0; i--) {
+        if (ladder[i].guaranteed) return ladder[i].amount;
+      }
+      return '2.00';
+    }
+
+    /* =========================================================
+       MONEY LADDER COMPONENT
+       ========================================================= */
+    function MoneyLadder({ ladder, currentIdx, isCollapsed, onToggle }) {
+      return (
+        <div>
+          {/* Mobile toggle */}
+          <button
+            onClick={onToggle}
+            className="lg:hidden w-full flex items-center justify-between bg-blue-950/60 border border-blue-800/40 rounded-xl px-4 py-2 text-yellow-400 text-sm font-semibold mb-2"
+            aria-label="Покажи/скрий стълбицата с оценки"
+          >
+            <span>🎓 Оценки</span>
+            <i className={`fas fa-chevron-${isCollapsed ? 'down' : 'up'}`}></i>
+          </button>
+
+          <div className={`${isCollapsed ? 'hidden' : 'flex'} lg:flex flex-col-reverse gap-px overflow-y-auto max-h-80 lg:max-h-none`}>
+            {ladder.map((step, idx) => {
+              const isCurrent  = idx === currentIdx;
+              const isPast     = idx < currentIdx;
+              return (
+                <div
+                  key={step.level}
+                  className={`
+                    flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-all select-none
+                    ${isCurrent
+                      ? 'bg-yellow-400 text-gray-900 font-bold pulse-gold'
+                      : step.guaranteed
+                        ? 'bg-blue-900/50 text-blue-200 border border-blue-600/30'
+                        : isPast
+                          ? 'bg-green-900/30 text-green-400'
+                          : 'bg-gray-900/30 text-gray-500'
+                    }
+                  `}
+                >
+                  <span className="w-5 text-center shrink-0">{step.level}</span>
+                  <span className="flex-1 text-right">{step.amount}</span>
+                  {step.guaranteed && (
+                    <span className="text-xs ml-1" title="Гарантирано ниво">🛡️</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================
+       AUDIENCE CHART COMPONENT
+       ========================================================= */
+    function AudienceChart({ poll, optionOrder }) {
+      const barColors = { A: '#3b82f6', B: '#10b981', C: '#f59e0b', D: '#ef4444' };
+      return (
+        <div>
+          <p className="text-purple-300 font-semibold text-sm text-center mb-3">
+            👥 Публиката гласува:
+          </p>
+          <div className="space-y-2">
+            {optionOrder.map(letter => (
+              <div key={letter} className="flex items-center gap-2">
+                <span className="text-white font-bold text-sm w-5 shrink-0">{letter}</span>
+                <div className="flex-1 bg-gray-800 rounded-full h-5 overflow-hidden">
+                  <div
+                    className="h-full rounded-full flex items-center justify-end pr-2 transition-all duration-700"
+                    style={{ width: `${poll[letter]}%`, backgroundColor: barColors[letter] || '#6b7280' }}
+                  >
+                    <span className="text-white text-xs font-bold">{poll[letter]}%</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================
+       FRIEND MODAL
+       ========================================================= */
+    function FriendModal({ friendResult, onClose }) {
+      useEffect(() => {
+        const h = (e) => { if (e.key === 'Escape') onClose(); };
+        document.addEventListener('keydown', h);
+        return () => document.removeEventListener('keydown', h);
+      }, [onClose]);
+
+      return (
+        <div
+          className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4"
+          role="dialog" aria-modal="true" aria-label="Обаждане на приятел"
+          onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        >
+          <div className="bg-gray-900 border border-yellow-500/60 rounded-2xl p-6 max-w-sm w-full fade-in shadow-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-yellow-400 font-bold text-lg">📞 Приятелят казва:</h3>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white transition-colors p-1"
+                aria-label="Затвори"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="bg-gray-800 rounded-xl p-4 text-white text-lg italic leading-relaxed">
+              „Мисля, че отговорът е{' '}
+              <span className="text-yellow-400 font-bold not-italic">
+                {friendResult.letter}
+              </span>
+              ."
+            </div>
+            <button
+              onClick={onClose}
+              className="mt-4 w-full bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2.5 rounded-xl transition-colors"
+            >
+              Благодаря!
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================
+       QUESTION PANEL
+       ========================================================= */
+    function QuestionPanel({
+      question, level, onAnswer, lifelines, onUseLifeline,
+      revealAnswer, disabled
+    }) {
+      const [selectedOption, setSelectedOption]   = useState(null);
+      const [visibleOptions, setVisibleOptions]   = useState(() => new Set(question.optionOrder));
+      const [audiencePoll, setAudiencePoll]       = useState(null);
+      const [showAudience, setShowAudience]       = useState(false);
+      const [friendResult, setFriendResult]       = useState(null);
+      const [showFriend, setShowFriend]           = useState(false);
+
+      // Reset all local state when question changes
+      useEffect(() => {
+        setSelectedOption(null);
+        setVisibleOptions(new Set(question.optionOrder));
+        setAudiencePoll(null);
+        setShowAudience(false);
+        setFriendResult(null);
+        setShowFriend(false);
+      }, [question]);
+
+      // --- Keyboard handler using ref to avoid stale closures ---
+      const stateRef = useRef({});
+      stateRef.current = { selectedOption, visibleOptions, disabled, revealAnswer, showFriend };
+
+      useEffect(() => {
+        const handler = (e) => {
+          const { selectedOption, visibleOptions, disabled, revealAnswer, showFriend } = stateRef.current;
+          if (disabled || revealAnswer !== null || showFriend) return;
+
+          const keyMap = {
+            '1': 'A', '2': 'B', '3': 'C', '4': 'D',
+            'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D',
+          };
+          const mapped = keyMap[e.key.toLowerCase()];
+          if (mapped && visibleOptions.has(mapped)) {
+            setSelectedOption(mapped);
+          }
+          if ((e.key === 'Enter') && selectedOption && !disabled) {
+            onAnswer(selectedOption);
+          }
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+      }, [onAnswer]); // onAnswer is stable from useCallback in parent
+
+      // --- Lifelines ---
+      const handle50 = () => {
+        if (lifelines.fiftyFifty || disabled) return;
+        const kept = lifeline50(question);
+        setVisibleOptions(kept);
+        if (selectedOption && !kept.has(selectedOption)) setSelectedOption(null);
+        onUseLifeline('fiftyFifty');
+      };
+
+      const handleFriend = () => {
+        if (lifelines.friend || disabled) return;
+        setFriendResult(lifelineFriend(question, level));
+        setShowFriend(true);
+        onUseLifeline('friend');
+      };
+
+      const handleAudience = () => {
+        if (lifelines.audience || disabled) return;
+        setAudiencePoll(lifelineAudience(question, level));
+        setShowAudience(true);
+        onUseLifeline('audience');
+      };
+
+      // --- Option styling ---
+      const optionClass = (letter) => {
+        const base = 'flex items-center gap-3 p-3 lg:p-4 rounded-xl border-2 transition-all duration-300 text-left w-full';
+        if (!visibleOptions.has(letter)) {
+          return `${base} border-gray-800/30 bg-gray-900/20 text-gray-700 cursor-not-allowed`;
+        }
+        if (revealAnswer !== null) {
+          if (letter === question.answer)
+            return `${base} border-green-400 bg-green-700/60 text-white font-bold`;
+          if (letter === revealAnswer)
+            return `${base} border-red-400 bg-red-700/60 text-white font-bold`;
+          return `${base} border-gray-700/40 bg-gray-900/30 text-gray-500`;
+        }
+        if (letter === selectedOption)
+          return `${base} border-yellow-400 bg-yellow-500/20 text-white font-bold`;
+        return `${base} border-blue-700/50 bg-blue-950/50 text-white hover:border-blue-500 hover:bg-blue-900/50 cursor-pointer`;
+      };
+
+      const lifelineBtn = (used, colorClass, label, icon, onClickFn) => (
+        <button
+          onClick={onClickFn}
+          disabled={used || disabled}
+          aria-label={label}
+          className={`
+            flex flex-col items-center px-3 lg:px-5 py-2 rounded-xl border text-xs lg:text-sm font-semibold transition-all
+            ${used
+              ? 'border-gray-700/40 bg-gray-800/20 text-gray-600 opacity-50 cursor-not-allowed line-through'
+              : `${colorClass} cursor-pointer`
+            }
+          `}
+        >
+          <span className="text-xl lg:text-2xl">{icon}</span>
+          <span className="mt-0.5 font-normal opacity-80 text-xs hidden sm:block">{label}</span>
+        </button>
+      );
+
+      return (
+        <div className="flex flex-col gap-4">
+          {/* Lifelines row */}
+          <div className="flex justify-center gap-3">
+            {lifelineBtn(lifelines.fiftyFifty, 'border-yellow-500/60 bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20', '50:50', '50:50', handle50)}
+            {lifelineBtn(lifelines.friend,     'border-blue-400/60 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20', 'Приятел', '📞', handleFriend)}
+            {lifelineBtn(lifelines.audience,   'border-purple-400/60 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20', 'Публика', '👥', handleAudience)}
+          </div>
+
+          {/* Question box */}
+          <div className="bg-blue-950/50 border border-blue-700/40 rounded-2xl p-4 lg:p-6">
+            <p className="text-blue-400 text-xs font-semibold uppercase tracking-wider mb-2">
+              Въпрос {level}
+            </p>
+            <p className="text-white text-base lg:text-xl font-semibold leading-relaxed">
+              {question.question}
+            </p>
+          </div>
+
+          {/* Options grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:gap-3">
+            {question.optionOrder.map((letter) => (
+              <button
+                key={letter}
+                onClick={() => {
+                  if (!disabled && revealAnswer === null && visibleOptions.has(letter))
+                    setSelectedOption(letter);
+                }}
+                disabled={!visibleOptions.has(letter) || disabled}
+                className={optionClass(letter)}
+                aria-label={`Опция ${letter}: ${question.options[letter]}`}
+              >
+                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 text-sm font-bold shrink-0">
+                  {letter}
+                </span>
+                <span className="text-sm lg:text-base">
+                  {visibleOptions.has(letter) ? question.options[letter] : ''}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Confirm / Cancel */}
+          {selectedOption !== null && revealAnswer === null && !disabled && (
+            <div className="flex gap-3 justify-center fade-in">
+              <button
+                onClick={() => onAnswer(selectedOption)}
+                className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-xl transition-colors shadow-lg shadow-yellow-500/20"
+                aria-label="Потвърди отговора"
+              >
+                Потвърди <span className="opacity-60 text-sm font-normal">(Enter)</span>
+              </button>
+              <button
+                onClick={() => setSelectedOption(null)}
+                className="bg-gray-700 hover:bg-gray-600 text-white font-medium px-5 py-3 rounded-xl transition-colors"
+                aria-label="Откажи избора"
+              >
+                Откажи
+              </button>
+            </div>
+          )}
+
+          {/* Audience poll */}
+          {showAudience && audiencePoll && (
+            <div className="bg-gray-900/60 border border-purple-500/30 rounded-xl p-4 fade-in">
+              <AudienceChart poll={audiencePoll} optionOrder={question.optionOrder} />
+            </div>
+          )}
+
+          {/* Friend modal */}
+          {showFriend && friendResult && (
+            <FriendModal friendResult={friendResult} onClose={() => setShowFriend(false)} />
+          )}
+        </div>
+      );
+    }
+
+    /* =========================================================
+       LOBBY
+       ========================================================= */
+    function MillionaireLobby({ onStart, onBack }) {
+      const [categories, setCategories]     = useState([]);
+      const [selected, setSelected]         = useState(new Set());
+      const [questionCounts, setQCounts]    = useState({});
+      const [loading, setLoading]           = useState(true);
+      const [error, setError]               = useState(null);
+
+      useEffect(() => {
+        fetch('quizzes/manifest.json')
+          .then(r => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}: не може да се зареди manifest.json`);
+            return r.json();
+          })
+          .then(data => { setCategories(data.categories); setLoading(false); })
+          .catch(e => { setError(e.message); setLoading(false); });
+      }, []);
+
+      // Pre-count questions per category
+      useEffect(() => {
+        categories.forEach(cat => {
+          if (questionCounts[cat.id] !== undefined) return;
+          fetch(`quizzes/${cat.file}`)
+            .then(r => r.text())
+            .then(txt => {
+              let cnt = 0;
+              try { cnt = parseAiken(txt).length; } catch {}
+              setQCounts(prev => ({ ...prev, [cat.id]: cnt }));
+            })
+            .catch(() => setQCounts(prev => ({ ...prev, [cat.id]: 0 })));
+        });
+      }, [categories]);
+
+      const totalQ = [...selected].reduce((s, id) => s + (questionCounts[id] || 0), 0);
+
+      const toggleCat = (id) => {
+        setSelected(prev => {
+          const next = new Set(prev);
+          next.has(id) ? next.delete(id) : next.add(id);
+          return next;
+        });
+      };
+
+      const handleStart = () => {
+        const cats = categories.filter(c => selected.has(c.id));
+        onStart(cats);
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 py-10"
+             style={{ background: 'radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0a0a1a 70%)' }}>
+          <div className="w-full max-w-xl fade-in">
+            {/* Hero */}
+            <div className="text-center mb-8">
+              <div className="text-7xl mb-4 select-none">🎓</div>
+              <h1 className="text-4xl lg:text-5xl font-bold text-yellow-400 mb-2"
+                  style={{ textShadow: '0 0 40px rgba(250,204,21,0.4)' }}>
+                Стани Отличник
+              </h1>
+              <p className="text-blue-300 text-base lg:text-lg">
+                Образователен куиз — изкачи стълбицата от 2 до 6!
+              </p>
+            </div>
+
+            {/* Category card */}
+            <div className="bg-gray-900/80 border border-blue-800/40 rounded-2xl p-5 lg:p-6 mb-5 shadow-xl">
+              <h2 className="text-white font-bold text-base mb-4 flex items-center gap-2">
+                <i className="fas fa-list-check text-yellow-400"></i>
+                Избери категории
+              </h2>
+
+              {loading && (
+                <div className="text-center text-blue-300 py-10">
+                  <i className="fas fa-spinner fa-spin text-3xl text-yellow-400 mb-3 block"></i>
+                  Зареждане на категориите…
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-red-900/40 border border-red-500/40 rounded-xl p-4 text-red-300 text-sm">
+                  <i className="fas fa-exclamation-triangle mr-2"></i>{error}
+                </div>
+              )}
+
+              {!loading && !error && (
+                <div className="space-y-3">
+                  {categories.map(cat => (
+                    <label
+                      key={cat.id}
+                      className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all
+                        ${selected.has(cat.id)
+                          ? 'border-yellow-500/70 bg-yellow-500/10'
+                          : 'border-gray-700/40 bg-gray-800/20 hover:border-blue-600/50'
+                        }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected.has(cat.id)}
+                        onChange={() => toggleCat(cat.id)}
+                        className="mt-0.5 w-4 h-4 accent-yellow-400 shrink-0"
+                        aria-label={cat.title}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-semibold text-sm">{cat.title}</p>
+                        <p className="text-gray-400 text-xs mt-0.5 leading-relaxed">{cat.description}</p>
+                      </div>
+                      <span className="text-yellow-400 text-xs font-semibold shrink-0 ml-2 pt-0.5">
+                        {questionCounts[cat.id] !== undefined
+                          ? `${questionCounts[cat.id]} въпр.`
+                          : <i className="fas fa-spinner fa-spin"></i>}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            {selected.size > 0 && (
+              <p className="text-center text-sm text-blue-300 mb-4 fade-in">
+                Избрани: <span className="text-yellow-400 font-bold">{totalQ}</span> въпроса
+                {totalQ < 15 && totalQ > 0 && (
+                  <span className="text-orange-400 ml-2">(стълбицата ще бъде адаптирана до {totalQ} нива)</span>
+                )}
+                {totalQ > 15 && (
+                  <span className="text-gray-500 ml-2">(ще се вземат само 15)</span>
+                )}
+              </p>
+            )}
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={onBack}
+                className="shrink-0 flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-medium px-5 py-3 rounded-xl transition-colors"
+              >
+                <i className="fas fa-arrow-left"></i>
+                Назад
+              </button>
+              <button
+                onClick={handleStart}
+                disabled={selected.size === 0 || totalQ === 0}
+                className={`flex-1 flex items-center justify-center gap-2 font-bold py-3 rounded-xl transition-all text-base
+                  ${selected.size > 0 && totalQ > 0
+                    ? 'bg-yellow-500 hover:bg-yellow-400 text-gray-900 shadow-lg shadow-yellow-500/25'
+                    : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  }`}
+              >
+                <i className="fas fa-play"></i>
+                Старт!
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================
+       GAME SCREEN
+       ========================================================= */
+    function MillionaireGame({ questions, onEnd }) {
+      // Freeze shuffled questions + ladder at mount
+      const [gameState] = useState(() => {
+        const shuffled = shuffle(questions);
+        const count    = Math.min(shuffled.length, 15);
+        const qs       = shuffled.slice(0, count);
+        const lad      = buildLadder(count);
+        return { qs, lad };
+      });
+      const { qs: gameQs, lad: ladder } = gameState;
+
+      const [currentIdx,  setCurrentIdx]  = useState(0);
+      const [correctCount, setCorrect]    = useState(0);
+      const [lifelines,   setLifelines]   = useState({ fiftyFifty: false, friend: false, audience: false });
+      const [revealAnswer, setReveal]     = useState(null); // null | chosen letter
+      const [isRevealing, setIsRevealing] = useState(false);
+      const [ladderCollapsed, setLColl]   = useState(true);
+
+      const currentQuestion = gameQs[currentIdx];
+      const currentStep     = ladder[currentIdx];
+
+      const handleAnswer = useCallback((chosen) => {
+        if (isRevealing) return;
+        setReveal(chosen);
+        setIsRevealing(true);
+
+        setTimeout(() => {
+          const isCorrect = chosen === currentQuestion.answer;
+          const newCorrect = isCorrect ? correctCount + 1 : correctCount;
+
+          if (isCorrect && currentIdx + 1 >= gameQs.length) {
+            // Last question answered correctly → won!
+            onEnd({
+              result: 'won',
+              amount: ladder[ladder.length - 1].amount,
+              correctCount: newCorrect,
+              total: gameQs.length,
+            });
+          } else if (isCorrect) {
+            setCorrect(newCorrect);
+            setCurrentIdx(i => i + 1);
+            setReveal(null);
+            setIsRevealing(false);
+          } else {
+            onEnd({
+              result: 'wrong',
+              amount: getGuaranteedAmount(ladder, currentIdx),
+              correctAnswer: currentQuestion.answer,
+              chosenAnswer: chosen,
+              correctCount,
+              total: gameQs.length,
+              level: currentIdx + 1,
+            });
+          }
+        }, 1800);
+      }, [isRevealing, currentIdx, correctCount, currentQuestion, gameQs, ladder, onEnd]);
+
+      const handleQuit = () => {
+        if (isRevealing) return;
+        onEnd({
+          result: 'quit',
+          amount: currentStep.amount,
+          correctCount,
+          total: gameQs.length,
+          level: currentIdx + 1,
+        });
+      };
+
+      const handleUseLifeline = useCallback((name) => {
+        setLifelines(prev => ({ ...prev, [name]: true }));
+      }, []);
+
+      const quitAmount = currentStep.amount;
+
+      return (
+        <div className="min-h-screen flex flex-col p-3 lg:p-5"
+             style={{ background: 'radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0a0a1a 75%)' }}>
+          {/* Top bar */}
+          <div className="flex items-center justify-between mb-4 max-w-6xl mx-auto w-full shrink-0">
+            <div className="flex items-center gap-2 text-yellow-400 font-bold">
+              <span className="text-xl">🎓</span>
+              <span className="hidden sm:inline">Стани Отличник</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-blue-300 text-sm hidden sm:block">
+                Ниво <span className="font-bold text-white">{currentIdx + 1}</span>/{ladder.length}
+              </span>
+              <button
+                onClick={handleQuit}
+                disabled={isRevealing}
+                className={`flex items-center gap-2 border text-sm font-semibold px-4 py-2 rounded-xl transition-all
+                  ${isRevealing
+                    ? 'border-gray-700/40 bg-gray-800/20 text-gray-600 cursor-not-allowed opacity-50'
+                    : 'border-red-500/50 bg-red-800/40 text-red-300 hover:bg-red-700/50'
+                  }`}
+                aria-label="Спри и запази оценката"
+              >
+                <i className="fas fa-hand-paper"></i>
+                <span>Спирам</span>
+                <span className="text-yellow-400 font-bold hidden sm:inline">(оц. {quitAmount})</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Main layout */}
+          <div className="flex-1 max-w-6xl mx-auto w-full flex flex-col lg:flex-row gap-4 min-h-0">
+            {/* Question area */}
+            <div className="flex-1 bg-gray-900/50 border border-blue-900/40 rounded-2xl p-4 lg:p-6">
+              <QuestionPanel
+                key={currentIdx}
+                question={currentQuestion}
+                level={currentIdx + 1}
+                onAnswer={handleAnswer}
+                lifelines={lifelines}
+                onUseLifeline={handleUseLifeline}
+                revealAnswer={revealAnswer}
+                disabled={isRevealing}
+              />
+            </div>
+
+            {/* Grade ladder sidebar */}
+            <div className="lg:w-52 shrink-0 bg-gray-900/50 border border-blue-900/40 rounded-2xl p-3">
+              <MoneyLadder
+                ladder={ladder}
+                currentIdx={currentIdx}
+                isCollapsed={ladderCollapsed}
+                onToggle={() => setLColl(v => !v)}
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================
+       END SCREEN
+       ========================================================= */
+    function MillionaireEnd({ result, onNewGame, onBack }) {
+      const targetNum = parseFloat(result.amount) || 2.00;
+      const [displayAmt, setDisplayAmt] = useState('2.00');
+      const [animKey, setAnimKey]       = useState(0);
+
+      useEffect(() => {
+        setAnimKey(k => k + 1);
+        const start = 2.00;
+        let current = start;
+        if (targetNum <= start) { setDisplayAmt(start.toFixed(2)); return; }
+        const steps = 40;
+        const inc   = (targetNum - start) / steps;
+        const timer = setInterval(() => {
+          current = Math.min(current + inc, targetNum);
+          setDisplayAmt(current.toFixed(2));
+          if (current >= targetNum) clearInterval(timer);
+        }, 35);
+        return () => clearInterval(timer);
+      }, [targetNum]);
+
+      const isWon   = result.result === 'won';
+      const isWrong = result.result === 'wrong';
+      const isQuit  = result.result === 'quit';
+
+      const gradeLabel = (g) => {
+        const n = parseFloat(g);
+        if (n >= 5.50) return 'Отличен';
+        if (n >= 4.50) return 'Много добър';
+        if (n >= 3.50) return 'Добър';
+        if (n >= 3.00) return 'Среден';
+        return 'Слаб';
+      };
+
+      const headline = isWon  ? { emoji: '🎉', text: 'ПОЗДРАВЛЕНИЯ!',       color: 'text-yellow-400' }
+                      : isQuit ? { emoji: '👋', text: 'Избра да спреш',      color: 'text-blue-300' }
+                               : { emoji: '❌', text: 'Грешен отговор',      color: 'text-red-400' };
+
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 py-10"
+             style={{ background: 'radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0a0a1a 70%)' }}>
+          <div className="w-full max-w-lg fade-in text-center">
+            <div className="text-6xl mb-4 select-none">{headline.emoji}</div>
+            <h1 className={`text-3xl lg:text-4xl font-bold mb-2 ${headline.color}`}>
+              {headline.text}
+            </h1>
+
+            {isWon && (
+              <p className="text-gray-300 text-lg mb-6">Постигна оценка <span className="text-yellow-400 font-bold">6.00 — Отличен</span>!</p>
+            )}
+            {isQuit && (
+              <p className="text-gray-300 text-base mb-6">
+                Записваш оценка <span className="text-yellow-400 font-bold">{result.amount}</span>{' '}
+                — <span className="text-yellow-300">{gradeLabel(result.amount)}</span>.
+              </p>
+            )}
+            {isWrong && (
+              <p className="text-gray-300 text-base mb-6">
+                {parseFloat(result.amount) > 2.00
+                  ? <>Не уцели, но запазваш гарантирана оценка{' '}<span className="text-yellow-400 font-bold">{result.amount}</span>{' '}— <span className="text-yellow-300">{gradeLabel(result.amount)}</span>.</>
+                  : 'Не уцели. Няма гарантирани оценки — записва се 2.00.'}
+              </p>
+            )}
+
+            {/* Grade display */}
+            <div className="bg-gray-900/80 border border-yellow-500/40 rounded-2xl p-8 mb-5 shadow-xl">
+              <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">Постигната оценка</p>
+              <p key={animKey} className="text-yellow-400 text-5xl lg:text-6xl font-bold count-anim">
+                {displayAmt}
+              </p>
+              <p className="text-yellow-300/70 text-sm mt-2 font-medium">{gradeLabel(displayAmt)}</p>
+            </div>
+
+            {/* Stats */}
+            <div className="bg-gray-900/60 border border-blue-800/30 rounded-xl p-4 mb-8 text-sm">
+              <p className="text-gray-300">
+                Верни отговори:{' '}
+                <span className="text-green-400 font-bold">{result.correctCount}</span>
+                <span className="text-gray-600"> / {result.total}</span>
+              </p>
+              {isWrong && (
+                <p className="text-gray-400 mt-1">
+                  Спря на ниво <span className="text-white font-bold">{result.level}</span>.{' '}
+                  Правилният отговор беше{' '}
+                  <span className="text-green-400 font-bold">{result.correctAnswer}</span>.
+                </p>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={onNewGame}
+                className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-yellow-500/20"
+              >
+                <i className="fas fa-redo"></i>
+                Нова игра
+              </button>
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-medium px-6 py-3 rounded-xl transition-colors"
+              >
+                <i className="fas fa-home"></i>
+                Към уроците
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* =========================================================
+       MAIN APP
+       ========================================================= */
+    function App() {
+      const [screen,     setScreen]     = useState('lobby'); // lobby | loading | game | end
+      const [questions,  setQuestions]  = useState([]);
+      const [endResult,  setEndResult]  = useState(null);
+      const [loadError,  setLoadError]  = useState(null);
+
+      const handleStart = async (selectedCats) => {
+        setScreen('loading');
+        setLoadError(null);
+        try {
+          const all = [];
+          for (const cat of selectedCats) {
+            const resp = await fetch(`quizzes/${cat.file}`);
+            if (!resp.ok)
+              throw new Error(`HTTP ${resp.status}: не може да се зареди файл „${cat.file}".`);
+            const txt = await resp.text();
+            all.push(...parseAiken(txt));
+          }
+          setQuestions(all);
+          setScreen('game');
+        } catch (e) {
+          setLoadError(e.message);
+          setScreen('lobby');
+        }
+      };
+
+      const handleEnd = (result) => {
+        setEndResult(result);
+        setScreen('end');
+      };
+
+      const handleBack = () => {
+        // Try history back; fallback to root
+        if (window.history.length > 1) window.history.back();
+        else window.location.href = '../../../index.html';
+      };
+
+      if (screen === 'lobby') {
+        return (
+          <>
+            {loadError && (
+              <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-900 border border-red-500 text-red-200 px-5 py-3 rounded-xl shadow-2xl text-sm max-w-sm text-center">
+                <i className="fas fa-exclamation-triangle mr-2"></i>{loadError}
+              </div>
+            )}
+            <MillionaireLobby onStart={handleStart} onBack={handleBack} />
+          </>
+        );
+      }
+
+      if (screen === 'loading') {
+        return (
+          <div className="min-h-screen flex items-center justify-center"
+               style={{ background: '#0a0a1a' }}>
+            <div className="text-center">
+              <i className="fas fa-spinner fa-spin text-5xl text-yellow-400 block mb-4"></i>
+              <p className="text-white text-xl">Зареждане на въпросите…</p>
+            </div>
+          </div>
+        );
+      }
+
+      if (screen === 'game') {
+        return <MillionaireGame questions={questions} onEnd={handleEnd} />;
+      }
+
+      if (screen === 'end') {
+        return (
+          <MillionaireEnd
+            result={endResult}
+            onNewGame={() => setScreen('lobby')}
+            onBack={handleBack}
+          />
+        );
+      }
+
+      return null;
+    }
+
+    ReactDOM.render(<App />, document.getElementById('app'));
+  </script>
+</body>
+</html>

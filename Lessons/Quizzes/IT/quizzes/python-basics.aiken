@@ -1,0 +1,69 @@
+Кой оператор в Python връща остатъка от деление?
+A. /
+B. //
+C. **
+D. %
+ANSWER: D
+
+Каква е структурата за съхранение на двойки ключ-стойност в Python?
+A. list
+B. tuple
+C. dict
+D. set
+ANSWER: C
+
+Кой цикъл в Python се използва за обхождане на елементи в последователност?
+A. while
+B. for
+C. do-while
+D. loop
+ANSWER: B
+
+Каква функция се използва за намиране на дължината на списък в Python?
+A. size()
+B. count()
+C. length()
+D. len()
+ANSWER: D
+
+Кое ключово слово се използва за дефиниране на функция в Python?
+A. func
+B. function
+C. define
+D. def
+ANSWER: D
+
+Каква е стойността на израза 2 ** 3 в Python?
+A. 6
+B. 9
+C. 8
+D. 5
+ANSWER: C
+
+Кой метод добавя елемент в края на списък в Python?
+A. add()
+B. insert()
+C. push()
+D. append()
+ANSWER: D
+
+Какво е резултатът от израза type([]) в Python?
+A. list
+B. array
+C. <class 'list'>
+D. tuple
+ANSWER: C
+
+Кое е вярното твърдение за tuple в Python?
+A. Може да бъде променян след създаване
+B. Е неизменяем (immutable)
+C. Не поддържа индексиране
+D. Може да съдържа само числа
+ANSWER: B
+
+Кой символ се използва за коментар в Python?
+A. //
+B. --
+C. #
+D. /* */
+ANSWER: C

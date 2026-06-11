@@ -15,11 +15,6 @@
     "path": "Lessons/IT/8 клас/"
   },
   {
-    "name": "VR",
-    "type": "folder",
-    "path": "Lessons/IT/8 клас/VR/"
-  },
-  {
     "name": "data-guardian",
     "type": "file",
     "path": "Lessons/IT/8 клас/data-guardian.html"
@@ -125,9 +120,34 @@
     "path": "Lessons/Other/Malta/video/"
   },
   {
+    "name": "Quizzes",
+    "type": "folder",
+    "path": "Lessons/Quizzes/"
+  },
+  {
+    "name": "Informatics",
+    "type": "folder",
+    "path": "Lessons/Quizzes/Informatics/"
+  },
+  {
+    "name": "IT",
+    "type": "folder",
+    "path": "Lessons/Quizzes/IT/"
+  },
+  {
+    "name": "stani-bogat",
+    "type": "file",
+    "path": "Lessons/Quizzes/IT/stani-bogat.html"
+  },
+  {
     "name": "Информатика",
     "type": "folder",
     "path": "Lessons/Информатика/"
+  },
+  {
+    "name": "Modul1",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul1/"
   },
   {
     "name": "Modul2",
@@ -203,6 +223,11 @@
     "name": "sort-search-spa",
     "type": "file",
     "path": "Lessons/Информатика/Modul2/sort-search-spa.html"
+  },
+  {
+    "name": "Modul3",
+    "type": "folder",
+    "path": "Lessons/Информатика/Modul3/"
   },
   {
     "name": "Modul4",

@@ -25,7 +25,8 @@ IGNORE_ITEMS = {
     '.DS_Store',
     'Thumbs.db',
     'backgrounds',
-    'libs'
+    'libs',
+    'quizzes',  # data folder for quiz activities (aiken + manifest files, not lessons)
 }
 
 def should_ignore(item_name: str) -> bool:
