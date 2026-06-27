@@ -33,3 +33,6 @@ backgrounds/*.jpeg
 backgrounds/*.webp
 backgrounds/*.gif
 !backgrounds/README.md
+
+# Tauri build output
+sets-app/src-tauri/target/
