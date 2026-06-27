@@ -13,8 +13,10 @@ jobs:
         include:
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
+            bundles: nsis
           - platform: macos-latest
             target: aarch64-apple-darwin
+            bundles: app
 
     runs-on: ${{ matrix.platform }}
 
@@ -31,18 +33,20 @@ jobs:
         with:
           workspaces: sets-app/src-tauri
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
-        with:
-          projectPath: sets-app
-          args: --target ${{ matrix.target }}
+        working-directory: sets-app/src-tauri
+        run: cargo tauri build --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sets-lesson-${{ matrix.platform }}
           path: |
-            sets-app/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
             sets-app/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
+            sets-app/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
             sets-app/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.app
             sets-app/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
