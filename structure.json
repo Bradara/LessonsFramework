@@ -15,6 +15,11 @@
     "path": "Lessons/IT/8 клас/"
   },
   {
+    "name": "VR",
+    "type": "folder",
+    "path": "Lessons/IT/8 клас/VR/"
+  },
+  {
     "name": "data-guardian",
     "type": "file",
     "path": "Lessons/IT/8 клас/data-guardian.html"
@@ -95,6 +100,16 @@
     "path": "Lessons/Other/"
   },
   {
+    "name": "Labels",
+    "type": "folder",
+    "path": "Lessons/Other/Labels/"
+  },
+  {
+    "name": "Обложка за диск.dc",
+    "type": "file",
+    "path": "Lessons/Other/Labels/Обложка за диск.dc.html"
+  },
+  {
     "name": "Malta",
     "type": "folder",
     "path": "Lessons/Other/Malta/"
@@ -125,11 +140,6 @@
     "path": "Lessons/Quizzes/"
   },
   {
-    "name": "Informatics",
-    "type": "folder",
-    "path": "Lessons/Quizzes/Informatics/"
-  },
-  {
     "name": "IT",
     "type": "folder",
     "path": "Lessons/Quizzes/IT/"
@@ -143,11 +153,6 @@
     "name": "Информатика",
     "type": "folder",
     "path": "Lessons/Информатика/"
-  },
-  {
-    "name": "Modul1",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul1/"
   },
   {
     "name": "Modul2",
@@ -173,6 +178,11 @@
     "name": "04multidimensional-arrays",
     "type": "file",
     "path": "Lessons/Информатика/Modul2/04multidimensional-arrays.html"
+  },
+  {
+    "name": "05sets-portable",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul2/05sets-portable.html"
   },
   {
     "name": "05sets",
@@ -225,11 +235,6 @@
     "path": "Lessons/Информатика/Modul2/sort-search-spa.html"
   },
   {
-    "name": "Modul3",
-    "type": "folder",
-    "path": "Lessons/Информатика/Modul3/"
-  },
-  {
     "name": "Modul4",
     "type": "folder",
     "path": "Lessons/Информатика/Modul4/"
@@ -248,5 +253,1760 @@
     "name": "project_dev_of_IS-spa",
     "type": "file",
     "path": "Lessons/Информатика/Modul4/project_dev_of_IS-spa.html"
+  },
+  {
+    "name": "sets-app",
+    "type": "folder",
+    "path": "sets-app/"
+  },
+  {
+    "name": "src-tauri",
+    "type": "folder",
+    "path": "sets-app/src-tauri/"
+  },
+  {
+    "name": "gen",
+    "type": "folder",
+    "path": "sets-app/src-tauri/gen/"
+  },
+  {
+    "name": "schemas",
+    "type": "folder",
+    "path": "sets-app/src-tauri/gen/schemas/"
+  },
+  {
+    "name": "icons",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/"
+  },
+  {
+    "name": "android",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/"
+  },
+  {
+    "name": "mipmap-anydpi-v26",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/mipmap-anydpi-v26/"
+  },
+  {
+    "name": "mipmap-hdpi",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/mipmap-hdpi/"
+  },
+  {
+    "name": "mipmap-mdpi",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/mipmap-mdpi/"
+  },
+  {
+    "name": "mipmap-xhdpi",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/mipmap-xhdpi/"
+  },
+  {
+    "name": "mipmap-xxhdpi",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/mipmap-xxhdpi/"
+  },
+  {
+    "name": "mipmap-xxxhdpi",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/mipmap-xxxhdpi/"
+  },
+  {
+    "name": "values",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/android/values/"
+  },
+  {
+    "name": "ios",
+    "type": "folder",
+    "path": "sets-app/src-tauri/icons/ios/"
+  },
+  {
+    "name": "src",
+    "type": "folder",
+    "path": "sets-app/src-tauri/src/"
+  },
+  {
+    "name": "target",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/"
+  },
+  {
+    "name": "debug",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/"
+  },
+  {
+    "name": "build",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/"
+  },
+  {
+    "name": "anyhow-b9b583ae1b266aa5",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/anyhow-b9b583ae1b266aa5/"
+  },
+  {
+    "name": "anyhow-c3db90e380fb4fb0",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/anyhow-c3db90e380fb4fb0/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/anyhow-c3db90e380fb4fb0/out/"
+  },
+  {
+    "name": "camino-be23949cd728be78",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/camino-be23949cd728be78/"
+  },
+  {
+    "name": "camino-f65de97227372daf",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/camino-f65de97227372daf/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/camino-f65de97227372daf/out/"
+  },
+  {
+    "name": "cookie-b7e1f29f31a8c666",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/cookie-b7e1f29f31a8c666/"
+  },
+  {
+    "name": "cookie-e81a3ab222943ba5",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/cookie-e81a3ab222943ba5/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/cookie-e81a3ab222943ba5/out/"
+  },
+  {
+    "name": "crc32fast-2effd4628f3044bc",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/crc32fast-2effd4628f3044bc/"
+  },
+  {
+    "name": "crc32fast-63bb31c998f9c753",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/crc32fast-63bb31c998f9c753/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/crc32fast-63bb31c998f9c753/out/"
+  },
+  {
+    "name": "crossbeam-utils-0a5f7ae599b83d0c",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/crossbeam-utils-0a5f7ae599b83d0c/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/crossbeam-utils-0a5f7ae599b83d0c/out/"
+  },
+  {
+    "name": "crossbeam-utils-10775242e9cd3778",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/crossbeam-utils-10775242e9cd3778/"
+  },
+  {
+    "name": "erased-serde-30d79e523c1a4490",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/erased-serde-30d79e523c1a4490/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/erased-serde-30d79e523c1a4490/out/"
+  },
+  {
+    "name": "erased-serde-8e160681797647d6",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/erased-serde-8e160681797647d6/"
+  },
+  {
+    "name": "generic-array-761d29909ba06578",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/generic-array-761d29909ba06578/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/generic-array-761d29909ba06578/out/"
+  },
+  {
+    "name": "generic-array-77a2005f66ca44d9",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/generic-array-77a2005f66ca44d9/"
+  },
+  {
+    "name": "getrandom-401c50181efe151f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/getrandom-401c50181efe151f/"
+  },
+  {
+    "name": "getrandom-d4ac5237dce4e131",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/getrandom-d4ac5237dce4e131/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/getrandom-d4ac5237dce4e131/out/"
+  },
+  {
+    "name": "getrandom-f0737d27cb8cee92",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/getrandom-f0737d27cb8cee92/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/getrandom-f0737d27cb8cee92/out/"
+  },
+  {
+    "name": "getrandom-f399a27a4287e628",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/getrandom-f399a27a4287e628/"
+  },
+  {
+    "name": "icu_normalizer_data-2b0507016294efc1",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/icu_normalizer_data-2b0507016294efc1/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/icu_normalizer_data-2b0507016294efc1/out/"
+  },
+  {
+    "name": "icu_normalizer_data-888ed9af342c59d4",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/icu_normalizer_data-888ed9af342c59d4/"
+  },
+  {
+    "name": "icu_properties_data-25001a155985658b",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/icu_properties_data-25001a155985658b/"
+  },
+  {
+    "name": "icu_properties_data-392560d9d4e63487",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/icu_properties_data-392560d9d4e63487/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/icu_properties_data-392560d9d4e63487/out/"
+  },
+  {
+    "name": "indexmap-83d9701e9196eead",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/indexmap-83d9701e9196eead/"
+  },
+  {
+    "name": "indexmap-c8d865446864a6a3",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/indexmap-c8d865446864a6a3/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/indexmap-c8d865446864a6a3/out/"
+  },
+  {
+    "name": "libc-e9aa4decb4d275de",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/libc-e9aa4decb4d275de/"
+  },
+  {
+    "name": "libc-ff35aac0c372988d",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/libc-ff35aac0c372988d/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/libc-ff35aac0c372988d/out/"
+  },
+  {
+    "name": "objc2-4b516d0df32956d6",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/objc2-4b516d0df32956d6/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/objc2-4b516d0df32956d6/out/"
+  },
+  {
+    "name": "objc2-d04bac62cc6ef236",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/objc2-d04bac62cc6ef236/"
+  },
+  {
+    "name": "objc2-exception-helper-2464a01366997dac",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/objc2-exception-helper-2464a01366997dac/"
+  },
+  {
+    "name": "objc2-exception-helper-7d6ddbefd79089d1",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/objc2-exception-helper-7d6ddbefd79089d1/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/objc2-exception-helper-7d6ddbefd79089d1/out/"
+  },
+  {
+    "name": "parking_lot_core-06f2cc862c2df202",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/parking_lot_core-06f2cc862c2df202/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/parking_lot_core-06f2cc862c2df202/out/"
+  },
+  {
+    "name": "parking_lot_core-6832ab796be4be4e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/parking_lot_core-6832ab796be4be4e/"
+  },
+  {
+    "name": "proc-macro2-7887ed8a294660fa",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/proc-macro2-7887ed8a294660fa/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/proc-macro2-7887ed8a294660fa/out/"
+  },
+  {
+    "name": "proc-macro2-e6b2540d44a1d110",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/proc-macro2-e6b2540d44a1d110/"
+  },
+  {
+    "name": "quote-8b839510b3454d32",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/quote-8b839510b3454d32/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/quote-8b839510b3454d32/out/"
+  },
+  {
+    "name": "quote-95bf1eb7851a8b61",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/quote-95bf1eb7851a8b61/"
+  },
+  {
+    "name": "schemars-2f29f6e2239a0de4",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/schemars-2f29f6e2239a0de4/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/schemars-2f29f6e2239a0de4/out/"
+  },
+  {
+    "name": "schemars-871269d4e1d7b1b9",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/schemars-871269d4e1d7b1b9/"
+  },
+  {
+    "name": "selectors-8417c24778222b92",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/selectors-8417c24778222b92/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/selectors-8417c24778222b92/out/"
+  },
+  {
+    "name": "selectors-9acedffd9c9f845b",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/selectors-9acedffd9c9f845b/"
+  },
+  {
+    "name": "serde-1a009445241d7457",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde-1a009445241d7457/"
+  },
+  {
+    "name": "serde-794e2c02a520af9a",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde-794e2c02a520af9a/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde-794e2c02a520af9a/out/"
+  },
+  {
+    "name": "serde-ed3d927fc6099e73",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde-ed3d927fc6099e73/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde-ed3d927fc6099e73/out/"
+  },
+  {
+    "name": "serde-f0cbbecf7d082186",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde-f0cbbecf7d082186/"
+  },
+  {
+    "name": "serde_core-078d7201a78bfe87",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_core-078d7201a78bfe87/"
+  },
+  {
+    "name": "serde_core-199c67723babd9da",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_core-199c67723babd9da/"
+  },
+  {
+    "name": "serde_core-410ef4b4dca37868",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_core-410ef4b4dca37868/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_core-410ef4b4dca37868/out/"
+  },
+  {
+    "name": "serde_core-d753f95cc24cccbe",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_core-d753f95cc24cccbe/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_core-d753f95cc24cccbe/out/"
+  },
+  {
+    "name": "serde_json-3094aeb84d2faea8",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_json-3094aeb84d2faea8/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_json-3094aeb84d2faea8/out/"
+  },
+  {
+    "name": "serde_json-6e67224870e6869a",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_json-6e67224870e6869a/"
+  },
+  {
+    "name": "serde_json-8695e5eb02f0dbe2",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_json-8695e5eb02f0dbe2/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_json-8695e5eb02f0dbe2/out/"
+  },
+  {
+    "name": "serde_json-86b0167037f43fcf",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/serde_json-86b0167037f43fcf/"
+  },
+  {
+    "name": "sets-lesson-377b529320eb01a0",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/sets-lesson-377b529320eb01a0/"
+  },
+  {
+    "name": "sets-lesson-bf4ecaf8991eb27e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/sets-lesson-bf4ecaf8991eb27e/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/sets-lesson-bf4ecaf8991eb27e/out/"
+  },
+  {
+    "name": "app-manifest",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/sets-lesson-bf4ecaf8991eb27e/out/app-manifest/"
+  },
+  {
+    "name": "swift-rs-0636527f3fc329cf",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/swift-rs-0636527f3fc329cf/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/swift-rs-0636527f3fc329cf/out/"
+  },
+  {
+    "name": "swift-rs-56fecfc236619af0",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/swift-rs-56fecfc236619af0/"
+  },
+  {
+    "name": "tauri-282d8c5a97a0b0ad",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/"
+  },
+  {
+    "name": "permissions",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/"
+  },
+  {
+    "name": "app",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/app/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/app/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/app/autogenerated/commands/"
+  },
+  {
+    "name": "event",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/event/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/event/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/event/autogenerated/commands/"
+  },
+  {
+    "name": "image",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/image/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/image/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/image/autogenerated/commands/"
+  },
+  {
+    "name": "menu",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/menu/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/menu/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/menu/autogenerated/commands/"
+  },
+  {
+    "name": "path",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/path/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/path/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/path/autogenerated/commands/"
+  },
+  {
+    "name": "resources",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/resources/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/resources/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/resources/autogenerated/commands/"
+  },
+  {
+    "name": "tray",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/tray/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/tray/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/tray/autogenerated/commands/"
+  },
+  {
+    "name": "webview",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/webview/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/webview/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/webview/autogenerated/commands/"
+  },
+  {
+    "name": "window",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/window/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/window/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-282d8c5a97a0b0ad/out/permissions/window/autogenerated/commands/"
+  },
+  {
+    "name": "tauri-9ab801a494e052de",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-9ab801a494e052de/"
+  },
+  {
+    "name": "tauri-plugin-opener-41ed5688eaeee3bb",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-plugin-opener-41ed5688eaeee3bb/"
+  },
+  {
+    "name": "tauri-plugin-opener-bbc4ba754d660498",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-plugin-opener-bbc4ba754d660498/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-plugin-opener-bbc4ba754d660498/out/"
+  },
+  {
+    "name": "tauri-runtime-16571d078b1666a1",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-runtime-16571d078b1666a1/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-runtime-16571d078b1666a1/out/"
+  },
+  {
+    "name": "tauri-runtime-773d04361d381ea8",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-runtime-773d04361d381ea8/"
+  },
+  {
+    "name": "tauri-runtime-wry-49f0e8d83008ba38",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-runtime-wry-49f0e8d83008ba38/"
+  },
+  {
+    "name": "tauri-runtime-wry-d34f0d3a8665b43b",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-runtime-wry-d34f0d3a8665b43b/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/tauri-runtime-wry-d34f0d3a8665b43b/out/"
+  },
+  {
+    "name": "thiserror-0131d91ae01a690f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/thiserror-0131d91ae01a690f/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/thiserror-0131d91ae01a690f/out/"
+  },
+  {
+    "name": "thiserror-160227d5ba65c09a",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/thiserror-160227d5ba65c09a/"
+  },
+  {
+    "name": "thiserror-9fa644c4e4c11820",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/thiserror-9fa644c4e4c11820/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/thiserror-9fa644c4e4c11820/out/"
+  },
+  {
+    "name": "thiserror-dd6c6de9cd885cba",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/thiserror-dd6c6de9cd885cba/"
+  },
+  {
+    "name": "typeid-5b63e07dea11ad0e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/typeid-5b63e07dea11ad0e/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/typeid-5b63e07dea11ad0e/out/"
+  },
+  {
+    "name": "typeid-6d074db82db1076c",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/typeid-6d074db82db1076c/"
+  },
+  {
+    "name": "web_atoms-2befebc85edbff96",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/web_atoms-2befebc85edbff96/"
+  },
+  {
+    "name": "web_atoms-57637ed766f5901d",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/web_atoms-57637ed766f5901d/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/web_atoms-57637ed766f5901d/out/"
+  },
+  {
+    "name": "wry-85ab37ec316721c3",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/wry-85ab37ec316721c3/"
+  },
+  {
+    "name": "wry-8f7d9de44d995b0b",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/wry-8f7d9de44d995b0b/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/wry-8f7d9de44d995b0b/out/"
+  },
+  {
+    "name": "zmij-8deb5dcb6305bde4",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/zmij-8deb5dcb6305bde4/"
+  },
+  {
+    "name": "zmij-a553f209bc98e076",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/zmij-a553f209bc98e076/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/build/zmij-a553f209bc98e076/out/"
+  },
+  {
+    "name": "deps",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/deps/"
+  },
+  {
+    "name": "examples",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/examples/"
+  },
+  {
+    "name": "incremental",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/incremental/"
+  },
+  {
+    "name": "build_script_build-08blxywmws7o3",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/incremental/build_script_build-08blxywmws7o3/"
+  },
+  {
+    "name": "s-hjv06x82rv-1cbgqes-dxc3ukbokask8j9w50v6eajny",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/incremental/build_script_build-08blxywmws7o3/s-hjv06x82rv-1cbgqes-dxc3ukbokask8j9w50v6eajny/"
+  },
+  {
+    "name": "sets_lesson-312vunw4itdju",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/incremental/sets_lesson-312vunw4itdju/"
+  },
+  {
+    "name": "s-hjv0713dh1-1rc6k88-3qrj3z1ocuef7hw427b0bruxs",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/debug/incremental/sets_lesson-312vunw4itdju/s-hjv0713dh1-1rc6k88-3qrj3z1ocuef7hw427b0bruxs/"
+  },
+  {
+    "name": "release",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/"
+  },
+  {
+    "name": "build",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/"
+  },
+  {
+    "name": "anyhow-990a93c98b4267b5",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/anyhow-990a93c98b4267b5/"
+  },
+  {
+    "name": "anyhow-d81d05bd5b92e6d6",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/anyhow-d81d05bd5b92e6d6/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/anyhow-d81d05bd5b92e6d6/out/"
+  },
+  {
+    "name": "anyhow-f22ecf554606252f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/anyhow-f22ecf554606252f/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/anyhow-f22ecf554606252f/out/"
+  },
+  {
+    "name": "camino-11e8d839e9023c85",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/camino-11e8d839e9023c85/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/camino-11e8d839e9023c85/out/"
+  },
+  {
+    "name": "camino-30fdab80a6d19b4c",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/camino-30fdab80a6d19b4c/"
+  },
+  {
+    "name": "cookie-3231de1cf2c533f2",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/cookie-3231de1cf2c533f2/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/cookie-3231de1cf2c533f2/out/"
+  },
+  {
+    "name": "cookie-fb2b2c1bff4f53d4",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/cookie-fb2b2c1bff4f53d4/"
+  },
+  {
+    "name": "crc32fast-9ec9b6efd9985824",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crc32fast-9ec9b6efd9985824/"
+  },
+  {
+    "name": "crc32fast-a8db8e8374ecbdd1",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crc32fast-a8db8e8374ecbdd1/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crc32fast-a8db8e8374ecbdd1/out/"
+  },
+  {
+    "name": "crc32fast-e4238fa894e1695e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crc32fast-e4238fa894e1695e/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crc32fast-e4238fa894e1695e/out/"
+  },
+  {
+    "name": "crossbeam-utils-5dff7035009b414a",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crossbeam-utils-5dff7035009b414a/"
+  },
+  {
+    "name": "crossbeam-utils-ca2769cd55bff18f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crossbeam-utils-ca2769cd55bff18f/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/crossbeam-utils-ca2769cd55bff18f/out/"
+  },
+  {
+    "name": "erased-serde-6cdd83d50a54f00b",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/erased-serde-6cdd83d50a54f00b/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/erased-serde-6cdd83d50a54f00b/out/"
+  },
+  {
+    "name": "erased-serde-f2284d5f7ea79c26",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/erased-serde-f2284d5f7ea79c26/"
+  },
+  {
+    "name": "erased-serde-fc3376924b75b39f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/erased-serde-fc3376924b75b39f/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/erased-serde-fc3376924b75b39f/out/"
+  },
+  {
+    "name": "generic-array-779a492ff8a0b133",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/generic-array-779a492ff8a0b133/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/generic-array-779a492ff8a0b133/out/"
+  },
+  {
+    "name": "generic-array-f461eeab97ec3eaf",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/generic-array-f461eeab97ec3eaf/"
+  },
+  {
+    "name": "getrandom-10ec0012fca48bbf",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/getrandom-10ec0012fca48bbf/"
+  },
+  {
+    "name": "getrandom-1f498bd0f1c7d2cd",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/getrandom-1f498bd0f1c7d2cd/"
+  },
+  {
+    "name": "getrandom-a1cba6d7dddb723e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/getrandom-a1cba6d7dddb723e/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/getrandom-a1cba6d7dddb723e/out/"
+  },
+  {
+    "name": "getrandom-e3aab2f9b6cb354d",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/getrandom-e3aab2f9b6cb354d/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/getrandom-e3aab2f9b6cb354d/out/"
+  },
+  {
+    "name": "icu_normalizer_data-61539eb541f6de24",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_normalizer_data-61539eb541f6de24/"
+  },
+  {
+    "name": "icu_normalizer_data-65fcd82c25f94176",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_normalizer_data-65fcd82c25f94176/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_normalizer_data-65fcd82c25f94176/out/"
+  },
+  {
+    "name": "icu_normalizer_data-c3d6d4e5ffbe2503",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_normalizer_data-c3d6d4e5ffbe2503/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_normalizer_data-c3d6d4e5ffbe2503/out/"
+  },
+  {
+    "name": "icu_properties_data-1f3c62d48b089c81",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_properties_data-1f3c62d48b089c81/"
+  },
+  {
+    "name": "icu_properties_data-273fb2af66c601bc",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_properties_data-273fb2af66c601bc/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_properties_data-273fb2af66c601bc/out/"
+  },
+  {
+    "name": "icu_properties_data-93c55950f9bd6e73",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_properties_data-93c55950f9bd6e73/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/icu_properties_data-93c55950f9bd6e73/out/"
+  },
+  {
+    "name": "indexmap-2396c4adc2bc5687",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/indexmap-2396c4adc2bc5687/"
+  },
+  {
+    "name": "indexmap-f53ef92c9a07e076",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/indexmap-f53ef92c9a07e076/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/indexmap-f53ef92c9a07e076/out/"
+  },
+  {
+    "name": "libc-2748a213f72da250",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/libc-2748a213f72da250/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/libc-2748a213f72da250/out/"
+  },
+  {
+    "name": "libc-414a17bb06da2121",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/libc-414a17bb06da2121/"
+  },
+  {
+    "name": "libc-f21d81818eda9e3c",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/libc-f21d81818eda9e3c/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/libc-f21d81818eda9e3c/out/"
+  },
+  {
+    "name": "objc2-55fc6c140b77dfb6",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/objc2-55fc6c140b77dfb6/"
+  },
+  {
+    "name": "objc2-79de353530d511e7",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/objc2-79de353530d511e7/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/objc2-79de353530d511e7/out/"
+  },
+  {
+    "name": "objc2-exception-helper-03fda17f4e9801f9",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/objc2-exception-helper-03fda17f4e9801f9/"
+  },
+  {
+    "name": "objc2-exception-helper-f51c9ec2a7d47d64",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/objc2-exception-helper-f51c9ec2a7d47d64/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/objc2-exception-helper-f51c9ec2a7d47d64/out/"
+  },
+  {
+    "name": "parking_lot_core-2ea67ba038fea825",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/parking_lot_core-2ea67ba038fea825/"
+  },
+  {
+    "name": "parking_lot_core-5adf251fc26d3fb4",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/parking_lot_core-5adf251fc26d3fb4/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/parking_lot_core-5adf251fc26d3fb4/out/"
+  },
+  {
+    "name": "proc-macro2-137ae2cf3a8b2bed",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/proc-macro2-137ae2cf3a8b2bed/"
+  },
+  {
+    "name": "proc-macro2-4ad2ade78360a8d3",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/proc-macro2-4ad2ade78360a8d3/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/proc-macro2-4ad2ade78360a8d3/out/"
+  },
+  {
+    "name": "quote-cb53d9b81cf95c6e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/quote-cb53d9b81cf95c6e/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/quote-cb53d9b81cf95c6e/out/"
+  },
+  {
+    "name": "quote-f25436f878910086",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/quote-f25436f878910086/"
+  },
+  {
+    "name": "schemars-7f9a0b438aaa889a",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/schemars-7f9a0b438aaa889a/"
+  },
+  {
+    "name": "schemars-fdb4effef9586d5d",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/schemars-fdb4effef9586d5d/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/schemars-fdb4effef9586d5d/out/"
+  },
+  {
+    "name": "selectors-d143948796196146",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/selectors-d143948796196146/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/selectors-d143948796196146/out/"
+  },
+  {
+    "name": "selectors-d7025948a3ab16b2",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/selectors-d7025948a3ab16b2/"
+  },
+  {
+    "name": "serde-4137a0dbedeae30f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde-4137a0dbedeae30f/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde-4137a0dbedeae30f/out/"
+  },
+  {
+    "name": "serde-4c915a989bc385e2",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde-4c915a989bc385e2/"
+  },
+  {
+    "name": "serde-995d95f51ad420ba",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde-995d95f51ad420ba/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde-995d95f51ad420ba/out/"
+  },
+  {
+    "name": "serde-e18b56f890aeb3ca",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde-e18b56f890aeb3ca/"
+  },
+  {
+    "name": "serde_core-470e109f77c885e2",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_core-470e109f77c885e2/"
+  },
+  {
+    "name": "serde_core-b619c4131223c48f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_core-b619c4131223c48f/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_core-b619c4131223c48f/out/"
+  },
+  {
+    "name": "serde_core-c7ffc4d0c64d1dc0",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_core-c7ffc4d0c64d1dc0/"
+  },
+  {
+    "name": "serde_core-e244cc1c8e22e754",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_core-e244cc1c8e22e754/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_core-e244cc1c8e22e754/out/"
+  },
+  {
+    "name": "serde_json-0bb9d5f6b92f9fee",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_json-0bb9d5f6b92f9fee/"
+  },
+  {
+    "name": "serde_json-5614782fc58449c3",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_json-5614782fc58449c3/"
+  },
+  {
+    "name": "serde_json-b8696c432fa2c2be",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_json-b8696c432fa2c2be/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_json-b8696c432fa2c2be/out/"
+  },
+  {
+    "name": "serde_json-bdbb43db3d2b8eec",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_json-bdbb43db3d2b8eec/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/serde_json-bdbb43db3d2b8eec/out/"
+  },
+  {
+    "name": "sets-lesson-6db3bd2c32200b9c",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/sets-lesson-6db3bd2c32200b9c/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/sets-lesson-6db3bd2c32200b9c/out/"
+  },
+  {
+    "name": "app-manifest",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/sets-lesson-6db3bd2c32200b9c/out/app-manifest/"
+  },
+  {
+    "name": "tauri-codegen-assets",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/sets-lesson-6db3bd2c32200b9c/out/tauri-codegen-assets/"
+  },
+  {
+    "name": "9e50815da8933ee70476b43c7c6dfc113bba95a7efef57e5737c14bf0980036a",
+    "type": "file",
+    "path": "sets-app/src-tauri/target/release/build/sets-lesson-6db3bd2c32200b9c/out/tauri-codegen-assets/9e50815da8933ee70476b43c7c6dfc113bba95a7efef57e5737c14bf0980036a.html"
+  },
+  {
+    "name": "dbd7ed1cc166c9d28a91b55b26ff3905ffd6f5bde843838be37525d4acd4d4b1",
+    "type": "file",
+    "path": "sets-app/src-tauri/target/release/build/sets-lesson-6db3bd2c32200b9c/out/tauri-codegen-assets/dbd7ed1cc166c9d28a91b55b26ff3905ffd6f5bde843838be37525d4acd4d4b1.html"
+  },
+  {
+    "name": "sets-lesson-bf3590861ab6dec0",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/sets-lesson-bf3590861ab6dec0/"
+  },
+  {
+    "name": "swift-rs-b70e7701c21e6b2f",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/swift-rs-b70e7701c21e6b2f/"
+  },
+  {
+    "name": "swift-rs-e1a2daba1a16960d",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/swift-rs-e1a2daba1a16960d/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/swift-rs-e1a2daba1a16960d/out/"
+  },
+  {
+    "name": "tauri-0b2ad89f81881299",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/"
+  },
+  {
+    "name": "permissions",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/"
+  },
+  {
+    "name": "app",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/app/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/app/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/app/autogenerated/commands/"
+  },
+  {
+    "name": "event",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/event/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/event/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/event/autogenerated/commands/"
+  },
+  {
+    "name": "image",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/image/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/image/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/image/autogenerated/commands/"
+  },
+  {
+    "name": "menu",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/menu/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/menu/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/menu/autogenerated/commands/"
+  },
+  {
+    "name": "path",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/path/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/path/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/path/autogenerated/commands/"
+  },
+  {
+    "name": "resources",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/resources/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/resources/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/resources/autogenerated/commands/"
+  },
+  {
+    "name": "tray",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/tray/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/tray/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/tray/autogenerated/commands/"
+  },
+  {
+    "name": "webview",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/webview/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/webview/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/webview/autogenerated/commands/"
+  },
+  {
+    "name": "window",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/window/"
+  },
+  {
+    "name": "autogenerated",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/window/autogenerated/"
+  },
+  {
+    "name": "commands",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-0b2ad89f81881299/out/permissions/window/autogenerated/commands/"
+  },
+  {
+    "name": "tauri-bd7daa7714f273b7",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-bd7daa7714f273b7/"
+  },
+  {
+    "name": "tauri-plugin-opener-0c715c5e237cddff",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-plugin-opener-0c715c5e237cddff/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-plugin-opener-0c715c5e237cddff/out/"
+  },
+  {
+    "name": "tauri-plugin-opener-4298bbb6317aeb57",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-plugin-opener-4298bbb6317aeb57/"
+  },
+  {
+    "name": "tauri-runtime-355973100a0b914e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-runtime-355973100a0b914e/"
+  },
+  {
+    "name": "tauri-runtime-da3c12f5afa4c7b7",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-runtime-da3c12f5afa4c7b7/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-runtime-da3c12f5afa4c7b7/out/"
+  },
+  {
+    "name": "tauri-runtime-wry-619f461b8257fa1e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-runtime-wry-619f461b8257fa1e/"
+  },
+  {
+    "name": "tauri-runtime-wry-f125062bcc0e6d5a",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-runtime-wry-f125062bcc0e6d5a/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/tauri-runtime-wry-f125062bcc0e6d5a/out/"
+  },
+  {
+    "name": "thiserror-46ea8f6bb965a5c3",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-46ea8f6bb965a5c3/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-46ea8f6bb965a5c3/out/"
+  },
+  {
+    "name": "thiserror-549cf28f9e525dd0",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-549cf28f9e525dd0/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-549cf28f9e525dd0/out/"
+  },
+  {
+    "name": "thiserror-6be2fd0f4fdb85ff",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-6be2fd0f4fdb85ff/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-6be2fd0f4fdb85ff/out/"
+  },
+  {
+    "name": "thiserror-abad422399b433f4",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-abad422399b433f4/"
+  },
+  {
+    "name": "thiserror-c77d9346f9df612d",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-c77d9346f9df612d/"
+  },
+  {
+    "name": "thiserror-d20f0128df8a00b2",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-d20f0128df8a00b2/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/thiserror-d20f0128df8a00b2/out/"
+  },
+  {
+    "name": "typeid-18c2d13b311c54df",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/typeid-18c2d13b311c54df/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/typeid-18c2d13b311c54df/out/"
+  },
+  {
+    "name": "typeid-a0221bc75c1576dd",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/typeid-a0221bc75c1576dd/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/typeid-a0221bc75c1576dd/out/"
+  },
+  {
+    "name": "typeid-e5d09ba0fc883d5e",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/typeid-e5d09ba0fc883d5e/"
+  },
+  {
+    "name": "web_atoms-78f930edfe6d5465",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/web_atoms-78f930edfe6d5465/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/web_atoms-78f930edfe6d5465/out/"
+  },
+  {
+    "name": "web_atoms-c55a758b399a0cde",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/web_atoms-c55a758b399a0cde/"
+  },
+  {
+    "name": "wry-e0770f70fe6f3f01",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/wry-e0770f70fe6f3f01/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/wry-e0770f70fe6f3f01/out/"
+  },
+  {
+    "name": "wry-f74904d462fdac2b",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/wry-f74904d462fdac2b/"
+  },
+  {
+    "name": "zmij-087f3a96349c3678",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/zmij-087f3a96349c3678/"
+  },
+  {
+    "name": "zmij-37c3c5708325f132",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/zmij-37c3c5708325f132/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/zmij-37c3c5708325f132/out/"
+  },
+  {
+    "name": "zmij-6ec809246b5c23dd",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/zmij-6ec809246b5c23dd/"
+  },
+  {
+    "name": "out",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/build/zmij-6ec809246b5c23dd/out/"
+  },
+  {
+    "name": "bundle",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/"
+  },
+  {
+    "name": "dmg",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/dmg/"
+  },
+  {
+    "name": "macos",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/macos/"
+  },
+  {
+    "name": "Множества и Речници.app",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/macos/Множества и Речници.app/"
+  },
+  {
+    "name": "Contents",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/macos/Множества и Речници.app/Contents/"
+  },
+  {
+    "name": "MacOS",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/macos/Множества и Речници.app/Contents/MacOS/"
+  },
+  {
+    "name": "Resources",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/macos/Множества и Речници.app/Contents/Resources/"
+  },
+  {
+    "name": "share",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/share/"
+  },
+  {
+    "name": "create-dmg",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/share/create-dmg/"
+  },
+  {
+    "name": "support",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/bundle/share/create-dmg/support/"
+  },
+  {
+    "name": "deps",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/deps/"
+  },
+  {
+    "name": "examples",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/examples/"
+  },
+  {
+    "name": "incremental",
+    "type": "folder",
+    "path": "sets-app/src-tauri/target/release/incremental/"
+  },
+  {
+    "name": "web",
+    "type": "folder",
+    "path": "sets-app/web/"
+  },
+  {
+    "name": "audio",
+    "type": "folder",
+    "path": "sets-app/web/audio/"
   }
 ]
