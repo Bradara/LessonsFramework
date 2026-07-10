@@ -5,6 +5,11 @@
     "path": "Lessons/"
   },
   {
+    "name": "Games",
+    "type": "folder",
+    "path": "Lessons/Games/"
+  },
+  {
     "name": "IT",
     "type": "folder",
     "path": "Lessons/IT/"
