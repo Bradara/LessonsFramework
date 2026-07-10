@@ -10,6 +10,11 @@
     "path": "Lessons/Games/"
   },
   {
+    "name": "HexMinesweeper",
+    "type": "file",
+    "path": "Lessons/Games/HexMinesweeper.html"
+  },
+  {
     "name": "IT",
     "type": "folder",
     "path": "Lessons/IT/"
