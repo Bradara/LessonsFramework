@@ -26,6 +26,7 @@ IGNORE_ITEMS = {
     'Thumbs.db',
     'backgrounds',
     'libs',
+    'sets-app',
     'quizzes',  # data folder for quiz activities (aiken + manifest files, not lessons)
 }
 

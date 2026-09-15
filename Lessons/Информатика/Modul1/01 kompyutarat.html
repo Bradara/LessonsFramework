@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Компютърът — Информационни технологии | ППМГ Бургас</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome — local primary, CDN fallback -->
+  <link rel="stylesheet" href="../libs/font-awesome/all.min.css"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'" />
+
+  <!-- Reveal.js — local primary, CDN fallback -->
+  <link rel="stylesheet" id="reveal-css" href="../libs/reveal/dist/reveal.css"
+        onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css'" />
+  <link rel="stylesheet" id="reveal-theme" href="../libs/reveal/dist/theme/night.css"
+        onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/night.css'" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night:      '#0f172a',
+            panel:      '#1e293b',
+            accent:     '#22c55e',
+            accentDark: '#16a34a',
+          },
+          fontFamily: {
+            code: ["'Fira Code'", 'monospace'],
+            sans: ["'Inter'", 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg-primary:   #0f172a;
+      --bg-secondary: #1e293b;
+      --accent:       #22c55e;
+      --accent-hover: #16a34a;
+      --text-primary: #f8fafc;
+      --text-muted:   #94a3b8;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    /* ── Hero banner ── */
+    .hero-banner {
+      background:
+        linear-gradient(rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.96)),
+        url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    /* ── Reveal wrapper ── */
+    .reveal-container {
+      width: 100%;
+      height: 700px;
+    }
+    .reveal {
+      font-size: 22px;
+    }
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section p {
+      line-height: 1.35;
+    }
+    .reveal .slides section li {
+      margin-bottom: 0.35em;
+    }
+    .reveal pre code { font-size: 0.85em; }
+    @media (max-width: 640px) {
+      .reveal-container { height: 560px; }
+    }
+
+    /* ── Flash cards ── */
+    .card-scene {
+      perspective: 900px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+    }
+
+    /* ── Quiz highlight ── */
+    .answer-btn:disabled { cursor: default; }
+
+    /* ── Demo — architecture diagram ── */
+    .bus-bar {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 14px;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .connector {
+      width: 2px;
+      height: 26px;
+      background: linear-gradient(#334155, var(--accent));
+      margin: 0 auto;
+    }
+    .component-node button {
+      min-width: 120px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- Reveal.js — local primary, CDN fallback -->
+<script>
+  (function () {
+    var s = document.createElement('script');
+    s.src = '../libs/reveal/dist/reveal.js';
+    s.async = false;
+    s.onerror = function () {
+      var s2 = document.createElement('script');
+      s2.src = 'https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js';
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+<script>
+  (function () {
+    var s = document.createElement('script');
+    s.src = '../libs/reveal/plugin/markdown/markdown.js';
+    s.async = false;
+    s.onerror = function () {
+      var s2 = document.createElement('script');
+      s2.src = 'https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/markdown/markdown.js';
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+<script>
+  (function () {
+    var s = document.createElement('script');
+    s.src = '../libs/reveal/plugin/highlight/highlight.js';
+    s.async = false;
+    s.onerror = function () {
+      var s2 = document.createElement('script');
+      s2.src = 'https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js';
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ═══════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════ */
+const FLASH_CARDS = [
+  {
+    front: 'Компютърна система (КС)',
+    back:  'Хардуерът, управляван от софтуера. Без софтуер хардуерът е безполезен.',
+  },
+  {
+    front: 'CPU',
+    back:  'Central Processing Unit — мозъкът на компютъра. Съдържа ядро, кеш памети и контролери.',
+  },
+  {
+    front: 'RAM памет',
+    back:  'Random Access Memory — временна, енергозависима памет. Изтрива се при изключване.',
+  },
+  {
+    front: 'ROM памет',
+    back:  'Read Only Memory — постоянна памет само за четене. Енергонезависима.',
+  },
+  {
+    front: 'Комуникационна шина',
+    back:  'Канал за предаване на данни между всички компоненти на компютърната система.',
+  },
+  {
+    front: 'Запомнящи устройства',
+    back:  'Твърд диск, CD/DVD, флаш памети, външни дискове — дългосрочно съхранение на данни.',
+  },
+  {
+    front: 'Операционна система',
+    back:  'Системен софтуер за управление на компютърната система. Примери: Windows, Linux, Android.',
+  },
+  {
+    front: 'Потребителски интерфейс',
+    back:  'Начинът за взаимодействие с компютъра — графичен (GUI) или команден (CLI).',
+  },
+  {
+    front: 'Командна процедура (.bat)',
+    back:  'Текстов файл с поредица от команди, изпълнявани последователно.',
+  },
+  {
+    front: 'Контролер (карта)',
+    back:  'Управлява входно-изходни устройства. Примери: видеокарта, звукова карта, мрежова карта.',
+  },
+];
+
+const QUIZ_QUESTIONS = [
+  {
+    q: 'Кога работи компютърната система (КС)?',
+    options: ['Когато е включена в захранването', 'Когато хардуерът се управлява от софтуера', 'Когато има интернет връзка', 'Когато RAM паметта е достатъчна'],
+    correct: 1,
+  },
+  {
+    q: 'Какво означава CPU?',
+    options: ['Computer Power Unit', 'Central Program Utility', 'Central Processing Unit', 'Computer Processing Utility'],
+    correct: 2,
+  },
+  {
+    q: 'RAM паметта е:',
+    options: ['Постоянна и енергонезависима', 'Временна и енергозависима', 'По-бавна от ROM', 'Вградена в процесора'],
+    correct: 1,
+  },
+  {
+    q: 'Кеш паметта е:',
+    options: ['Вид твърд диск', 'Оперативна памет на дъното', 'Вътрешна памет на CPU, по-бърза от RAM', 'Временен интернет файл'],
+    correct: 2,
+  },
+  {
+    q: 'Комуникационната шина служи за:',
+    options: ['Свързване към интернет', 'Предаване на данни между компонентите', 'Управление на монитора', 'Съхранение на ОС'],
+    correct: 1,
+  },
+  {
+    q: 'Кои са запомнящите устройства?',
+    options: ['Монитор, клавиатура, мишка', 'Принтер, скенер, уеб камера', 'Твърд диск, CD/DVD, флаш памет', 'Процесор, RAM, видеокарта'],
+    correct: 2,
+  },
+  {
+    q: 'Системният софтуер включва:',
+    options: ['Игри и мултимедия', 'Операционна система и инструментални програми', 'Само операционната система', 'Само приложните програми'],
+    correct: 1,
+  },
+  {
+    q: 'Кой е пример за команден интерфейс?',
+    options: ['MS Windows', 'Android', 'MS DOS / Command Prompt', 'macOS'],
+    correct: 2,
+  },
+  {
+    q: 'Какво е .bat файл?',
+    options: ['Програма с графичен интерфейс', 'Текстов файл с поредица от команди', 'Вид компютърен вирус', 'Системен драйвер'],
+    correct: 1,
+  },
+  {
+    q: 'Потребителският интерфейс е:',
+    options: ['Само клавиатурата и мишката', 'Операционната система', 'Връзката на потребителя със софтуера и хардуера', 'Видеокартата и монитора'],
+    correct: 2,
+  },
+];
+
+const DEMO_COMPONENTS = [
+  {
+    id: 'cpu', label: 'CPU',
+    title: 'Централен процесор',
+    icon: 'fa-microchip',
+    desc: 'Мозъкът на компютъра. Изпълнява инструкции, обработва данни. Тактова честота: 3–5 GHz при модерните процесори.',
+    fact: '💡 Съвременен CPU съдържа над 10 милиарда транзистора на чип с размер на нокът!',
+  },
+  {
+    id: 'ram', label: 'RAM',
+    title: 'Оперативна памет',
+    icon: 'fa-memory',
+    desc: 'Временно хранилище за работещите програми. Енергозависима — при изключване всичко се изтрива.',
+    fact: '💡 Повече RAM = повече програми едновременно без забавяне.',
+  },
+  {
+    id: 'hdd', label: 'HDD/SSD',
+    title: 'Твърд диск',
+    icon: 'fa-hard-drive',
+    desc: 'Постоянно хранилище за ОС, програмите и файловете. SSD е до 10 пъти по-бърз от HDD.',
+    fact: '💡 SSD няма движещи се части — затова е по-бърз и по-издръжлив от HDD.',
+  },
+  {
+    id: 'gpu', label: 'Видеокарта',
+    title: 'Видеокарта (GPU)',
+    icon: 'fa-tv',
+    desc: 'Контролер за монитора. Обработва графика и изображения. Използва се и за AI изчисления.',
+    fact: '💡 GPU има хиляди малки ядра — идеални за паралелни изчисления и машинно обучение.',
+  },
+  {
+    id: 'net', label: 'Мрежова карта',
+    title: 'Мрежова карта',
+    icon: 'fa-network-wired',
+    desc: 'Свързва компютъра с мрежа и Интернет. Може да е жична (Ethernet) или безжична (Wi-Fi).',
+    fact: '💡 Интернет може да се разглежда като едно огромно устройство за съхранение на данни!',
+  },
+];
+
+const SUMMARY_CONCEPTS = [
+  { term: 'Компютърна система (КС)', def: 'Хардуер, управляван от софтуер' },
+  { term: 'CPU',                     def: 'Централен процесор — основна обработваща единица' },
+  { term: 'RAM',                     def: 'Временна, енергозависима памет' },
+  { term: 'ROM',                     def: 'Постоянна, енергонезависима памет' },
+  { term: 'Комуникационна шина',     def: 'Канал за данни между компонентите' },
+  { term: 'Операционна система',     def: 'Системен софтуер, управляващ ресурсите на КС' },
+  { term: 'Потребителски интерфейс', def: 'GUI (графичен) или CLI (команден)' },
+  { term: 'Командна процедура',      def: '.bat файл с поредица от команди' },
+];
+
+const FACTS = [
+  {
+    icon: 'fa-microchip',
+    title: 'Колко е мощен CPU?',
+    body: 'Съвременен процесор изпълнява над 3 милиарда операции в секунда и съдържа над 10 милиарда транзистора на чип с размер на нокът. Intel и AMD се „надпреварват“ с нанометри — днес 3nm, а скоро 1nm!',
+  },
+  {
+    icon: 'fa-hard-drive',
+    title: 'Първият твърд диск (1956)',
+    body: 'Първият твърд диск тежал над 900 кг и съхранявал едва 5 MB данни — колкото две снимки от телефона ти. Днес в джоба носиш терабайти с тегло под 5 грама.',
+  },
+  {
+    icon: 'fa-globe',
+    title: 'Интернет наистина е устройство за памет',
+    body: 'Всяка секунда в интернет се качват над 500 часа видео в YouTube, 6 000 туита и 1 000 снимки в Instagram. Данните в интернет вече се измерват в зетабайти (1 ZB = 1 милиард терабайта).',
+  },
+];
+
+/* ═══════════════════════════════════════════════
+   NAV TABS
+═══════════════════════════════════════════════ */
+const TABS = [
+  { id: 'presentation', label: 'Презентация',  icon: 'fa-chalkboard-teacher' },
+  { id: 'flashcards',   label: 'Флаш карти',   icon: 'fa-layer-group' },
+  { id: 'demo',         label: 'Демо / Игра',  icon: 'fa-microchip' },
+  { id: 'quiz',         label: 'Куиз',         icon: 'fa-question-circle' },
+  { id: 'summary',      label: 'Обобщение',    icon: 'fa-star' },
+];
+
+/* ═══════════════════════════════════════════════
+   PRESENTATION SECTION
+═══════════════════════════════════════════════ */
+function PresentationSection() {
+  const deckRef = useRef(null);
+  const revealRef = useRef(null);
+
+  useEffect(() => {
+    let tries = 0;
+    const init = () => {
+      if (typeof Reveal === 'undefined') {
+        if (++tries < 40) setTimeout(init, 300);
+        return;
+      }
+      if (revealRef.current) { revealRef.current.destroy(); revealRef.current = null; }
+      revealRef.current = new Reveal(deckRef.current, {
+        plugins: typeof RevealHighlight !== 'undefined' ? [RevealHighlight] : [],
+        hash: false,
+        embedded: true,
+        width: '100%',
+        height: 700,
+        margin: 0.1,
+        transition: 'slide',
+        highlight: { theme: 'monokai' },
+      });
+      revealRef.current.initialize();
+    };
+    init();
+    return () => { if (revealRef.current) { revealRef.current.destroy(); revealRef.current = null; } };
+  }, []);
+
+  return (
+    <div className="reveal-container">
+      <div className="reveal" ref={deckRef} style={{ width: '100%', height: '700px' }}>
+        <div className="slides">
+
+          {/* Slide 0 */}
+          <section>
+            <h1 style={{fontSize:'2rem',marginBottom:'0.5rem'}}>Компютърът</h1>
+            <h3 style={{color:'#94a3b8',fontWeight:400}}>Информационни технологии</h3>
+          </section>
+
+          {/* Slide 1 */}
+          <section>
+            <h2>1. Компютърната система (КС)</h2>
+            <ul>
+              <li><strong>Компютърната система (КС)</strong> работи, когато <strong>хардуерът</strong> се управлява от <strong>софтуера</strong></li>
+              <li><strong>Хардуер</strong> = физическите компоненти (процесор, памет, устройства)</li>
+              <li><strong>Софтуер</strong> = програмите, които управляват хардуера</li>
+            </ul>
+          </section>
+
+          {/* Slide 2 */}
+          <section>
+            <h2>2. Архитектура на съвременен компютър</h2>
+            <p>Всички компоненти са свързани чрез <strong>комуникационна шина</strong></p>
+            <p style={{marginTop:'0.8rem'}}><strong>Вътрешни компоненти:</strong></p>
+            <ul>
+              <li>Централен процесор (CPU)</li>
+              <li>Оперативна памет (RAM)</li>
+              <li>Запомнящи устройства: твърд диск, CD/DVD, флаш, външен диск</li>
+            </ul>
+            <p style={{marginTop:'0.8rem'}}><strong>Външни устройства:</strong></p>
+            <ul>
+              <li>Монитор ← Видеокарта &nbsp;|&nbsp; Клавиатура, Мишка</li>
+              <li>Принтер, Скенер &nbsp;|&nbsp; Мрежова карта ↔ Интернет</li>
+              <li>Аудио карта ↔ Микрофон, Тонколони</li>
+            </ul>
+          </section>
+
+          {/* Slide 3 */}
+          <section>
+            <h2>3. Централен процесор (CPU)</h2>
+            <p><strong>Central Processing Unit</strong> — основното обработващо и управляващо устройство</p>
+            <ul>
+              <li>Изпълнява инструкции</li>
+              <li>Взима данни от паметта, обработва ги и записва резултата</li>
+              <li>Състои се от: <strong>ядро</strong>, <strong>кеш памети</strong> и <strong>контролери</strong></li>
+              <li><strong>Кеш паметта</strong> = вътрешна памет на CPU, по-бърза от RAM</li>
+              <li>Бързодействието на КС зависи от <strong>тактовата честота</strong> на CPU</li>
+            </ul>
+          </section>
+
+          {/* Slide 4 */}
+          <section>
+            <h2>4. Видове памет</h2>
+            <p><strong>RAM — Random Access Memory</strong></p>
+            <ul>
+              <li>Временна памет за работещите програми</li>
+              <li><strong>Енергозависима</strong> — изтрива се при изключване</li>
+            </ul>
+            <p style={{marginTop:'0.8rem'}}><strong>ROM — Read Only Memory</strong></p>
+            <ul>
+              <li>Постоянна памет (само за четене)</li>
+              <li><strong>Енергонезависима</strong> — запазва данните</li>
+            </ul>
+            <p style={{marginTop:'0.8rem'}}><strong>Кеш памет</strong> — вградена в CPU, най-бързата памет в системата</p>
+          </section>
+
+          {/* Slide 5 */}
+          <section>
+            <h2>5. Входно-изходни устройства</h2>
+            <p>Разделят се на <strong>2 групи:</strong></p>
+            <p style={{marginTop:'0.6rem'}}><strong>Запомнящи устройства:</strong></p>
+            <ul>
+              <li>Твърд диск (HDD/SSD) — програми и данни</li>
+              <li>CD/DVD дискове &nbsp;|&nbsp; Флаш памети (USB) &nbsp;|&nbsp; Външни дискове</li>
+              <li>Глобалната мрежа — огромно устройство за съхранение</li>
+            </ul>
+            <p style={{marginTop:'0.8rem'}}><strong>Управлението</strong> се осъществява чрез <strong>контролери (карти):</strong> звукова карта, мрежова карта, видеокарта</p>
+          </section>
+
+          {/* Slide 6 */}
+          <section>
+            <h2>6. Устройства за диалог с потребителя</h2>
+            <ul>
+              <li>Екран (монитор)</li>
+              <li>Клавиатура и мишка</li>
+              <li>Принтери и скенери</li>
+              <li>Устройства за запис/възпроизвеждане на звук</li>
+              <li>Видеокамери и уеб камери</li>
+            </ul>
+          </section>
+
+          {/* Slide 7 */}
+          <section>
+            <h2>7. Видове софтуер</h2>
+            <p><strong>Два вида:</strong> системен и приложен</p>
+            <p style={{marginTop:'0.6rem'}}><strong>Системен софтуер:</strong></p>
+            <ul>
+              <li>Операционна система (ОС): Windows, Unix, Linux, Android</li>
+              <li>Инструментални програми: Explorer, MS Office, Paint, Sound Recorder</li>
+            </ul>
+            <p style={{marginTop:'0.8rem'}}><strong>Приложен софтуер:</strong></p>
+            <ul>
+              <li>Програми за конкретни задачи на потребителя</li>
+            </ul>
+          </section>
+
+          {/* Slide 8 */}
+          <section>
+            <h2>8. Операционна система (ОС)</h2>
+            <p>Съвкупност от програми, проектирани да работят съвместно</p>
+            <p style={{marginTop:'0.6rem'}}><strong>Предназначение:</strong></p>
+            <ul>
+              <li>Осигурява удобство на потребителя</li>
+              <li>Използва ефективно ресурсите на КС</li>
+            </ul>
+            <p style={{marginTop:'0.8rem'}}><strong>Основни функции:</strong></p>
+            <ul>
+              <li>Диалог с потребителя</li>
+              <li>Управление на изпълнението на програмите</li>
+              <li>Управление на входно-изходните устройства</li>
+            </ul>
+          </section>
+
+          {/* Slide 9 */}
+          <section>
+            <h2>9. Потребителски интерфейс</h2>
+            <p>Връзката на потребителя със софтуера и хардуера.</p>
+            <p style={{marginTop:'0.6rem'}}><strong>Графичен интерфейс (GUI)</strong> — MS Windows:</p>
+            <ul>
+              <li>Прозорци: заглавна лента, менюта, инструменти, работно поле, плъзгачи</li>
+              <li>Диалогови прозорци — с опции и настройки</li>
+            </ul>
+            <p style={{marginTop:'0.8rem'}}><strong>Команден интерфейс (CLI)</strong> — MS DOS, Command Prompt:</p>
+            <ul>
+              <li>Изписва се команда → Enter</li>
+              <li>Командите имат имена и параметри</li>
+            </ul>
+          </section>
+
+          {/* Slide 10 */}
+          <section>
+            <h2>10. Видове команди в CLI</h2>
+            <p><strong>Команди за изпълнение на програми</strong></p>
+            <ul>
+              <li>Файлове с <code>.exe</code> или <code>.com</code></li>
+            </ul>
+            <p style={{marginTop:'0.6rem'}}><strong>Команди за вградени функции</strong></p>
+            <ul>
+              <li>Пример: <code>D:\&gt;dir a*</code> — списък на файловете, започващи с „а“</li>
+            </ul>
+            <p style={{marginTop:'0.6rem'}}><strong>Командни процедури</strong></p>
+            <ul>
+              <li>Текстови файлове с <code>.bat</code> разширение</li>
+              <li>При изпълнение се изпълняват всички команди последователно</li>
+            </ul>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   FLASH CARDS SECTION
+═══════════════════════════════════════════════ */
+function FlashCards() {
+  const [current, setCurrent] = useState(0);
+  const [flipped, setFlipped] = useState({});
+
+  const toggle = (i) => setFlipped(f => ({ ...f, [i]: !f[i] }));
+  const prev = () => { setCurrent(c => Math.max(0, c - 1)); };
+  const next = () => { setCurrent(c => Math.min(FLASH_CARDS.length - 1, c + 1)); };
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold text-center mb-2" style={{ color: 'var(--accent)' }}>
+        <i className="fas fa-layer-group mr-2" />Флаш карти
+      </h2>
+      <p className="text-center mb-8" style={{ color: 'var(--text-muted)' }}>
+        Карта {current + 1} от {FLASH_CARDS.length} — Кликни върху картата, за да я обърнеш
+      </p>
+
+      {/* Card */}
+      <div className="card-scene mx-auto mb-8" style={{ width: '100%', height: '220px' }}>
+        <div
+          className={`card-inner cursor-pointer${flipped[current] ? ' flipped' : ''}`}
+          onClick={() => toggle(current)}
+        >
+          {/* Front */}
+          <div className="card-face" style={{ background: 'var(--bg-secondary)', border: '1px solid rgba(34,197,94,0.3)' }}>
+            <span className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
+              Термин
+            </span>
+            <span className="text-2xl font-bold text-center font-code" style={{ color: 'var(--text-primary)' }}>
+              {FLASH_CARDS[current].front}
+            </span>
+            <span className="text-xs mt-4" style={{ color: 'var(--text-muted)' }}>
+              <i className="fas fa-sync-alt mr-1" /> Кликни за обяснение
+            </span>
+          </div>
+          {/* Back */}
+          <div className="card-face card-back" style={{ background: 'linear-gradient(135deg,#1e293b,#0f172a)', border: '1px solid rgba(34,197,94,0.6)' }}>
+            <span className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>
+              Обяснение
+            </span>
+            <p className="text-lg text-center leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+              {FLASH_CARDS[current].back}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-between gap-4">
+        <button
+          onClick={prev}
+          disabled={current === 0}
+          className="flex-1 py-3 rounded-xl font-semibold transition-all"
+          style={{
+            background: current === 0 ? '#1e293b' : 'var(--bg-secondary)',
+            color: current === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
+            border: '1px solid #334155',
+          }}
+        >
+          <i className="fas fa-chevron-left mr-2" />Предишна
+        </button>
+
+        {/* Dots */}
+        <div className="flex gap-1.5">
+          {FLASH_CARDS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className="w-2.5 h-2.5 rounded-full transition-all"
+              style={{ background: i === current ? 'var(--accent)' : '#334155' }}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={next}
+          disabled={current === FLASH_CARDS.length - 1}
+          className="flex-1 py-3 rounded-xl font-semibold transition-all"
+          style={{
+            background: current === FLASH_CARDS.length - 1 ? '#1e293b' : 'var(--accent)',
+            color: current === FLASH_CARDS.length - 1 ? 'var(--text-muted)' : '#0f172a',
+            border: '1px solid transparent',
+          }}
+        >
+          Следваща<i className="fas fa-chevron-right ml-2" />
+        </button>
+      </div>
+
+      {/* Grid overview */}
+      <div className="mt-10">
+        <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>
+          Всички карти
+        </h3>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {FLASH_CARDS.map((card, i) => (
+            <button
+              key={i}
+              onClick={() => { setCurrent(i); setFlipped(f => ({ ...f, [i]: false })); }}
+              className="p-3 rounded-lg text-left transition-all"
+              style={{
+                background: i === current ? 'rgba(34,197,94,0.15)' : 'var(--bg-secondary)',
+                border: `1px solid ${i === current ? 'var(--accent)' : '#334155'}`,
+                color: i === current ? 'var(--accent)' : 'var(--text-primary)',
+              }}
+            >
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{i + 1}.</span>
+              <p className="text-sm font-semibold mt-0.5 font-code">{card.front}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   DEMO — Разгледай компютъра отвътре
+═══════════════════════════════════════════════ */
+function Demo() {
+  const [selectedId, setSelectedId] = useState('cpu');
+  const selected = DEMO_COMPONENTS.find(c => c.id === selectedId) || DEMO_COMPONENTS[0];
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold text-center mb-1" style={{ color: 'var(--accent)' }}>
+        <i className="fas fa-microchip mr-2" />Разгледай компютъра отвътре
+      </h2>
+      <p className="text-center mb-8" style={{ color: 'var(--text-muted)' }}>
+        Кликни върху компонент от схемата, за да видиш описание и интересен факт
+      </p>
+
+      <div className="grid gap-6 md:grid-cols-[1.4fr_1fr]">
+        {/* Architecture board */}
+        <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-secondary)', border: '1px solid #334155' }}>
+          <button
+            onClick={() => setSelectedId('bus')}
+            className="bus-bar"
+            style={{
+              background: selectedId === 'bus' ? 'rgba(34,197,94,0.2)' : 'var(--bg-primary)',
+              border: `1px solid ${selectedId === 'bus' ? 'var(--accent)' : '#334155'}`,
+              color: selectedId === 'bus' ? 'var(--accent)' : 'var(--text-primary)',
+              boxShadow: selectedId === 'bus' ? '0 0 20px rgba(34,197,94,0.25)' : 'none',
+            }}
+          >
+            <i className="fas fa-network-wired mr-2" />Комуникационна шина
+          </button>
+
+          <div className="flex flex-wrap justify-center gap-6 mt-2">
+            {DEMO_COMPONENTS.map((c) => (
+              <div key={c.id} className="component-node flex flex-col items-center">
+                <span className="connector" />
+                <button
+                  onClick={() => setSelectedId(c.id)}
+                  className="px-4 py-3 rounded-xl font-semibold text-sm transition-all"
+                  style={{
+                    background: selectedId === c.id ? 'rgba(34,197,94,0.2)' : 'var(--bg-primary)',
+                    border: `1px solid ${selectedId === c.id ? 'var(--accent)' : '#334155'}`,
+                    color: selectedId === c.id ? 'var(--accent)' : 'var(--text-primary)',
+                    boxShadow: selectedId === c.id ? '0 0 16px rgba(34,197,94,0.2)' : 'none',
+                  }}
+                >
+                  <i className={`fas ${c.icon} mr-2`} />{c.label}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Info panel */}
+        <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-secondary)', border: '1px solid #334155' }}>
+          <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--accent)' }}>
+            <i className={`fas ${selected.icon} mr-1`} /> {selected.id === 'bus' ? 'Комуникационна шина' : selected.title}
+          </p>
+          <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+            {selected.title}
+          </h3>
+          <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--text-muted)' }}>
+            {selected.desc}
+          </p>
+          <div className="p-3 rounded-xl text-sm" style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: 'var(--text-primary)' }}>
+            {selected.fact}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   QUIZ SECTION
+═══════════════════════════════════════════════ */
+function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [finished, setFinished] = useState(false);
+
+  const q = QUIZ_QUESTIONS[current];
+
+  const choose = (idx) => {
+    if (selected !== null) return;
+    setSelected(idx);
+    if (idx === q.correct) setScore(s => s + 1);
+    setTimeout(() => {
+      if (current + 1 < QUIZ_QUESTIONS.length) {
+        setCurrent(c => c + 1);
+        setSelected(null);
+      } else {
+        setFinished(true);
+      }
+    }, 1200);
+  };
+
+  const restart = () => { setCurrent(0); setScore(0); setSelected(null); setFinished(false); };
+
+  const pct = Math.round((score / QUIZ_QUESTIONS.length) * 100);
+  const msg =
+    pct >= 90 ? 'Отличен резултат! 🏆' :
+    pct >= 70 ? 'Много добре! Продължавай така.' :
+    pct >= 50 ? 'Добре, но има какво да доработиш.' :
+                'Прегледай материала отново.';
+
+  if (finished) return (
+    <div className="max-w-lg mx-auto px-4 py-12 text-center">
+      <div className="w-28 h-28 rounded-full mx-auto mb-6 flex items-center justify-center text-5xl"
+        style={{ background: 'rgba(34,197,94,0.15)', border: '3px solid var(--accent)' }}>
+        {pct >= 70 ? '🏆' : '📚'}
+      </div>
+      <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--accent)' }}>
+        {score} / {QUIZ_QUESTIONS.length}
+      </h2>
+      <p className="text-xl mb-2" style={{ color: 'var(--text-primary)' }}>{pct}%</p>
+      <p className="text-lg mb-8" style={{ color: 'var(--text-muted)' }}>{msg}</p>
+
+      {/* Bar */}
+      <div className="w-full h-3 rounded-full mb-8" style={{ background: '#1e293b' }}>
+        <div className="h-3 rounded-full transition-all" style={{ width: `${pct}%`, background: 'var(--accent)' }} />
+      </div>
+
+      <button onClick={restart} className="px-8 py-3 rounded-xl font-bold text-lg transition-all"
+        style={{ background: 'var(--accent)', color: '#0f172a' }}>
+        <i className="fas fa-redo mr-2" />Опитай пак
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-sm font-semibold" style={{ color: 'var(--text-muted)' }}>
+          Въпрос {current + 1} / {QUIZ_QUESTIONS.length}
+        </span>
+        <span className="px-3 py-1 rounded-full text-sm font-bold font-code"
+          style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent)' }}>
+          {score} т.
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full h-1.5 rounded-full mb-8" style={{ background: '#1e293b' }}>
+        <div className="h-1.5 rounded-full transition-all"
+          style={{ width: `${((current) / QUIZ_QUESTIONS.length) * 100}%`, background: 'var(--accent)' }} />
+      </div>
+
+      <div className="p-6 rounded-2xl mb-6" style={{ background: 'var(--bg-secondary)', border: '1px solid #334155' }}>
+        <p className="text-lg font-semibold leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+          {q.q}
+        </p>
+      </div>
+
+      <div className="grid gap-3">
+        {q.options.map((opt, i) => {
+          let bg = 'var(--bg-secondary)';
+          let border = '#334155';
+          let color = 'var(--text-primary)';
+          if (selected !== null) {
+            if (i === q.correct) { bg = 'rgba(34,197,94,0.2)'; border = 'var(--accent)'; color = 'var(--accent)'; }
+            else if (i === selected && i !== q.correct) { bg = 'rgba(239,68,68,0.15)'; border = '#ef4444'; color = '#ef4444'; }
+          }
+          return (
+            <button
+              key={i}
+              onClick={() => choose(i)}
+              disabled={selected !== null}
+              className="answer-btn w-full text-left px-5 py-4 rounded-xl font-medium text-base transition-all"
+              style={{ background: bg, border: `1px solid ${border}`, color }}
+            >
+              <span className="font-bold mr-3 font-code" style={{ color: 'var(--text-muted)' }}>
+                {['A', 'B', 'C', 'D'][i]}.
+              </span>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   SUMMARY SECTION
+═══════════════════════════════════════════════ */
+function Summary() {
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold text-center mb-8" style={{ color: 'var(--accent)' }}>
+        <i className="fas fa-star mr-2" />Обобщение
+      </h2>
+
+      {/* Key concepts table */}
+      <div className="rounded-2xl overflow-hidden mb-10" style={{ border: '1px solid #334155' }}>
+        <div className="px-5 py-3" style={{ background: 'rgba(34,197,94,0.1)', borderBottom: '1px solid #334155' }}>
+          <p className="font-semibold text-sm uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
+            <i className="fas fa-key mr-2" />Ключови понятия
+          </p>
+        </div>
+        {SUMMARY_CONCEPTS.map((c, i) => (
+          <div key={i} className="flex gap-4 px-5 py-3.5 items-start"
+            style={{ background: i % 2 === 0 ? 'var(--bg-secondary)' : 'var(--bg-primary)', borderBottom: i < SUMMARY_CONCEPTS.length - 1 ? '1px solid #1e293b' : 'none' }}>
+            <span className="font-bold font-code shrink-0 min-w-[11rem]" style={{ color: 'var(--accent)' }}>{c.term}</span>
+            <span style={{ color: 'var(--text-primary)' }}>{c.def}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Facts */}
+      <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>
+        <i className="fas fa-lightbulb mr-2" />3 интересни факта за запомняне
+      </h3>
+      <div className="grid gap-4">
+        {FACTS.map((f, i) => (
+          <div key={i} className="flex gap-4 p-5 rounded-2xl" style={{ background: 'var(--bg-secondary)', border: '1px solid #334155' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: 'rgba(34,197,94,0.15)' }}>
+              <i className={`fas ${f.icon}`} style={{ color: 'var(--accent)' }} />
+            </div>
+            <div>
+              <p className="font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{f.title}</p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{f.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   APP ROOT
+═══════════════════════════════════════════════ */
+function App() {
+  const [tab, setTab] = useState('presentation');
+
+  return (
+    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
+      {/* Header */}
+      <div className="hero-banner px-4 pt-10 pb-8 text-center">
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+          Компютърът <span style={{ color: 'var(--accent)' }}>(хардуер и софтуер)</span>
+        </h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Информационни технологии | ППМГ Бургас</p>
+      </div>
+
+      {/* Nav */}
+      <nav className="sticky top-0 z-40 px-2" style={{ background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #1e293b' }}>
+        <div className="flex overflow-x-auto gap-1 py-2 max-w-3xl mx-auto">
+          {TABS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all shrink-0"
+              style={{
+                background: tab === t.id ? 'rgba(34,197,94,0.15)' : 'transparent',
+                color: tab === t.id ? 'var(--accent)' : 'var(--text-muted)',
+                border: `1px solid ${tab === t.id ? 'var(--accent)' : 'transparent'}`,
+              }}
+            >
+              <i className={`fas ${t.icon} text-xs`} />
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Content */}
+      <main className="max-w-5xl mx-auto py-6">
+        {tab === 'presentation' && <PresentationSection />}
+        {tab === 'flashcards'   && <FlashCards />}
+        {tab === 'demo'         && <Demo />}
+        {tab === 'quiz'         && <Quiz />}
+        {tab === 'summary'      && <Summary />}
+      </main>
+
+      {/* Footer */}
+      <footer className="text-center py-6 text-xs" style={{ color: 'var(--text-muted)', borderTop: '1px solid #1e293b' }}>
+        Компютърът · Информационни технологии · ППМГ Бургас
+      </footer>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
