@@ -100,6 +100,21 @@
     "path": "Lessons/IT/Примерни уроци/Увод в HTML.html"
   },
   {
+    "name": "KMIT",
+    "type": "folder",
+    "path": "Lessons/KMIT/"
+  },
+  {
+    "name": "5 klass",
+    "type": "folder",
+    "path": "Lessons/KMIT/5 klass/"
+  },
+  {
+    "name": "01 преговор",
+    "type": "file",
+    "path": "Lessons/KMIT/5 klass/01 преговор.html"
+  },
+  {
     "name": "Other",
     "type": "folder",
     "path": "Lessons/Other/"
