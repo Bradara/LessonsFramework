@@ -115,6 +115,11 @@
     "path": "Lessons/KMIT/5 klass/01 преговор.html"
   },
   {
+    "name": "02 Въведение в информационните технологии и компютърните системи",
+    "type": "file",
+    "path": "Lessons/KMIT/5 klass/02 Въведение в информационните технологии и компютърните системи.html"
+  },
+  {
     "name": "Other",
     "type": "folder",
     "path": "Lessons/Other/"

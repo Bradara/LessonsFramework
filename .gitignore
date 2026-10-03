@@ -37,3 +37,6 @@ backgrounds/*.gif
 
 # Tauri build output
 sets-app/src-tauri/target/
+
+# Claude AI
+CLAUDE.md
