@@ -326,6 +326,55 @@ npm i -g vercel
 vercel
 ```
 
+## 🧩 H5P ресурси (куизове и интерактивни упражнения)
+
+H5P ресурсите се вграждат в урока с локалния плейър `h5p-standalone` (без сървър на H5P). Общите библиотеки се пазят веднъж в `libs/h5p-libraries/`, а всеки ресурс има само своите данни.
+
+### Структура за нов H5P ресурс
+
+```
+Lessons/<предмет>/<клас>/
+├── 02 Урок.html               ← урокът
+└── H5P/
+    ├── Име-на-ресурса.h5p     ← оригиналният експорт (по желание, за архив)
+    └── Име-на-ресурса/        ← разархивирана папка
+        ├── h5p.json           ← оставя се
+        └── content/           ← оставя се (content.json, config.json)
+
+libs/h5p-libraries/            ← общите библиотеки (H5P.*, FontAwesome-4.5, H5PEditor.* ...)
+```
+
+### Стъпки
+
+1. Експортирай ресурса от H5P редактора (или Lumi) като `.h5p`.
+2. Сложи го в `H5P/` в папката на урока и го разархивирай в подпапка със същото име (без `.h5p`).
+3. Копирай всички папки на библиотеките (всичко освен `content/` и `h5p.json`) в `libs/h5p-libraries/`, ако ги няма там. Папките с версии, които вече съществуват, не е нужно да се копират отново.
+4. Изтрий библиотечните папки от разархивираната папка, така че да останат само `h5p.json` и `content/`.
+5. В урока добави контейнер и инициализация (замени името на папката с ресурса):
+
+```html
+<div id="h5p-container"></div>
+
+<!-- в края на <body> -->
+<script src="../../../libs/h5p-standalone/dist/main.bundle.js" charset="UTF-8"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new H5PStandalone.H5P(document.getElementById('h5p-container'), {
+            h5pJsonPath: 'H5P/Име-на-ресурса',
+            librariesPath: '../../../libs/h5p-libraries',
+            frameJs: '../../../libs/h5p-standalone/dist/frame.bundle.js',
+            frameCss: '../../../libs/h5p-standalone/dist/styles/h5p.css'
+        });
+    });
+</script>
+```
+
+6. Регенерирай структурата: `python scanner.py -r`. Папката `H5P/` е в `IGNORE_ITEMS`, така че не се появява в Dashboard-а.
+
+Пътищата са относителни спрямо урока (`../../../` е от `Lessons/<предмет>/<клас>/`). Тествай през HTTP сървър (`python -m http.server 8000`), не с двоен клик.
+
+Версията на `h5p-standalone` (`libs/h5p-standalone/`) се управлява от `download_libs.py`.
+
 ## 🐛 Troubleshooting
 
 ### CORS грешка / NetworkError (НАЙ-ЧЕСТО)

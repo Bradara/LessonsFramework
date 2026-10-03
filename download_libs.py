@@ -81,6 +81,38 @@ for wf in [
 ]:
     download(FA_BASE + wf, os.path.join(L, "font-awesome", "webfonts", wf))
 
+# ── h5p-standalone (local H5P player, no backend needed) ───────────────────────
+
+H5P_STANDALONE_VERSION = "3.8.2"
+H5P = os.path.join(L, "h5p-standalone")
+h5p_base = f"https://unpkg.com/h5p-standalone@{H5P_STANDALONE_VERSION}"
+
+for rel in [
+    "dist/main.bundle.js",
+    "dist/frame.bundle.js",
+    "dist/styles/h5p.css",
+    "dist/styles/h5p-fonts.css",
+    "dist/images/throbber.gif",
+    "dist/images/h5p.svg",
+    "dist/fonts/h5p-hub-publish.woff",
+    "dist/fonts/h5p-hub-publish.woff2",
+    "dist/fonts/h5p-core-30.woff2",
+    "dist/fonts/h5p-theme.woff2",
+    "dist/fonts/inter/Inter-ExtraBold.woff2",
+    "dist/fonts/inter/Inter-ExtraBoldItalic.woff2",
+    "dist/fonts/inter/inter-v18-cyrillic_cyrillic-ext_greek_greek-ext_latin_latin-ext_vietnamese-regular.woff2",
+    "dist/fonts/inter/inter-v18-cyrillic_cyrillic-ext_greek_greek-ext_latin_latin-ext_vietnamese-italic.woff2",
+    "dist/fonts/inter/inter-v18-cyrillic_cyrillic-ext_greek_greek-ext_latin_latin-ext_vietnamese-600.woff2",
+    "dist/fonts/inter/inter-v18-cyrillic_cyrillic-ext_greek_greek-ext_latin_latin-ext_vietnamese-600italic.woff2",
+    "dist/fonts/open-sans/open-sans-v40-cyrillic_cyrillic-ext_greek_greek-ext_hebrew_latin_latin-ext_math_symbols_vietnamese-regular.woff2",
+    "dist/fonts/open-sans/open-sans-v40-cyrillic_cyrillic-ext_greek_greek-ext_hebrew_latin_latin-ext_math_symbols_vietnamese-italic.woff2",
+    "dist/fonts/open-sans/open-sans-v40-cyrillic_cyrillic-ext_greek_greek-ext_hebrew_latin_latin-ext_math_symbols_vietnamese-600.woff2",
+    "dist/fonts/open-sans/open-sans-v40-cyrillic_cyrillic-ext_greek_greek-ext_hebrew_latin_latin-ext_math_symbols_vietnamese-600italic.woff2",
+    "dist/fonts/open-sans/open-sans-v40-cyrillic_cyrillic-ext_greek_greek-ext_hebrew_latin_latin-ext_math_symbols_vietnamese-700.woff2",
+    "dist/fonts/open-sans/open-sans-v40-cyrillic_cyrillic-ext_greek_greek-ext_hebrew_latin_latin-ext_math_symbols_vietnamese-700italic.woff2",
+]:
+    download(f"{h5p_base}/{rel}", os.path.join(H5P, *rel.split("/")))
+
 # ── reveal.js 5 ───────────────────────────────────────────────────────────────
 
 RV = os.path.join(L, "reveal")

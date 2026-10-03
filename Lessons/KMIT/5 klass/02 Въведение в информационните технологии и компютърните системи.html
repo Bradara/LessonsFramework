@@ -13,6 +13,9 @@
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
 
+    <!-- H5P Standalone player (локален, за H5P ресурси от подпапка H5P/) -->
+    <link rel="stylesheet" href="../../../libs/h5p-standalone/dist/styles/h5p.css">
+
     <style>
         * {
             margin: 0;
@@ -118,6 +121,20 @@
             border: 0;
         }
 
+        .section-title {
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .h5p-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
         .actions {
             display: flex;
             justify-content: center;
@@ -194,6 +211,9 @@
                 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTLXcumBYzHjhQ7c6bMugD7zKow08A43uKPHxp34rHohfyxEqQfj7I4wGZBJ9ENYMnDQ0nLI4MoAd-p/pubembed?start=false&loop=false&delayms=60000" frameborder="0" width="1707" height="989" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
             </div>
 
+            <h2 class="section-title"><i class="fas fa-circle-question"></i> Куиз</h2>
+            <div id="h5p-container" class="h5p-wrapper"></div>
+
             <div class="actions">
                 <a href="../../../index.html" class="back-button">
                     <i class="fas fa-arrow-left"></i>
@@ -228,6 +248,19 @@
             document.body.style.backgroundImage =
                 `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('${pick}')`;
         })();
+    </script>
+
+    <!-- H5P Standalone player: рендира H5P ресурса от локалната подпапка H5P/Urok2 -->
+    <script src="../../../libs/h5p-standalone/dist/main.bundle.js" charset="UTF-8"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new H5PStandalone.H5P(document.getElementById('h5p-container'), {
+                h5pJsonPath: 'H5P/Urok2',
+                librariesPath: '../../../libs/h5p-libraries',
+                frameJs: '../../../libs/h5p-standalone/dist/frame.bundle.js',
+                frameCss: '../../../libs/h5p-standalone/dist/styles/h5p.css'
+            });
+        });
     </script>
 </body>
 </html>
