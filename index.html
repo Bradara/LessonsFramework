@@ -232,36 +232,47 @@
             const pathParts = currentPath === '' ? [] : currentPath.split('/').filter(p => p);
             
             return (
-                <div className="mb-6 flex items-center space-x-2 text-sm">
-                    <button
-                        onClick={() => onNavigate('')}
-                        className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors"
-                    >
-                        <i className="fas fa-home"></i>
-                        <span>Начало</span>
-                    </button>
-                    
-                    {pathParts.map((part, index) => {
-                        const path = pathParts.slice(0, index + 1).join('/');
-                        const isLast = index === pathParts.length - 1;
-                        
-                        return (
-                            <React.Fragment key={index}>
-                                <i className="fas fa-chevron-right text-gray-400 text-xs"></i>
-                                <button
-                                    onClick={() => !isLast && onNavigate(path)}
-                                    className={`${
-                                        isLast 
-                                            ? 'text-blue-600 font-semibold' 
-                                            : 'text-gray-600 hover:text-blue-600'
-                                    } transition-colors`}
-                                    disabled={isLast}
-                                >
-                                    {part}
-                                </button>
-                            </React.Fragment>
-                        );
-                    })}
+                <div className="mb-6 flex items-center justify-between">
+                    <div className="flex items-center space-x-2 text-sm">
+                        <button
+                            onClick={() => onNavigate('')}
+                            className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors"
+                        >
+                            <i className="fas fa-home"></i>
+                            <span>Начало</span>
+                        </button>
+
+                        {pathParts.map((part, index) => {
+                            const path = pathParts.slice(0, index + 1).join('/');
+                            const isLast = index === pathParts.length - 1;
+
+                            return (
+                                <React.Fragment key={index}>
+                                    <i className="fas fa-chevron-right text-gray-400 text-xs"></i>
+                                    <button
+                                        onClick={() => !isLast && onNavigate(path)}
+                                        className={`${
+                                            isLast
+                                                ? 'text-blue-600 font-semibold'
+                                                : 'text-gray-600 hover:text-blue-600'
+                                        } transition-colors`}
+                                        disabled={isLast}
+                                    >
+                                        {part}
+                                    </button>
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+
+                    {currentPath === '' && (
+                        <img
+                            src="backgrounds/qr.svg"
+                            alt="QR код за сканиране"
+                            title="Сканирайте за достъп до портала"
+                            className="w-24 h-24 bg-white p-1 rounded-lg shadow-sm"
+                        />
+                    )}
                 </div>
             );
         }
