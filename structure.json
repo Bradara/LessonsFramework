@@ -160,6 +160,16 @@
     "path": "Lessons/Other/Malta/video/"
   },
   {
+    "name": "Роботика",
+    "type": "folder",
+    "path": "Lessons/Other/Роботика/"
+  },
+  {
+    "name": "zadanie-1",
+    "type": "file",
+    "path": "Lessons/Other/Роботика/zadanie-1.html"
+  },
+  {
     "name": "Quizzes",
     "type": "folder",
     "path": "Lessons/Quizzes/"
