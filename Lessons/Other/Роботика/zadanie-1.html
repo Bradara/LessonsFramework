@@ -62,6 +62,21 @@
     header.top .eyebrow { font-size: 13px; opacity: .85; letter-spacing: .04em; text-transform: uppercase; }
     header.top h1 { margin: 6px 0 4px; font-size: clamp(22px, 4vw, 30px); }
     header.top p { margin: 0; opacity: .92; }
+    header.top { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    header.top .top-text { min-width: 0; }
+    .qr {
+      flex-shrink: 0;
+      background: #fff;
+      padding: 8px;
+      border-radius: 12px;
+      line-height: 0;
+    }
+    .qr img { width: 112px; height: 112px; display: block; }
+    @media (max-width: 600px) {
+      header.top { gap: 12px; }
+      .qr { padding: 6px; }
+      .qr img { width: 76px; height: 76px; }
+    }
 
     nav.tabs {
       display: flex;
@@ -418,9 +433,14 @@
       return (
         <div className="app">
           <header className="top">
-            <div className="eyebrow">Роботика за България 2026/2027</div>
-            <h1>Задание 1 · Малки действия, голяма промяна</h1>
-            <p>Подобри средата около теб — условия, мисии и бланки за отборите.</p>
+            <div className="top-text">
+              <div className="eyebrow">Роботика за България 2026/2027</div>
+              <h1>Задание 1 · Малки действия, голяма промяна</h1>
+              <p>Подобри средата около теб — условия, мисии и бланки за отборите.</p>
+            </div>
+            <div className="qr">
+              <img src="qr-kod_robo.png" alt="QR код към страницата със Задание 1" width="112" height="112" />
+            </div>
           </header>
 
           <nav className="tabs">
