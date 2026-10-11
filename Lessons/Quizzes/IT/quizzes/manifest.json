@@ -1,6 +1,12 @@
 {
   "categories": [
     {
+      "id": "Modil1-QQ-C#_Basics",
+      "title": "Модул 1 — Основи на програмирането",
+      "file": "Modul_1 - QQ_CSharp_Basic.aiken",
+      "description": "109 въпроса: типове данни, оператори, условни конструкции, цикли и основи на C#"
+    },
+    {
       "id": "sample-algorithms",
       "title": "Алгоритми — основи",
       "file": "sample-algorithms.aiken",
