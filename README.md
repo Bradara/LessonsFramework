@@ -375,6 +375,31 @@ libs/h5p-libraries/            ← общите библиотеки (H5P.*, Fon
 
 Версията на `h5p-standalone` (`libs/h5p-standalone/`) се управлява от `download_libs.py`.
 
+## 📚 Библиотека с markdown статии (Other/Library)
+
+`Lessons/Other/Library/library.html` показва филтрируем списък със статии, написани като обикновени `.md` файлове в `Lessons/Other/Library/library/` (data-папка, игнорирана от scanner-а по същия начин като `quizzes/`/`H5P/`).
+
+### Добавяне на статия
+
+1. Сложи нов `.md` файл в `Lessons/Other/Library/library/` (директно или в подпапка по избор).
+2. По желание добави frontmatter в началото на файла:
+
+   ```markdown
+   ---
+   title: Заглавие
+   author: Автор
+   date: 2026-03-01
+   topic: Категория
+   tags: таг1, таг2
+   ---
+   ```
+
+   Всички полета са опционални — липсващо `title` пада обратно на първия `# heading` в текста, липсващо `date` пада на датата на последния git commit за файла (после file mtime).
+3. Регенерирай манифеста: `python build_library_manifest.py`. Това пренаписва `library/manifest.json`, който `library.html` чете при зареждане.
+4. (По желание) `python scanner.py -r`, ако е добавена нова подпапка извън `Other/Library`.
+
+Markdown се рендерира в браузъра с `marked.js` (`libs/marked.min.js`, качен от `download_libs.py`).
+
 ## 🐛 Troubleshooting
 
 ### CORS грешка / NetworkError (НАЙ-ЧЕСТО)

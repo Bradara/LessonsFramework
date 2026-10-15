@@ -140,6 +140,16 @@
     "path": "Lessons/Other/Labels/Обложка за диск.dc.html"
   },
   {
+    "name": "Library",
+    "type": "folder",
+    "path": "Lessons/Other/Library/"
+  },
+  {
+    "name": "library",
+    "type": "file",
+    "path": "Lessons/Other/Library/library.html"
+  },
+  {
     "name": "Malta",
     "type": "folder",
     "path": "Lessons/Other/Malta/"

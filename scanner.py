@@ -29,6 +29,7 @@ IGNORE_ITEMS = {
     'sets-app',
     'quizzes',  # data folder for quiz activities (aiken + manifest files, not lessons)
     'H5P',  # data folder for local H5P content/library folders, not lessons
+    'library',  # data folder for markdown library articles + manifest.json, not lessons
 }
 
 def should_ignore(item_name: str) -> bool:

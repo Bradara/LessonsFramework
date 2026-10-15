@@ -68,6 +68,10 @@ download("https://unpkg.com/lucide@latest/dist/umd/lucide.min.js",
 download("https://unpkg.com/framer-motion@10.16.16/dist/framer-motion.js",
          os.path.join(L, "framer-motion.js"))
 
+# marked (markdown -> HTML renderer, used by Other/Library/library.html)
+download("https://unpkg.com/marked@12.0.2/marked.min.js",
+         os.path.join(L, "marked.min.js"))
+
 # Font Awesome 6
 download(
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Библиотека</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="../../../libs/marked.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/marked@12.0.2/marked.min.js'"></script>
+
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+        color: #333;
+        line-height: 1.7;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2.5rem;
+        text-align: center;
+    }
+
+    .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .header p { font-size: 1.1rem; font-weight: 300; opacity: 0.95; }
+
+    .content { padding: 2.5rem; }
+
+    .content h2 {
+        color: #667eea;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 3px solid #f0f0f0;
+    }
+    .content h2:first-child { margin-top: 0; }
+    .content h3 { color: #764ba2; font-size: 1.4rem; font-weight: 600; margin: 1.5rem 0 0.8rem; }
+    .content p { margin-bottom: 1rem; }
+    .content ul, .content ol { margin: 0 0 1rem 1.5rem; }
+    .content code { background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 4px; font-family: 'Fira Code', monospace; }
+    .content pre { background: #1e1e2e; color: #f0f0f0; padding: 1rem; border-radius: 8px; overflow-x: auto; margin-bottom: 1rem; }
+    .content pre code { background: none; padding: 0; }
+    .content blockquote { border-left: 4px solid #667eea; padding-left: 1rem; color: #555; margin-bottom: 1rem; }
+    .content a { color: #667eea; }
+    .content table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
+    .content th, .content td { border: 1px solid #e0e0e0; padding: 0.5rem 0.75rem; text-align: left; }
+
+    /* ── Filters ── */
+    .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .filters input[type="search"],
+    .filters select {
+        font-family: inherit;
+        font-size: 0.95rem;
+        padding: 0.5rem 0.9rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 999px;
+        outline: none;
+    }
+    .filters input[type="search"]:focus,
+    .filters select:focus { border-color: #667eea; }
+
+    .chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .chip {
+        font-size: 0.85rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        border: 2px solid #e0e0e0;
+        background: white;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        color: #555;
+    }
+    .chip:hover { border-color: #667eea; color: #667eea; }
+    .chip.active { background: #667eea; border-color: #667eea; color: white; }
+
+    .empty-state { text-align: center; color: #888; padding: 3rem 1rem; }
+
+    /* ── Article cards ── */
+    .article-list { display: flex; flex-direction: column; gap: 1rem; }
+    .article-card {
+        border: 2px solid #f0f0f0;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        cursor: pointer;
+        transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .article-card:hover { border-color: #667eea; transform: translateY(-2px); }
+    .article-card h3 { color: #333; font-size: 1.2rem; margin-bottom: 0.4rem; }
+    .article-meta { display: flex; flex-wrap: wrap; gap: 0.6rem; font-size: 0.85rem; color: #888; margin-bottom: 0.5rem; }
+    .article-meta .topic { color: #764ba2; font-weight: 600; }
+    .article-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .article-tags span {
+        font-size: 0.75rem;
+        background: #f3f1fb;
+        color: #667eea;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+    }
+
+    /* ── Article view ── */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: none;
+        border: none;
+        color: #667eea;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+        padding: 0;
+    }
+    .back-button:hover { text-decoration: underline; }
+
+    .article-header { margin-bottom: 1.5rem; }
+    .article-header h2 { margin: 0 0 0.5rem 0 !important; border-bottom: none !important; }
+
+    [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📚 Библиотека</h1>
+        <p>Статии и материали</p>
+    </div>
+
+    <div class="content">
+
+        <!-- ── Списък ── -->
+        <div id="list-view">
+            <div class="filters">
+                <input type="search" id="search-box" placeholder="Търсене по заглавие...">
+                <select id="author-select">
+                    <option value="">Всички автори</option>
+                </select>
+            </div>
+            <div class="chip-row" id="topic-chips"></div>
+            <div class="chip-row" id="tag-chips"></div>
+            <div class="article-list" id="article-list"></div>
+            <div class="empty-state" id="empty-state" hidden>Няма статии, отговарящи на филтрите.</div>
+        </div>
+
+        <!-- ── Преглед на статия ── -->
+        <div id="article-view" hidden>
+            <button class="back-button" id="back-button">← Към списъка</button>
+            <div class="article-header">
+                <h2 id="article-title"></h2>
+                <div class="article-meta" id="article-meta"></div>
+            </div>
+            <div id="article-body"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+let allEntries = [];
+let activeTopic = null;
+let activeTag = null;
+
+function el(tag, props, children) {
+    const node = document.createElement(tag);
+    Object.assign(node, props || {});
+    (children || []).forEach(c => node.appendChild(c));
+    return node;
+}
+
+function renderChips(container, values, active, onToggle) {
+    container.innerHTML = '';
+    values.forEach(value => {
+        const chip = el('button', {
+            className: 'chip' + (value === active ? ' active' : ''),
+            textContent: value,
+            onclick: () => onToggle(value === active ? null : value)
+        });
+        container.appendChild(chip);
+    });
+}
+
+function populateFilters() {
+    const topics = [...new Set(allEntries.map(e => e.topic).filter(Boolean))].sort();
+    const tags = [...new Set(allEntries.flatMap(e => e.tags))].sort();
+    const authors = [...new Set(allEntries.map(e => e.author).filter(Boolean))].sort();
+
+    renderChips(document.getElementById('topic-chips'), topics, activeTopic, value => {
+        activeTopic = value;
+        renderList();
+    });
+    renderChips(document.getElementById('tag-chips'), tags, activeTag, value => {
+        activeTag = value;
+        renderList();
+    });
+
+    const authorSelect = document.getElementById('author-select');
+    authors.forEach(author => authorSelect.appendChild(el('option', { value: author, textContent: author })));
+}
+
+function filteredEntries() {
+    const query = document.getElementById('search-box').value.trim().toLowerCase();
+    const author = document.getElementById('author-select').value;
+
+    return allEntries.filter(e => {
+        if (activeTopic && e.topic !== activeTopic) return false;
+        if (activeTag && !e.tags.includes(activeTag)) return false;
+        if (author && e.author !== author) return false;
+        if (query && !e.title.toLowerCase().includes(query)) return false;
+        return true;
+    });
+}
+
+function renderList() {
+    document.getElementById('topic-chips').querySelectorAll('.chip').forEach(chip => {
+        chip.classList.toggle('active', chip.textContent === activeTopic);
+    });
+    document.getElementById('tag-chips').querySelectorAll('.chip').forEach(chip => {
+        chip.classList.toggle('active', chip.textContent === activeTag);
+    });
+
+    const entries = filteredEntries();
+    const listEl = document.getElementById('article-list');
+    const emptyEl = document.getElementById('empty-state');
+    listEl.innerHTML = '';
+    emptyEl.hidden = entries.length > 0;
+
+    entries.forEach(entry => {
+        const meta = el('div', { className: 'article-meta' }, [
+            el('span', { textContent: entry.date || '' }),
+            entry.author ? el('span', { textContent: '· ' + entry.author }) : null,
+            entry.topic ? el('span', { className: 'topic', textContent: entry.topic }) : null,
+        ].filter(Boolean));
+
+        const tagsEl = el('div', { className: 'article-tags' },
+            entry.tags.map(tag => el('span', { textContent: tag })));
+
+        const card = el('div', { className: 'article-card', onclick: () => openArticle(entry) }, [
+            el('h3', { textContent: entry.title }),
+            meta,
+            tagsEl,
+        ]);
+        listEl.appendChild(card);
+    });
+}
+
+async function openArticle(entry) {
+    const response = await fetch(entry.file);
+    const raw = await response.text();
+    const body = raw.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
+
+    document.getElementById('article-title').textContent = entry.title;
+    const meta = document.getElementById('article-meta');
+    meta.innerHTML = '';
+    [
+        entry.date,
+        entry.author,
+        entry.topic,
+    ].filter(Boolean).forEach(text => meta.appendChild(el('span', { textContent: text })));
+
+    document.getElementById('article-body').innerHTML = marked.parse(body);
+    document.getElementById('list-view').hidden = true;
+    document.getElementById('article-view').hidden = false;
+    window.scrollTo(0, 0);
+}
+
+document.getElementById('back-button').addEventListener('click', () => {
+    document.getElementById('article-view').hidden = true;
+    document.getElementById('list-view').hidden = false;
+});
+document.getElementById('search-box').addEventListener('input', renderList);
+document.getElementById('author-select').addEventListener('change', renderList);
+
+fetch('library/manifest.json')
+    .then(r => r.json())
+    .then(data => {
+        allEntries = data;
+        populateFilters();
+        renderList();
+    })
+    .catch(() => {
+        document.getElementById('article-list').innerHTML = '';
+        document.getElementById('empty-state').hidden = false;
+        document.getElementById('empty-state').textContent = 'Грешка при зареждане на library/manifest.json.';
+    });
+</script>
+
+</body>
+</html>
