@@ -125,6 +125,11 @@
     "path": "Lessons/KMIT/5 klass/03 Диалог на потребителя с компютърните приложения.html"
   },
   {
+    "name": "04 Носители на информация",
+    "type": "file",
+    "path": "Lessons/KMIT/5 klass/04 Носители на информация.html"
+  },
+  {
     "name": "Other",
     "type": "folder",
     "path": "Lessons/Other/"

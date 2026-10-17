@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Носители на информация - Образователен Портал</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
+
+    <!-- H5P Standalone player (локален, за H5P ресурсите от подпапка H5P/Urok4/) -->
+    <link rel="stylesheet" href="../../../libs/h5p-standalone/dist/styles/h5p.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 3rem 2.5rem;
+        }
+
+        /* Меню за превключване между активностите */
+        .activity-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .menu-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 1.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            color: #555;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .menu-btn:hover {
+            border-color: #764ba2;
+            color: #764ba2;
+        }
+
+        .menu-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .presentation-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .presentation-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .h5p-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-height: 200px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .menu-btn {
+                padding: 0.75rem 1.3rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-database"></i> Носители на информация</h1>
+                <p>KMIT - 5 клас</p>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Меню за активностите -->
+            <div class="activity-menu">
+                <button class="menu-btn active" data-tab="presentation" onclick="showTab('presentation')">
+                    <i class="fas fa-display"></i> Презентация
+                </button>
+                <button class="menu-btn" data-tab="cards" onclick="showTab('cards')">
+                    <i class="fas fa-clone"></i> Карти за повторение
+                </button>
+                <button class="menu-btn" data-tab="flashcards" onclick="showTab('flashcards')">
+                    <i class="fas fa-bolt"></i> Флаш карти
+                </button>
+                <button class="menu-btn" data-tab="quiz" onclick="showTab('quiz')">
+                    <i class="fas fa-circle-question"></i> Куиз
+                </button>
+            </div>
+
+            <!-- Презентация -->
+            <div id="panel-presentation" class="tab-panel active">
+                <div class="presentation-wrapper">
+                    <iframe src="https://docs.google.com/presentation/d/1_fADFyv3m8TW5CaHdaF18cOxbRFYcYOPTUJD56F6Jtk/embed?start=false&loop=false&delayms=3000"
+                            allow="fullscreen"
+                            allowfullscreen="true"
+                            mozallowfullscreen="true"
+                            webkitallowfullscreen="true">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- Карти за повторение (H5P Dialog Cards) -->
+            <div id="panel-cards" class="tab-panel">
+                <div id="h5p-cards" class="h5p-wrapper"></div>
+            </div>
+
+            <!-- Флаш карти (H5P Flashcards) -->
+            <div id="panel-flashcards" class="tab-panel">
+                <div id="h5p-flashcards" class="h5p-wrapper"></div>
+            </div>
+
+            <!-- Куиз (H5P Single Choice Set) -->
+            <div id="panel-quiz" class="tab-panel">
+                <div id="h5p-quiz" class="h5p-wrapper"></div>
+            </div>
+
+            <div class="actions">
+                <a href="../../../index.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    Назад към уроците
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+        </div>
+    </div>
+
+    <script>
+        // Случаен фон на страницата от папка backgrounds/
+        (function () {
+            const backgrounds = [
+                '../../../backgrounds/IT.jpg',
+                '../../../backgrounds/Informatics.jpg',
+                '../../../backgrounds/Lessons.jpg',
+                '../../../backgrounds/Malta.jpg',
+                '../../../backgrounds/Modul1.jpg',
+                '../../../backgrounds/Modul2.jpg',
+                '../../../backgrounds/Modul2.png',
+                '../../../backgrounds/Modul3.jpg',
+                '../../../backgrounds/Modul4.jpg',
+                '../../../backgrounds/Other.jpg',
+                '../../../backgrounds/Start.jpg'
+            ];
+            const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.body.style.backgroundImage =
+                `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('${pick}')`;
+        })();
+    </script>
+
+    <!-- H5P Standalone player: рендира картите, флаш картите и куиза от H5P/Urok4/ -->
+    <script src="../../../libs/h5p-standalone/dist/main.bundle.js" charset="UTF-8"></script>
+    <script>
+        const h5pInitialized = { cards: false, flashcards: false, quiz: false };
+
+        // Хващаме конструктора веднага след зареждането на main.bundle.js, докато
+        // window.H5PStandalone още е наред. Плейърът инжектира frame.bundle.js и в
+        // ГЛАВНИЯ документ (не само в iframe-а на активността), а то UMD-експортва
+        // себе си под СЪЩОТО глобално име "H5PStandalone" и го презаписва - след
+        // първата инициализирана активност window.H5PStandalone вече не съдържа
+        // .H5P и всяка следваща активност моментално гърми с "Cannot read properties
+        // of undefined (reading 'H5P')". Затова не викаме H5PStandalone.H5P директно
+        // при всяко превключване на таб, а използваме предварително хванатата референция.
+        const H5PConstructor = H5PStandalone.H5P;
+
+        function initH5P(containerId, h5pJsonPath) {
+            // "./" принуждава h5p-standalone да ресолвне пътя спрямо текущата страница.
+            // Без него библиотеката бърка относителен път от вида "H5P/..." с хостнейм
+            // (греши при разпознаване на URL-и) и съдържанието зарежда, но картинките
+            // в него се опитват да заредят от грешен адрес (липсваща папка на урока
+            // и дори липсваща наклонена черта след домейна) - картите изглеждат "счупени".
+            new H5PConstructor(document.getElementById(containerId), {
+                h5pJsonPath: './' + h5pJsonPath,
+                librariesPath: '../../../libs/h5p-libraries',
+                frameJs: '../../../libs/h5p-standalone/dist/frame.bundle.js',
+                frameCss: '../../../libs/h5p-standalone/dist/styles/h5p.css'
+            });
+        }
+
+        // Показва избраната активност и затваря предишната.
+        // H5P ресурсите се инициализират лениво - едва при първо отваряне на таба им,
+        // защото плейърът измерва размера на контейнера в момента на инициализация:
+        // ако контейнерът е скрит (display:none), той се оразмерява грешно (нулева
+        // височина/ширина) и активността остава счупена завинаги, дори след превключване
+        // към нея по-късно. Затова класът "active" (display:block) се слага ПРЕДИ initH5P(),
+        // а веднъж инициализирана активност не се пресъздава при повторно влизане в таба й.
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`.menu-btn[data-tab="${name}"]`).classList.add('active');
+
+            if (name === 'cards' && !h5pInitialized.cards) {
+                h5pInitialized.cards = true;
+                initH5P('h5p-cards', 'H5P/Urok4/DialogCards');
+            }
+            if (name === 'flashcards' && !h5pInitialized.flashcards) {
+                h5pInitialized.flashcards = true;
+                initH5P('h5p-flashcards', 'H5P/Urok4/FlashCards');
+            }
+            if (name === 'quiz' && !h5pInitialized.quiz) {
+                h5pInitialized.quiz = true;
+                initH5P('h5p-quiz', 'H5P/Urok4/Quiz');
+            }
+
+            // известява вече видимите H5P инстанции, че размерът на контейнера може да се е променил
+            window.dispatchEvent(new Event('resize'));
+        }
+    </script>
+</body>
+</html>

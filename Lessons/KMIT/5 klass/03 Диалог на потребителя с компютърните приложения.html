@@ -327,9 +327,24 @@
     <script>
         const h5pInitialized = { quiz: false, definitions: false };
 
+        // Хващаме конструктора веднага след зареждането на main.bundle.js, докато
+        // window.H5PStandalone още е наред. Плейърът инжектира frame.bundle.js и в
+        // ГЛАВНИЯ документ (не само в iframe-а на активността), а то UMD-експортва
+        // себе си под СЪЩОТО глобално име "H5PStandalone" и го презаписва - след
+        // първата инициализирана активност window.H5PStandalone вече не съдържа
+        // .H5P и всяка следваща активност моментално гърми с "Cannot read properties
+        // of undefined (reading 'H5P')". Затова не викаме H5PStandalone.H5P директно
+        // при всяко превключване на таб, а използваме предварително хванатата референция.
+        const H5PConstructor = H5PStandalone.H5P;
+
         function initH5P(containerId, h5pJsonPath) {
-            new H5PStandalone.H5P(document.getElementById(containerId), {
-                h5pJsonPath: h5pJsonPath,
+            // "./" принуждава h5p-standalone да ресолвне пътя спрямо текущата страница.
+            // Без него библиотеката бърка относителен път от вида "H5P/..." с хостнейм
+            // (греши при разпознаване на URL-и) и съдържанието зарежда, но картинките
+            // в него се опитват да заредят от грешен адрес (липсваща папка на урока
+            // и дори липсваща наклонена черта след домейна) - картите изглеждат "счупени".
+            new H5PConstructor(document.getElementById(containerId), {
+                h5pJsonPath: './' + h5pJsonPath,
                 librariesPath: '../../../libs/h5p-libraries',
                 frameJs: '../../../libs/h5p-standalone/dist/frame.bundle.js',
                 frameCss: '../../../libs/h5p-standalone/dist/styles/h5p.css'
