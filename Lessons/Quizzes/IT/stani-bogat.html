@@ -1013,9 +1013,9 @@
       };
 
       const handleBack = () => {
-        // Try history back; fallback to root
+        // Try history back; fallback to this lesson's own folder in the dashboard
         if (window.history.length > 1) window.history.back();
-        else window.location.href = '../../../index.html';
+        else window.location.href = '../../../index.html#/Lessons/Quizzes/IT';
       };
 
       if (screen === 'lobby') {
