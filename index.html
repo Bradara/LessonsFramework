@@ -227,6 +227,24 @@
             return { type: 'gradient', value: backgroundGradients[index] };
         };
 
+        // Помощни функции за синхронизиране на текущата папка с адресната лента (#hash).
+        // Целта е линк от вида index.html#/KMIT/5%20klass да отваря директно тази папка
+        // (за споделяне само на конкретен клас/папка с учениците) и бутонът "назад" на
+        // браузъра да връща стъпка по стъпка в навигацията, а не направо извън сайта.
+        function getPathFromHash() {
+            const raw = window.location.hash.replace(/^#\/?/, '');
+            try {
+                return decodeURIComponent(raw);
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function pathToHash(path) {
+            if (!path) return '#/';
+            return '#/' + path.split('/').map(encodeURIComponent).join('/');
+        }
+
         // Компонент за Breadcrumb навигация
         function Breadcrumb({ currentPath, onNavigate }) {
             const pathParts = currentPath === '' ? [] : currentPath.split('/').filter(p => p);
@@ -330,9 +348,17 @@
         // Основен App компонент
         function App() {
             const [allItems, setAllItems] = useState([]);
-            const [currentPath, setCurrentPath] = useState('');
+            const [currentPath, setCurrentPath] = useState(getPathFromHash);
             const [loading, setLoading] = useState(true);
             const [error, setError] = useState(null);
+
+            // Следи промени в #hash-а (вкл. бутоните "назад"/"напред" на браузъра) и
+            // синхронизира текущата папка с тях.
+            useEffect(() => {
+                const onHashChange = () => setCurrentPath(getPathFromHash());
+                window.addEventListener('hashchange', onHashChange);
+                return () => window.removeEventListener('hashchange', onHashChange);
+            }, []);
 
             useEffect(() => {
                 // Зареждане на structure.json
@@ -417,16 +443,28 @@
                 }
             };
 
+            // Единна точка за навигация: пише новия път в #hash-а (което добавя запис
+            // в историята на браузъра и обновява адресната лента), а currentPath се
+            // обновява чрез hashchange listener-а по-горе, не директно тук.
+            const navigateTo = (path) => {
+                const hash = pathToHash(path);
+                if (window.location.hash === hash) {
+                    setCurrentPath(path);
+                } else {
+                    window.location.hash = hash;
+                }
+            };
+
             const handleFolderClick = (folderPath) => {
                 // Премахваме крайния slash ако има
-                const cleanPath = folderPath.endsWith('/') 
-                    ? folderPath.slice(0, -1) 
+                const cleanPath = folderPath.endsWith('/')
+                    ? folderPath.slice(0, -1)
                     : folderPath;
-                setCurrentPath(cleanPath);
+                navigateTo(cleanPath);
             };
 
             const handleNavigate = (path) => {
-                setCurrentPath(path);
+                navigateTo(path);
             };
 
             if (loading) {
