@@ -400,6 +400,37 @@ libs/h5p-libraries/            ← общите библиотеки (H5P.*, Fon
 
 Markdown се рендерира в браузъра с `marked.js` (`libs/marked.min.js`, качен от `download_libs.py`).
 
+## 📝 Вграждане на .md файл директно в урок
+
+Освен през общата Library (виж по-горе), всеки урок може да вгради съседен `.md` файл директно в своето съдържание — по същия модел като H5P (контейнер `<div>` + малък init скрипт), чрез споделения helper `libs/md-embed.js` + `libs/md-embed.css`.
+
+### Стъпки за вграждане
+
+1. Сложи `.md` файла до урока (или в подпапка), напр. `Lessons/<предмет>/<клас>/статия.md`. YAML frontmatter (`title:`/`author:`/...) е по желание — маха се автоматично преди рендериране.
+2. В `<head>` добави стиловете:
+
+   ```html
+   <link rel="stylesheet" href="../../../libs/md-embed.css">
+   ```
+
+3. В тялото на урока добави контейнер и инициализация (замени пътя до `.md` файла с твоя):
+
+   ```html
+   <div id="md-embed"></div>
+
+   <script src="../../../libs/marked.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/marked@12.0.2/marked.min.js'"></script>
+   <script src="../../../libs/md-embed.js"></script>
+   <script>
+       document.addEventListener('DOMContentLoaded', function () {
+           renderMarkdownEmbed('md-embed', 'статия.md');
+       });
+   </script>
+   ```
+
+Пътят до `.md` файла в `renderMarkdownEmbed(...)` е относителен спрямо самия урок (не спрямо `libs/`). Относителната дълбочина до `libs/` зависи от нивото на урока, както при останалите библиотеки (`../../../` за `Lessons/<предмет>/<клас>/`). Тествай през `python -m http.server`, не с двоен клик (CORS).
+
+`md-embed.js`/`md-embed.css` са собствени файлове на проекта (не се вендорват от `download_libs.py` — няма CDN версия за тях).
+
 ## 🐛 Troubleshooting
 
 ### CORS грешка / NetworkError (НАЙ-ЧЕСТО)
