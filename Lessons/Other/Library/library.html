@@ -295,7 +295,7 @@ document.getElementById('back-button').addEventListener('click', () => {
 document.getElementById('search-box').addEventListener('input', renderList);
 document.getElementById('author-select').addEventListener('change', renderList);
 
-fetch('library/manifest.json')
+fetch('library/manifest.json', { cache: 'no-cache' })
     .then(r => r.json())
     .then(data => {
         allEntries = data;
