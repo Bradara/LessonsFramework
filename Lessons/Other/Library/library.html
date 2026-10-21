@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script src="../../../libs/marked.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/marked@12.0.2/marked.min.js'"></script>
+<script src="../../../libs/md-embed.js"></script>
 
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -63,6 +64,7 @@
     .content a { color: #667eea; }
     .content table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
     .content th, .content td { border: 1px solid #e0e0e0; padding: 0.5rem 0.75rem; text-align: left; }
+    .content .mermaid { display: flex; justify-content: center; margin-bottom: 1rem; background: #fff; border-radius: 8px; padding: 1rem; }
 
     /* ── Filters ── */
     .filters {
@@ -271,10 +273,6 @@ function renderList() {
 }
 
 async function openArticle(entry) {
-    const response = await fetch(entry.file);
-    const raw = await response.text();
-    const body = raw.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
-
     document.getElementById('article-title').textContent = entry.title;
     const meta = document.getElementById('article-meta');
     meta.innerHTML = '';
@@ -284,7 +282,7 @@ async function openArticle(entry) {
         entry.topic,
     ].filter(Boolean).forEach(text => meta.appendChild(el('span', { textContent: text })));
 
-    document.getElementById('article-body').innerHTML = marked.parse(body);
+    renderMarkdownEmbed('article-body', entry.file);
     document.getElementById('list-view').hidden = true;
     document.getElementById('article-view').hidden = false;
     window.scrollTo(0, 0);

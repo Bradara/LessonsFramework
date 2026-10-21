@@ -58,3 +58,12 @@
     padding: 0.5rem 0.75rem;
     text-align: left;
 }
+
+.md-embed .mermaid {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+}

@@ -431,6 +431,15 @@ Markdown се рендерира в браузъра с `marked.js` (`libs/marke
 
 `md-embed.js`/`md-embed.css` са собствени файлове на проекта (не се вендорват от `download_libs.py` — няма CDN версия за тях).
 
+### Mermaid диаграми и LaTeX/KaTeX формули
+
+`renderMarkdownEmbed(...)` (ползва се и от `library.html`) автоматично засича в markdown текста:
+
+- ` ```mermaid ` code block → зарежда `libs/mermaid.min.js` и рендира диаграмата
+- `$...$` / `$$...$$` → зарежда `libs/katex/` (CSS + JS + auto-render) и рендира формулите
+
+Зареждането е мързеливо — ако статията няма нито едното, нито другото, тези библиотеки изобщо не се теглят. Не е нужен допълнителен `<script>` таг в урока за това, работи автоматично за всеки `.md` файл, вграден през `renderMarkdownEmbed`. И двете са управлявани от `download_libs.py`.
+
 ## 🐛 Troubleshooting
 
 ### CORS грешка / NetworkError (НАЙ-ЧЕСТО)

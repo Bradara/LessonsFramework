@@ -72,6 +72,32 @@ download("https://unpkg.com/framer-motion@10.16.16/dist/framer-motion.js",
 download("https://unpkg.com/marked@12.0.2/marked.min.js",
          os.path.join(L, "marked.min.js"))
 
+# mermaid (diagram rendering, lazy-loaded by libs/md-embed.js only when a
+# ```mermaid code block is present)
+download("https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js",
+         os.path.join(L, "mermaid.min.js"))
+
+# KaTeX (LaTeX math rendering, lazy-loaded by libs/md-embed.js only when
+# $...$/$$...$$ is present)
+KATEX_BASE = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/"
+download(KATEX_BASE + "katex.min.css", os.path.join(L, "katex", "katex.min.css"))
+download(KATEX_BASE + "katex.min.js", os.path.join(L, "katex", "katex.min.js"))
+download(KATEX_BASE + "contrib/auto-render.min.js",
+         os.path.join(L, "katex", "auto-render.min.js"))
+# KaTeX webfonts referenced (as fonts/<name>) by katex.min.css - woff2 only,
+# sufficient for all current browsers
+for font in [
+    "KaTeX_AMS-Regular", "KaTeX_Caligraphic-Bold", "KaTeX_Caligraphic-Regular",
+    "KaTeX_Fraktur-Bold", "KaTeX_Fraktur-Regular", "KaTeX_Main-Bold",
+    "KaTeX_Main-BoldItalic", "KaTeX_Main-Italic", "KaTeX_Main-Regular",
+    "KaTeX_Math-BoldItalic", "KaTeX_Math-Italic", "KaTeX_SansSerif-Bold",
+    "KaTeX_SansSerif-Italic", "KaTeX_SansSerif-Regular", "KaTeX_Script-Regular",
+    "KaTeX_Size1-Regular", "KaTeX_Size2-Regular", "KaTeX_Size3-Regular",
+    "KaTeX_Size4-Regular", "KaTeX_Typewriter-Regular",
+]:
+    download(KATEX_BASE + f"fonts/{font}.woff2",
+             os.path.join(L, "katex", "fonts", f"{font}.woff2"))
+
 # Font Awesome 6
 download(
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
