@@ -19,6 +19,9 @@
     <!-- markmap-embed (интерактивна мисловна карта от H5P/Urok4/mindMap.md - пан/зуум + клик за разширяване на клонове) -->
     <link rel="stylesheet" href="../../../libs/markmap-embed.css">
 
+    <!-- md-embed (форматиран преглед на статията "История на арабските цифри" от Other/Library) -->
+    <link rel="stylesheet" href="../../../libs/md-embed.css">
+
     <style>
         * {
             margin: 0;
@@ -194,6 +197,15 @@
             color: #764ba2;
         }
 
+        .article-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            padding: 1.5rem 2rem;
+            background: #fff;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
         .actions {
             display: flex;
             justify-content: center;
@@ -279,6 +291,9 @@
                 <button class="menu-btn" data-tab="mindmap" onclick="showTab('mindmap')">
                     <i class="fas fa-diagram-project"></i> Мисловна карта
                 </button>
+                <button class="menu-btn" data-tab="history" onclick="showTab('history')">
+                    <i class="fas fa-scroll"></i> История на цифрите
+                </button>
                 <button class="menu-btn" data-tab="quiz" onclick="showTab('quiz')">
                     <i class="fas fa-circle-question"></i> Куиз
                 </button>
@@ -304,6 +319,13 @@
                         <svg id="mindmap-svg"></svg>
                         <div class="markmap-toolbar-host"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- История на арабските цифри (статия от Other/Library, вградена чрез md-embed) -->
+            <div id="panel-history" class="tab-panel">
+                <div class="article-wrapper">
+                    <div id="md-history"></div>
                 </div>
             </div>
 
@@ -351,11 +373,16 @@
     <!-- markmap-embed: рендира мисловната карта от H5P/Urok4/mindMap.md като интерактивна (пан/зуум + клик за разгъване/свиване) карта -->
     <script src="../../../libs/markmap-embed.js"></script>
 
+    <!-- md-embed: форматиран преглед на статията "История на арабските цифри" от Other/Library -->
+    <script src="../../../libs/marked.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/marked@12.0.2/marked.min.js'"></script>
+    <script src="../../../libs/md-embed.js"></script>
+
     <!-- H5P Standalone player: рендира куиза от H5P/Urok4/Quiz -->
     <script src="../../../libs/h5p-standalone/dist/main.bundle.js" charset="UTF-8"></script>
     <script>
         const h5pInitialized = { quiz: false };
         const mindmapInitialized = { mindmap: false };
+        const articleInitialized = { history: false };
 
         // Хващаме конструктора веднага след зареждането на main.bundle.js, докато
         // window.H5PStandalone още е наред (виж обяснението в 04 Носители на информация.html).
@@ -387,6 +414,10 @@
             if (name === 'mindmap' && !mindmapInitialized.mindmap) {
                 mindmapInitialized.mindmap = true;
                 renderMermaidMindmap('mindmap-svg', 'H5P/Urok4/mindMap.md');
+            }
+            if (name === 'history' && !articleInitialized.history) {
+                articleInitialized.history = true;
+                renderMarkdownEmbed('md-history', '../../Other/Library/library/История на арабските цифри - iskamdaznam.com.md');
             }
             if (name === 'quiz' && !h5pInitialized.quiz) {
                 h5pInitialized.quiz = true;
