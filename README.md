@@ -452,6 +452,52 @@ toc: true
 
 При рендиране `renderMarkdownEmbed(...)` автоматично генерира съдържание от `##`/`###` заглавията в текста (не е нужно да ги изброяваш ръчно) и показва бутон „☰" в горния десен ъгъл на статията. Клик върху него отваря/затваря падащо меню със списъка; клик върху елемент от него скролва плавно до съответното заглавие. Без `toc: true` (или с липсващо поле) бутонът не се показва.
 
+## 🧠 Интерактивна мисловна карта (markmap) от `mermaid mindmap`
+
+`renderMarkdownEmbed(...)` рендира ` ```mermaid ` блокове през `mermaid.js`, но за `mindmap` диаграми това е **статично** SVG — няма клик, няма пан/зуум. За урок, в който мисловната карта трябва да е навигируема (клик върху възел разгъва/свива клона му, плъзгане за преместване, бутони за мащаб), използвай `libs/markmap-embed.js` вместо `md-embed.js` — рендира **същия** `mermaid mindmap` синтаксис през [markmap](https://markmap.js.org/) (`libs/markmap/`).
+
+### Стъпки за интерактивна мисловна карта
+
+1. Напиши мисловната карта в `.md` файл със стандартен mermaid `mindmap` синтаксис (виж `Lessons/IT/8 клас/H5P/Urok4/mindMap.md` за пример):
+
+   ````markdown
+   ```mermaid
+   mindmap
+     root((Централна тема))
+       Клон 1
+         Подточка 1.1
+       Клон 2
+   ```
+   ````
+
+2. В `<head>` добави стиловете:
+
+   ```html
+   <link rel="stylesheet" href="../../../libs/markmap-embed.css">
+   ```
+
+3. В тялото на урока добави контейнера (точно тази структура — `markmap-embed.js` очаква `<svg>` + `.markmap-toolbar-host` като деца на `.markmap-host`) и инициализацията:
+
+   ```html
+   <div class="markmap-host">
+       <svg id="my-mindmap"></svg>
+       <div class="markmap-toolbar-host"></div>
+   </div>
+
+   <script src="../../../libs/markmap-embed.js"></script>
+   <script>
+       document.addEventListener('DOMContentLoaded', function () {
+           renderMermaidMindmap('my-mindmap', 'мисловна-карта.md');
+       });
+   </script>
+   ```
+
+`renderMermaidMindmap(svgId, mdPath)` зарежда `libs/markmap/d3.min.js` + `markmap-view.min.js` + `markmap-toolbar.min.js`/`.css` мързеливо (само при първо извикване), парсва mermaid `mindmap` текста директно в дърво (без markdown-it/markmap-lib — йерархията е по отстъпа на редовете), рендира интерактивната карта и добавя toolbar с zoom in / zoom out / fit бутони в `.markmap-toolbar-host`. По подразбиране са разгънати само първите 2 нива (`initialExpandLevel: 2`) — кликни възел, за да разгънеш/свиеш клона му.
+
+**Същият капан като при H5P/mermaid в таб-базирани уроци:** markmap измерва контейнера си при инициализация, затова вика `renderMermaidMindmap(...)` само след като табът му вече е `display:block` (лениво, при първо превключване към него — виж примера в `Lessons/IT/8 клас/Съвременни компютърни системи.html`), иначе картата излиза с нулев размер.
+
+Версиите на `d3`/`markmap-view`/`markmap-toolbar` (`libs/markmap/`) се управляват от `download_libs.py`. `markmap-embed.js`/`.css` са собствени файлове на проекта (не се вендорват от CDN), както `md-embed.js`.
+
 ## 🐛 Troubleshooting
 
 ### CORS грешка / NetworkError (НАЙ-ЧЕСТО)

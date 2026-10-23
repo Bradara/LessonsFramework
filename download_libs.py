@@ -77,6 +77,19 @@ download("https://unpkg.com/marked@12.0.2/marked.min.js",
 download("https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js",
          os.path.join(L, "mermaid.min.js"))
 
+# markmap (interactive, click-to-expand/collapse + zoom/pan mind maps, lazy-loaded
+# by libs/markmap-embed.js to render a ```mermaid mindmap block from a .md file as
+# an interactive diagram instead of mermaid's static mindmap SVG)
+MARKMAP_BASE = "https://unpkg.com/"
+download(MARKMAP_BASE + "d3@7.9.0/dist/d3.min.js",
+         os.path.join(L, "markmap", "d3.min.js"))
+download(MARKMAP_BASE + "markmap-view@0.18.12/dist/browser/index.js",
+         os.path.join(L, "markmap", "markmap-view.min.js"))
+download(MARKMAP_BASE + "markmap-toolbar@0.18.12/dist/index.js",
+         os.path.join(L, "markmap", "markmap-toolbar.min.js"))
+download(MARKMAP_BASE + "markmap-toolbar@0.18.12/dist/style.css",
+         os.path.join(L, "markmap", "markmap-toolbar.css"))
+
 # KaTeX (LaTeX math rendering, lazy-loaded by libs/md-embed.js only when
 # $...$/$$...$$ is present)
 KATEX_BASE = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/"

@@ -1,0 +1,41 @@
+/* markmap-embed.css — обвивка за интерактивната мисловна карта, рендирана
+   от markmap-embed.js. Markup очакван от markmap-embed.js:
+
+   <div class="markmap-host">
+       <svg id="..."></svg>
+       <div class="markmap-toolbar-host"></div>
+   </div>
+*/
+
+.markmap-host {
+    position: relative;
+    width: 100%;
+    height: 560px;
+    min-height: 320px;
+}
+
+.markmap-host svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.markmap-toolbar-host {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+}
+
+.markmap-error {
+    margin: 0;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+@media (max-width: 768px) {
+    .markmap-host {
+        height: 420px;
+    }
+}
