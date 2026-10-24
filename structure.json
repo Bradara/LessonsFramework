@@ -135,6 +135,11 @@
     "path": "Lessons/KMIT/5 klass/04 Носители на информация.html"
   },
   {
+    "name": "05 Файлова структура на организация на данните",
+    "type": "file",
+    "path": "Lessons/KMIT/5 klass/05 Файлова структура на организация на данните.html"
+  },
+  {
     "name": "Other",
     "type": "folder",
     "path": "Lessons/Other/"

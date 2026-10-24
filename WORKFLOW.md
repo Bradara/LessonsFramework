@@ -173,7 +173,6 @@ graph TB
         F --> J[Списъци ul, ol]
         F --> K[Код pre, code]
         F --> L[Highlight Box<br/>💡 Важни бележки]
-        F --> M[Бутон "Назад"<br/>🔙 Към Dashboard]
     end
     
     style A fill:#667eea,stroke:#333,color:#fff

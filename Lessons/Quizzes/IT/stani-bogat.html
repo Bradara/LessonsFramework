@@ -572,7 +572,7 @@
     /* =========================================================
        LOBBY
        ========================================================= */
-    function MillionaireLobby({ onStart, onBack }) {
+    function MillionaireLobby({ onStart }) {
       const [categories, setCategories]     = useState([]);
       const [selected, setSelected]         = useState(new Set());
       const [questionCounts, setQCounts]    = useState({});
@@ -703,13 +703,6 @@
 
             {/* Buttons */}
             <div className="flex gap-3">
-              <button
-                onClick={onBack}
-                className="shrink-0 flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-medium px-5 py-3 rounded-xl transition-colors"
-              >
-                <i className="fas fa-arrow-left"></i>
-                Назад
-              </button>
               <button
                 onClick={handleStart}
                 disabled={selected.size === 0 || totalQ === 0}
@@ -868,7 +861,7 @@
     /* =========================================================
        END SCREEN
        ========================================================= */
-    function MillionaireEnd({ result, onNewGame, onBack }) {
+    function MillionaireEnd({ result, onNewGame }) {
       const targetNum = parseFloat(result.amount) || 2.00;
       const [displayAmt, setDisplayAmt] = useState('2.00');
       const [animKey, setAnimKey]       = useState(0);
@@ -965,13 +958,6 @@
                 <i className="fas fa-redo"></i>
                 Нова игра
               </button>
-              <button
-                onClick={onBack}
-                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-medium px-6 py-3 rounded-xl transition-colors"
-              >
-                <i className="fas fa-home"></i>
-                Към уроците
-              </button>
             </div>
           </div>
         </div>
@@ -1012,12 +998,6 @@
         setScreen('end');
       };
 
-      const handleBack = () => {
-        // Try history back; fallback to this lesson's own folder in the dashboard
-        if (window.history.length > 1) window.history.back();
-        else window.location.href = '../../../index.html#/Lessons/Quizzes/IT';
-      };
-
       if (screen === 'lobby') {
         return (
           <>
@@ -1026,7 +1006,7 @@
                 <i className="fas fa-exclamation-triangle mr-2"></i>{loadError}
               </div>
             )}
-            <MillionaireLobby onStart={handleStart} onBack={handleBack} />
+            <MillionaireLobby onStart={handleStart} />
           </>
         );
       }
@@ -1052,7 +1032,6 @@
           <MillionaireEnd
             result={endResult}
             onNewGame={() => setScreen('lobby')}
-            onBack={handleBack}
           />
         );
       }

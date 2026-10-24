@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Файлова структура на организация на данните - Образователен Портал</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
+
+    <!-- H5P Standalone player (локален, за H5P ресурсите от подпапка H5P/Urok5/) -->
+    <link rel="stylesheet" href="../../../libs/h5p-standalone/dist/styles/h5p.css">
+
+    <!-- markmap-embed (интерактивна мисловна карта от H5P/Urok5/Urok5MindMap.md - пан/зуум + клик за разширяване на клонове) -->
+    <link rel="stylesheet" href="../../../libs/markmap-embed.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 3rem 2.5rem;
+        }
+
+        /* Меню за превключване между активностите */
+        .activity-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .menu-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 1.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            color: #555;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .menu-btn:hover {
+            border-color: #764ba2;
+            color: #764ba2;
+        }
+
+        .menu-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .presentation-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .presentation-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .h5p-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-height: 200px;
+        }
+
+        .mindmap-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            background: #fafafa;
+        }
+
+        .mindmap-hint {
+            margin: 0 0 0.75rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .mindmap-hint i {
+            color: #764ba2;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .menu-btn {
+                padding: 0.75rem 1.3rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-folder-tree"></i> Файлова структура на организация на данните</h1>
+                <p>KMIT - 5 клас</p>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Меню за активностите -->
+            <div class="activity-menu">
+                <button class="menu-btn active" data-tab="presentation" onclick="showTab('presentation')">
+                    <i class="fas fa-display"></i> Презентация
+                </button>
+                <button class="menu-btn" data-tab="mindmap" onclick="showTab('mindmap')">
+                    <i class="fas fa-diagram-project"></i> Мисловна карта
+                </button>
+                <button class="menu-btn" data-tab="quiz" onclick="showTab('quiz')">
+                    <i class="fas fa-circle-question"></i> Куиз
+                </button>
+            </div>
+
+            <!-- Презентация -->
+            <div id="panel-presentation" class="tab-panel active">
+                <div class="presentation-wrapper">
+                    <iframe src="https://docs.google.com/presentation/d/1w2B0jpCkGKbKmC9HWOcr88vKKhuFagmEq63VtJjpsrs/embed?start=false&loop=false&delayms=3000"
+                            allow="fullscreen"
+                            allowfullscreen="true"
+                            mozallowfullscreen="true"
+                            webkitallowfullscreen="true">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- Мисловна карта (интерактивна, от H5P/Urok5/Urok5MindMap.md чрез markmap-embed) -->
+            <div id="panel-mindmap" class="tab-panel">
+                <div class="mindmap-wrapper">
+                    <p class="mindmap-hint"><i class="fas fa-circle-info"></i> Кликни върху възел, за да разгънеш/свиеш клона му. Плъзгай за преместване, скрол/бутоните долу вдясно за мащаб.</p>
+                    <div class="markmap-host">
+                        <svg id="mindmap-svg"></svg>
+                        <div class="markmap-toolbar-host"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Куиз (H5P Single Choice Set) -->
+            <div id="panel-quiz" class="tab-panel">
+                <div id="h5p-quiz" class="h5p-wrapper"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+        </div>
+    </div>
+
+    <script>
+        // Случаен фон на страницата от папка backgrounds/
+        (function () {
+            const backgrounds = [
+                '../../../backgrounds/IT.jpg',
+                '../../../backgrounds/Informatics.jpg',
+                '../../../backgrounds/Lessons.jpg',
+                '../../../backgrounds/Malta.jpg',
+                '../../../backgrounds/Modul1.jpg',
+                '../../../backgrounds/Modul2.jpg',
+                '../../../backgrounds/Modul2.png',
+                '../../../backgrounds/Modul3.jpg',
+                '../../../backgrounds/Modul4.jpg',
+                '../../../backgrounds/Other.jpg',
+                '../../../backgrounds/Start.jpg'
+            ];
+            const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.body.style.backgroundImage =
+                `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('${pick}')`;
+        })();
+    </script>
+
+    <!-- markmap-embed: рендира мисловната карта от H5P/Urok5/Urok5MindMap.md като интерактивна (пан/зуум + клик за разгъване/свиване) карта -->
+    <script src="../../../libs/markmap-embed.js"></script>
+
+    <!-- H5P Standalone player: рендира куиза от H5P/Urok5/Quiz -->
+    <script src="../../../libs/h5p-standalone/dist/main.bundle.js" charset="UTF-8"></script>
+    <script>
+        const h5pInitialized = { quiz: false };
+        const mindmapInitialized = { mindmap: false };
+
+        // Хващаме конструктора веднага след зареждането на main.bundle.js, докато
+        // window.H5PStandalone още е наред (виж обяснението в 04 Носители на информация.html).
+        const H5PConstructor = H5PStandalone.H5P;
+
+        function initH5P(containerId, h5pJsonPath) {
+            new H5PConstructor(document.getElementById(containerId), {
+                h5pJsonPath: './' + h5pJsonPath,
+                librariesPath: '../../../libs/h5p-libraries',
+                frameJs: '../../../libs/h5p-standalone/dist/frame.bundle.js',
+                frameCss: '../../../libs/h5p-standalone/dist/styles/h5p.css'
+            });
+        }
+
+        // Показва избраната активност и затваря предишната.
+        // И H5P, и markmap (markmap-embed.js) измерват/оразмеряват при инициализация -
+        // ако контейнерът е скрит (display:none) в този момент, резултатът е счупен
+        // завинаги. Затова класът "active" (display:block) се слага ПРЕДИ initH5P()/
+        // renderMermaidMindmap(), а веднъж инициализирана активност не се пресъздава
+        // при повторно влизане в таба й (markmap пази и състоянието кои клонове са
+        // разгънати между превключванията на таба).
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`.menu-btn[data-tab="${name}"]`).classList.add('active');
+
+            if (name === 'mindmap' && !mindmapInitialized.mindmap) {
+                mindmapInitialized.mindmap = true;
+                renderMermaidMindmap('mindmap-svg', 'H5P/Urok5/Urok5MindMap.md');
+            }
+            if (name === 'quiz' && !h5pInitialized.quiz) {
+                h5pInitialized.quiz = true;
+                initH5P('h5p-quiz', 'H5P/Urok5/Quiz');
+            }
+
+            // известява вече видимите H5P инстанции, че размерът на контейнера може да се е променил
+            window.dispatchEvent(new Event('resize'));
+        }
+    </script>
+</body>
+</html>
