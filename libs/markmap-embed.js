@@ -9,6 +9,14 @@
  * не се променя - mermaid синтаксисът се парсва тук директно в дърво
  * {content, children}, без да минава през markdown-it/markmap-lib.
  *
+ * Поддържа два варианта на .md файла:
+ *   1. ```mermaid mindmap``` код блок вътре в markdown текст (напр. статия).
+ *   2. "Суров" mermaid source, както се копира директно от mermaid.live -
+ *      незадължителен YAML frontmatter с mermaid-специфичен config/theme,
+ *      последван директно от "mindmap" без ``` ограждане. Frontmatter-ът се
+ *      маха и игнорира (markmap-view си има собствено оцветяване/layout) -
+ *      само структурата на възлите се чете от него.
+ *
  * Собствен (не CDN-вендорван) helper, както md-embed.js.
  *
  * Употреба:
@@ -64,6 +72,16 @@
         return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    // Маха едни единствени ограждащи кавички ("текст" -> текст) - mermaid
+    // позволява текстът вътре във всяка форма да е квотиран, за да съдържа
+    // специални знаци.
+    function stripWrappingQuotes(text) {
+        if (text.length >= 2 && text[0] === '"' && text[text.length - 1] === '"') {
+            return text.slice(1, -1).trim();
+        }
+        return text;
+    }
+
     // Маха mermaid "формата" на възела (id((текст)), id[текст], id{{текст}}, id(текст))
     // и ::icon()/:::class анотациите, за да остане само видимият текст.
     function stripMermaidNodeShape(raw) {
@@ -76,9 +94,9 @@
         ];
         for (var i = 0; i < shapes.length; i++) {
             var m = text.match(shapes[i]);
-            if (m) return m[1].trim();
+            if (m) return stripWrappingQuotes(m[1].trim());
         }
-        return text;
+        return stripWrappingQuotes(text);
     }
 
     // Превръща текста на mermaid "mindmap" блока в дърво {content, children} -
@@ -117,6 +135,17 @@
         return root;
     }
 
+    // Взима mermaid mindmap source-а от .md файла - или от ```mermaid код блок,
+    // или (ако няма такъв) от целия текст след frontmatter-а, стига да съдържа
+    // декларацията "mindmap" (суров mermaid.live export).
+    function extractMermaidSource(raw) {
+        var body = raw.replace(FRONTMATTER_RE, '');
+        var fenced = body.match(MERMAID_BLOCK_RE);
+        if (fenced) return fenced[1];
+        if (/(^|\n)\s*mindmap\s*(\n|$)/.test(body)) return body;
+        return null;
+    }
+
     window.renderMermaidMindmap = function (svgId, mdPath, options) {
         var svgEl = document.getElementById(svgId);
         if (!svgEl) return;
@@ -127,10 +156,9 @@
                 return response.text();
             })
             .then(function (raw) {
-                var body = raw.replace(FRONTMATTER_RE, '');
-                var match = body.match(MERMAID_BLOCK_RE);
-                if (!match) throw new Error('не е открит ```mermaid блок в ' + mdPath);
-                var tree = parseMermaidMindmap(match[1]);
+                var source = extractMermaidSource(raw);
+                if (source === null) throw new Error('не е открит mermaid mindmap в ' + mdPath);
+                var tree = parseMermaidMindmap(source);
                 if (!tree) throw new Error('празна мисловна карта в ' + mdPath);
 
                 return loadScriptOnce(LIBS_BASE + 'markmap/d3.min.js')

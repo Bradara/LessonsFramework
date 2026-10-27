@@ -235,6 +235,11 @@
     "path": "Lessons/Информатика/Modul1/01 kompyutarat.html"
   },
   {
+    "name": "Тип за данни string",
+    "type": "file",
+    "path": "Lessons/Информатика/Modul1/Тип за данни string.html"
+  },
+  {
     "name": "Modul2",
     "type": "folder",
     "path": "Lessons/Информатика/Modul2/"
