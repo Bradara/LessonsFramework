@@ -225,6 +225,16 @@
     "path": "Lessons/Информатика/"
   },
   {
+    "name": "9class",
+    "type": "folder",
+    "path": "Lessons/Информатика/9class/"
+  },
+  {
+    "name": "Въведение в програмирането",
+    "type": "file",
+    "path": "Lessons/Информатика/9class/Въведение в програмирането.html"
+  },
+  {
     "name": "Modul1",
     "type": "folder",
     "path": "Lessons/Информатика/Modul1/"
