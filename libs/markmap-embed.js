@@ -37,6 +37,15 @@
  * момента на извикване - markmap-view измерва размера на SVG-то при fit(),
  * точно както H5P и mermaid.run() в md-embed.js. В таб-базирани уроци викай
  * renderMermaidMindmap() лениво, след showTab() е сложил класа "active".
+ *
+ * Бутон "Цял екран": автоматично се добавя в .markmap-toolbar-host до
+ * zoom/fit бутоните. Пробва Fullscreen API (host.requestFullscreen()); ако
+ * браузърът го откаже - типично защото урокът е вграден в <iframe> без
+ * allow="fullscreen" (Moodle Book ресурс - вижда се само URL-ът, не и
+ * iframe тагът, затова не може да се сложи това разрешение) - пада назад
+ * към CSS клас .markmap-pseudo-fullscreen, който прави .markmap-host
+ * position:fixed и запълва viewport-а на самия документ/iframe (не целия
+ * екран). Изход: бутонът пак, или Escape в псевдо-режим.
  */
 (function () {
     var LIBS_BASE = (document.currentScript && document.currentScript.src)
@@ -146,6 +155,84 @@
         return null;
     }
 
+    function requestFs(el) {
+        var fn = el.requestFullscreen || el.webkitRequestFullscreen;
+        return fn ? fn.call(el) : Promise.reject(new Error('Fullscreen API не се поддържа'));
+    }
+
+    function exitFs() {
+        var fn = document.exitFullscreen || document.webkitExitFullscreen;
+        return fn ? fn.call(document) : Promise.resolve();
+    }
+
+    function fsElement() {
+        return document.fullscreenElement || document.webkitFullscreenElement;
+    }
+
+    // Добавя бутон "Цял екран" до zoom toolbar-а. Пробва истинския Fullscreen
+    // API (работи при пряко отваряне на урока, или ако родителската страница
+    // е сложила allow="fullscreen" на <iframe>-а); ако браузърът го откаже -
+    // типично когато урокът е вграден без това разрешение, какъвто е случаят
+    // с Moodle Book ресурс, където не контролираш iframe тага - превключва
+    // на CSS fallback (.markmap-pseudo-fullscreen), който запълва целия
+    // видим viewport на самия документ/iframe вместо целия екран.
+    function setupFullscreenButton(host, mm, toolbarHost) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'markmap-fullscreen-btn';
+
+        function active() {
+            return host.classList.contains('markmap-pseudo-fullscreen') || fsElement() === host;
+        }
+
+        function refresh() {
+            btn.innerHTML = active() ? '<i class="fas fa-compress"></i>' : '<i class="fas fa-expand"></i>';
+            btn.title = active() ? 'Изход от цял екран' : 'Цял екран';
+        }
+
+        function afterToggle() {
+            refresh();
+            window.dispatchEvent(new Event('resize'));
+            requestAnimationFrame(function () { mm.fit(); });
+        }
+
+        function onKeydown(e) {
+            if (e.key === 'Escape' && host.classList.contains('markmap-pseudo-fullscreen')) {
+                exitPseudo();
+            }
+        }
+
+        function enterPseudo() {
+            host.classList.add('markmap-pseudo-fullscreen');
+            document.addEventListener('keydown', onKeydown);
+            afterToggle();
+        }
+
+        function exitPseudo() {
+            host.classList.remove('markmap-pseudo-fullscreen');
+            document.removeEventListener('keydown', onKeydown);
+            afterToggle();
+        }
+
+        btn.addEventListener('click', function () {
+            if (host.classList.contains('markmap-pseudo-fullscreen')) {
+                exitPseudo();
+                return;
+            }
+            if (fsElement() === host) {
+                exitFs().catch(function () {});
+                return;
+            }
+            requestFs(host).catch(function () { enterPseudo(); });
+        });
+
+        document.addEventListener('fullscreenchange', afterToggle);
+        document.addEventListener('webkitfullscreenchange', afterToggle);
+
+        refresh();
+        toolbarHost.appendChild(btn);
+    }
+
     window.renderMermaidMindmap = function (svgId, mdPath, options) {
         var svgEl = document.getElementById(svgId);
         if (!svgEl) return;
@@ -175,12 +262,16 @@
                             autoFit: true
                         }, options), tree);
 
-                        var toolbarHost = svgEl.parentElement && svgEl.parentElement.querySelector('.markmap-toolbar-host');
+                        var host = svgEl.parentElement;
+                        var toolbarHost = host && host.querySelector('.markmap-toolbar-host');
                         if (toolbarHost && window.markmap.Toolbar) {
                             var toolbar = window.markmap.Toolbar.create(mm);
                             toolbar.showBrand = false;
                             toolbar.setItems(['zoomIn', 'zoomOut', 'fit']);
                             toolbarHost.appendChild(toolbar.el);
+                        }
+                        if (toolbarHost && host) {
+                            setupFullscreenButton(host, mm, toolbarHost);
                         }
 
                         window.addEventListener('resize', function () { mm.fit(); });

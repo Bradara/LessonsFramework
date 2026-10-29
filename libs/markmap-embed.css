@@ -24,6 +24,52 @@
     position: absolute;
     bottom: 12px;
     right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.markmap-fullscreen-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 1px solid #d4d4d8;
+    border-radius: 0.25rem;
+    background: #fff;
+    color: #71717a;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.markmap-fullscreen-btn:hover {
+    border-color: #a1a1aa;
+    background: #f4f4f5;
+    color: #27272a;
+}
+
+/* Истински fullscreen (Fullscreen API) - UA стиловете вече правят елемента
+   fixed/100%, но подсигуряваме фон и размер изрично. */
+.markmap-host:fullscreen {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+}
+
+/* Fallback "псевдо-fullscreen" за случаите, в които Fullscreen API е
+   блокирано (напр. урокът е вграден в <iframe> без allow="fullscreen" -
+   такъв е именно Moodle Book ресурс, където не контролираш iframe тага).
+   Запълва целия видим viewport НА ТОЗИ ДОКУМЕНТ/IFRAME, не на целия екран. */
+.markmap-host.markmap-pseudo-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
 }
 
 .markmap-error {
