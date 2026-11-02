@@ -176,6 +176,7 @@
     }
     .kind.pdf { background: rgba(56, 189, 248, .15); color: var(--info); }
     .kind.doc { background: rgba(34, 197, 94, .15); color: var(--accent); }
+    .kind.video { background: rgba(244, 114, 182, .15); color: #f472b6; }
 
     .viewer {
       background: var(--bg-card);
@@ -213,6 +214,7 @@
     .btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
 
     .pdf-frame { display: block; width: 100%; height: min(78vh, 900px); min-height: 480px; border: 0; background: #fff; }
+    .video-frame { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
 
     .doc-panel { padding: 28px 24px; display: flex; flex-direction: column; gap: 16px; }
     .doc-panel h3 { margin: 0; font-size: 20px; }
@@ -270,13 +272,19 @@
       {
         id: 'robo',
         title: 'Робо игра и Робо дизайн',
-        intro: 'Мисии, точки, указания и шаблон за принтиране за Робо игра и Робо дизайн.',
+        intro: 'Разясняващо видео, мисии, точки, указания и шаблон за принтиране за Робо игра и Робо дизайн.',
         items: [
+          {
+            type: 'video',
+            title: 'Разясняващо видео',
+            desc: 'Видео с обяснение на робо играта (гледане в браузъра)',
+            fileId: '187520zmFWRkrB8fmoF8c491IwWKdw3dn',
+          },
           {
             type: 'pdf',
             title: 'Мисии и точки',
             desc: 'Описание на мисиите и разпределението на точките',
-            fileId: '1Ig74obOkKuNslE2YG-KeZs6Mu_mdCyIw',
+            fileId: '1c4WqFBH0c0UxShxacpM2hxScHR-aRlMD',
           },
           {
             type: 'pdf',
@@ -318,6 +326,8 @@
         ],
       },
     ];
+
+    const KIND_LABELS = { pdf: 'PDF · преглед', video: 'Видео · гледай', doc: 'DOCX · свали' };
 
     function useRoute() {
       const read = () => window.location.hash.replace(/^#/, '') || 'home';
@@ -377,6 +387,26 @@
       );
     }
 
+    function VideoViewer({ item }) {
+      return (
+        <>
+          <div className="viewer-bar">
+            <h3>{item.title}</h3>
+            <div className="actions">
+              <a className="btn" href={driveView(item.fileId)} target="_blank" rel="noopener">Отвори в Google Drive ↗</a>
+            </div>
+          </div>
+          <iframe
+            className="video-frame"
+            src={drivePreview(item.fileId)}
+            title={item.title}
+            allow="autoplay; fullscreen"
+            allowFullScreen
+          />
+        </>
+      );
+    }
+
     function DocPanel({ item }) {
       return (
         <div className="doc-panel">
@@ -411,7 +441,7 @@
                     onClick={() => setSelected(i)}
                     aria-pressed={i === selected}
                   >
-                    <span className={`kind ${it.type}`}>{it.type === 'pdf' ? 'PDF · преглед' : 'DOCX · свали'}</span>
+                    <span className={`kind ${it.type}`}>{KIND_LABELS[it.type]}</span>
                     <strong>{it.title}</strong>
                     <small>{it.desc}</small>
                   </button>
@@ -419,7 +449,9 @@
               ))}
             </ul>
             <div className="viewer">
-              {item.type === 'pdf' ? <PdfViewer item={item} /> : <DocPanel item={item} />}
+              {item.type === 'pdf' && <PdfViewer item={item} />}
+              {item.type === 'video' && <VideoViewer item={item} />}
+              {item.type === 'doc' && <DocPanel item={item} />}
             </div>
           </div>
         </>
