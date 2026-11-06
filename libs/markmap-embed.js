@@ -108,6 +108,15 @@
         return stripWrappingQuotes(text);
     }
 
+    // Засича fence маркер (```mermaid / ```), включително escape-нат с обратна
+    // наклонена черта пред всяка кавичка (\`\`\`mermaid / \`\`\`) - среща се,
+    // когато .md съдържанието идва от чат/LLM изход, където nested code fence
+    // вътре в по-голям markdown отговор се escape-ва, за да не се счупи
+    // външният fence. Такива редове просто се прескачат.
+    function isFenceLine(text) {
+        return /^```(mermaid)?$/.test(text.replace(/\\`/g, '`'));
+    }
+
     // Превръща текста на mermaid "mindmap" блока в дърво {content, children} -
     // форматът, който markmap-view очаква. Йерархията се определя по отстъпа
     // (брой водещи интервали спрямо предходните редове), без да се предполага
@@ -121,6 +130,8 @@
             if (!raw.trim()) return;
             var indent = raw.match(/^(\s*)/)[1].length;
             var text = raw.trim();
+
+            if (isFenceLine(text)) return;
 
             if (!started) {
                 if (text === 'mindmap') started = true;
