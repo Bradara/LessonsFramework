@@ -483,5 +483,37 @@ class Program
 
     ReactDOM.createRoot(document.getElementById("root")).render(<App />);
   </script>
+
+<!-- fullscreen-toggle: мини бутон горе вдясно за цял екран (виж README). В Moodle iframe-ът трябва да има allowfullscreen, иначе бутонът се скрива сам. -->
+<style>
+#fs-toggle{position:fixed;top:10px;right:10px;z-index:2147483000;width:34px;height:34px;padding:0;border:0;border-radius:8px;background:rgba(15,23,42,.55);color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;opacity:.75;transition:opacity .2s,background .2s}
+#fs-toggle:hover,#fs-toggle:focus-visible{opacity:1;background:rgba(15,23,42,.9)}
+#fs-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<button id="fs-toggle" type="button" title="Цял екран" aria-label="Цял екран"></button>
+<script>
+(function () {
+    var btn = document.getElementById('fs-toggle');
+    var root = document.documentElement;
+    var enter = root.requestFullscreen || root.webkitRequestFullscreen;
+    var exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!btn || !enter || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;
+    var IN = '<svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>';
+    var OUT = '<svg viewBox="0 0 24 24"><path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"/></svg>';
+    function active() { return document.fullscreenElement || document.webkitFullscreenElement; }
+    function sync() {
+        btn.innerHTML = active() ? OUT : IN;
+        var t = active() ? 'Изход от цял екран' : 'Цял екран';
+        btn.title = t; btn.setAttribute('aria-label', t);
+    }
+    btn.addEventListener('click', function () {
+        try { active() ? exit.call(document) : enter.call(root); } catch (e) {}
+    });
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    sync();
+    btn.style.display = 'inline-flex';
+})();
+</script>
 </body>
 </html>

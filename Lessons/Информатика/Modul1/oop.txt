@@ -1,0 +1,103 @@
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.9.0/dist/mermaid.min.js"></script>
+
+
+
+<!-- The content below will be included at the end of the  element. -->
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        // your code here
+    });
+</script>
+
+
+<div class="crossnote markdown-preview  ">
+
+    <div id="intro-section" style="background-color:lightyellow; padding:16px; border-radius:8px; margin-bottom:16px;" class="p-3 rounded-3">
+        <h1 id="урок-класове-и-обекти-basics">Урок: Класове и обекти (Basics) </h1>
+        <h2 id="обзор">Обзор </h2>
+        <p>Класове и обекти в C#: как се дефинират, какви членове имат (полета, свойства, методи), как се създават инстанции и каква е ролята на конструкторите.</p>
+        <h2 id="основни-понятия-и-кратки-определения">Основни понятия и кратки определения </h2>
+        <ul>
+            <li>Обект (Object): конкретна инстанция, която държи данни и поведение.</li>
+            <li>Клас (Class): шаблон/тип, който описва структурата и поведението на обектите от даден вид.</li>
+            <li>Инстанция (Instance): създаденият по време на изпълнение обект от даден клас.</li>
+            <li>Поле (Field): променлива вътре в класа за съхранение на данни (обикновено private).</li>
+            <li>Свойство (Property): достъпен член с get/set за контролирана работа с данни (инкапсулация).</li>
+            <li>Метод (Method): действие/функционалност на класа (изпълним код).</li>
+            <li>Конструктор (Constructor): специален метод за създаване и начална инициализация на обекта (извиква се с new).</li>
+            <li>Модификатори за достъп: public, private, protected, internal – определят видимостта и достъпа.</li>
+            <li>ООП (OOP): модел на разработка, базиран на класове и обекти (инкапсулация, наследяване, полиморфизъм).</li>
+        </ul>
+    </div>
+    <div id="graphic-section" style="background-color:lightcyan; padding:16px; border-radius:8px; margin-bottom:16px;" class="p-3 rounded-3">
+        <h2 id="визуална-карта--flowchart-lr">Визуална карта – Flowchart (LR) </h2>
+        <div class="mermaid">flowchart LR A((**Класове и обекти**)) B(Обект) B1(Конкретна инстанция) B2(Съхранява данни и поведение) C(Клас) C1(Шаблон за обекти) C2(Дефинира структура и поведение) D(Членове на класа) D1(Полета) D2(Свойства) D3(Методи) E(Конструктор) E1(Инициализира
+            състояние) E2(Извиква се с new) F(Инстанция) F1(Обект, създаден от клас) F2(Идентично поведение за даден клас) G(Именуване) G1(PascalCase за класове) G2(Описателни имена) H(ООП) H1(Капсулация) H2(Наследяване) H3(Полиморфизъм) A --&gt; C A
+            --&gt; B A --&gt; D A --&gt; E A --&gt; F A --&gt; G A --&gt; H B --&gt; B1 B --&gt; B2 C --&gt; C1 C --&gt; C2 D --&gt; D1 D --&gt; D2 D --&gt; D3 E --&gt; E1 E --&gt; E2 F --&gt; F1 F --&gt; F2 G --&gt; G1 G --&gt; G2 H --&gt; H1 H --&gt;
+            H2 H --&gt; H3 %% Цветове (леки пастели с стандартни HTML имена) style A fill:lightsteelblue,stroke:#333,stroke-width:2px,color:#000 style B fill:lightcyan,stroke:#333,color:#000 style C fill:lavender,stroke:#333,color:#000 style D fill:honeydew,stroke:#333,color:#000
+            style E fill:lemonchiffon,stroke:#333,color:#000 style F fill:mistyrose,stroke:#333,color:#000 style G fill:lightgoldenrodyellow,stroke:#333,color:#000 style H fill:lightblue,stroke:#333,color:#000 style B1 fill:azure,stroke:#333,color:#000
+            style B2 fill:azure,stroke:#333,color:#000 style C1 fill:ghostwhite,stroke:#333,color:#000 style C2 fill:ghostwhite,stroke:#333,color:#000 style D1 fill:mintcream,stroke:#333,color:#000 style D2 fill:mintcream,stroke:#333,color:#000 style
+            D3 fill:mintcream,stroke:#333,color:#000 style E1 fill:cornsilk,stroke:#333,color:#000 style E2 fill:cornsilk,stroke:#333,color:#000 style F1 fill:seashell,stroke:#333,color:#000 style F2 fill:seashell,stroke:#333,color:#000 style G1 fill:papayawhip,stroke:#333,color:#000
+            style G2 fill:papayawhip,stroke:#333,color:#000 style H1 fill:aliceblue,stroke:#333,color:#000 style H2 fill:aliceblue,stroke:#333,color:#000 style H3 fill:aliceblue,stroke:#333,color:#000
+        </div>
+        <div id="structured-section" style="background-color:lightgoldenrodyellow; padding:16px; border-radius:8px;" class="p-3 rounded-3">
+            <h2 id="минимални-примери-c">Минимални примери (C#) </h2>
+            <h3 id="дати--готов-клас-от-net">Дати – готов клас от .NET </h3>
+            <pre data-role="codeBlock" data-info="csharp" class="language-csharp csharp" style="background-color:#fdfdfd;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin:12px 0;font-family:'Cascadia Mono',Consolas,'SFMono-Regular','Fira Code','Liberation Mono',Menlo,monospace;font-size:0.95em;line-height:1.55;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset;overflow:auto;"><code><span class="token class-name">DateTime</span> peterBirthday <span class="token operator">=</span> <span class="token keyword keyword-new">new</span> <span class="token constructor-invocation class-name">DateTime</span><span class="token punctuation">(</span><span class="token number">1996</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token number">27</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">DateTime</span> mariaBirthday <span class="token operator">=</span> <span class="token keyword keyword-new">new</span> <span class="token constructor-invocation class-name">DateTime</span><span class="token punctuation">(</span><span class="token number">1995</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">14</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"Peter: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">peterBirthday</span><span class="token format-string"><span class="token punctuation">:</span>d-MMM-yyyy</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"Maria: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">mariaBirthday</span><span class="token format-string"><span class="token punctuation">:</span>d-MMM-yyyy</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name"><span class="token keyword keyword-var">var</span></span> mariaAfter18Months <span class="token operator">=</span> mariaBirthday<span class="token punctuation">.</span><span class="token function">AddMonths</span><span class="token punctuation">(</span><span class="token number">18</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"Maria +18m: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">mariaAfter18Months</span><span class="token format-string"><span class="token punctuation">:</span>d-MMM-yyyy</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">TimeSpan</span> diff <span class="token operator">=</span> peterBirthday<span class="token punctuation">.</span><span class="token function">Subtract</span><span class="token punctuation">(</span>mariaBirthday<span class="token punctuation">)</span><span class="token punctuation">;</span>
+Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"Maria older by: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">diff<span class="token punctuation">.</span>Days</span><span class="token punctuation">}</span></span><span class="token string"> days"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+            <h3 id="прост-клас-rectangle">Прост клас Rectangle </h3>
+            <pre data-role="codeBlock" data-info="csharp" class="language-csharp csharp" style="background-color:#fdfdfd;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin:12px 0;font-family:'Cascadia Mono',Consolas,'SFMono-Regular','Fira Code','Liberation Mono',Menlo,monospace;font-size:0.95em;line-height:1.55;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset;overflow:auto;"><code><span class="token keyword keyword-public">public</span> <span class="token keyword keyword-class">class</span> <span class="token class-name">Rectangle</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">// Свойства (инкапсулират данните)</span>
+    <span class="token keyword keyword-public">public</span> <span class="token return-type class-name"><span class="token keyword keyword-int">int</span></span> Width <span class="token punctuation">{</span> <span class="token keyword keyword-get">get</span><span class="token punctuation">;</span> <span class="token keyword keyword-set">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword keyword-public">public</span> <span class="token return-type class-name"><span class="token keyword keyword-int">int</span></span> Height <span class="token punctuation">{</span> <span class="token keyword keyword-get">get</span><span class="token punctuation">;</span> <span class="token keyword keyword-set">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword keyword-public">public</span> <span class="token return-type class-name"><span class="token keyword keyword-string">string</span></span> Color <span class="token punctuation">{</span> <span class="token keyword keyword-get">get</span><span class="token punctuation">;</span> <span class="token keyword keyword-set">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+
+    <span class="token comment">// Конструктор</span>
+    <span class="token keyword keyword-public">public</span> <span class="token function">Rectangle</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword keyword-int">int</span></span> width<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword keyword-int">int</span></span> height<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword keyword-string">string</span></span> color<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        Width <span class="token operator">=</span> width<span class="token punctuation">;</span>
+        Height <span class="token operator">=</span> height<span class="token punctuation">;</span>
+        Color <span class="token operator">=</span> color<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// Метод (поведение)</span>
+    <span class="token keyword keyword-public">public</span> <span class="token return-type class-name"><span class="token keyword keyword-int">int</span></span> <span class="token function">CalcArea</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Width <span class="token operator">*</span> Height<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+            <h3 id="създаване-на-инстанции">Създаване на инстанции </h3>
+            <pre data-role="codeBlock" data-info="csharp" class="language-csharp csharp" style="background-color:#fdfdfd;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin:12px 0;font-family:'Cascadia Mono',Consolas,'SFMono-Regular','Fira Code','Liberation Mono',Menlo,monospace;font-size:0.95em;line-height:1.55;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset;overflow:auto;"><code><span class="token class-name"><span class="token keyword keyword-var">var</span></span> r1 <span class="token operator">=</span> <span class="token keyword keyword-new">new</span> <span class="token constructor-invocation class-name">Rectangle</span><span class="token punctuation">(</span><span class="token number">30</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token string">"white"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name"><span class="token keyword keyword-var">var</span></span> r2 <span class="token operator">=</span> <span class="token keyword keyword-new">new</span> <span class="token constructor-invocation class-name">Rectangle</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">,</span> <span class="token string">"green"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"r1 area: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">r1<span class="token punctuation">.</span><span class="token function">CalcArea</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"r2 area: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">r2<span class="token punctuation">.</span><span class="token function">CalcArea</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+            <h2 id="обобщение">Обобщение </h2>
+            <ul>
+                <li>Класът определя структура и поведение; обектът е конкретна инстанция на класа.</li>
+                <li>Полета/свойства съхраняват и предоставят достъп до данните; методите реализират поведението.</li>
+                <li>Конструкторите задават първоначалното състояние на обектите.</li>
+                <li>Именувайте класове с ясни, описателни имена в PascalCase.</li>
+            </ul>
+
+        </div>
+
+    </div>
+
+
+
+
+    <script type="module">
+        // TODO: If ZenUML gets integrated into mermaid in the future, // we can remove the following lines. var MERMAID_CONFIG = ({"startOnLoad":false}); if (typeof MERMAID_CONFIG !== 'undefined') { MERMAID_CONFIG.startOnLoad = false MERMAID_CONFIG.cloneCssStyles
+        = false MERMAID_CONFIG.theme = "default" } mermaid.initialize(MERMAID_CONFIG || {}) if (typeof(window['Reveal']) !== 'undefined') { function mermaidRevealHelper(event) { var currentSlide = event.currentSlide var diagrams = currentSlide.querySelectorAll('.mermaid')
+        for (var i = 0; i
+        < diagrams.length; i++) { var diagram=d iagrams[i] if (!diagram.hasAttribute( 'data-processed')) { mermaid.init(null, diagram, ()=> { Reveal.slide(event.indexh, event.indexv) }) } } } Reveal.addEventListener('slidetransitionend', mermaidRevealHelper) Reveal.addEventListener('ready', mermaidRevealHelper) await mermaid.run({ nodes: document.querySelectorAll('.mermaid') }) }
+            else { await mermaid.run({ nodes: document.querySelectorAll('.mermaid') }) }
+    </script>
+</div>

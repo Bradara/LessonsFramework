@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Класове и обекти - Образователен Портал</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
+
+    <!-- markmap-embed (интерактивна мисловна карта от H5P/Urok3/Класове_и_обекти_мисловна_карта.mmd) -->
+    <link rel="stylesheet" href="../../../libs/markmap-embed.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .header-content { position: relative; z-index: 1; }
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .header p { font-size: 1.1rem; font-weight: 300; opacity: 0.95; }
+
+        .content { padding: 3rem 2.5rem; }
+
+        /* Меню за превключване между активностите */
+        .activity-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .menu-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.9rem 1.8rem;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            background: white; color: #555;
+            font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease;
+        }
+        .menu-btn:hover { border-color: #764ba2; color: #764ba2; }
+        .menu-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent; color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        .mindmap-wrapper { border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); padding: 1rem; background: #fafafa; }
+        .mindmap-hint { margin: 0 0 0.75rem; font-size: 0.85rem; color: #666; }
+        .mindmap-hint i { color: #764ba2; }
+
+        .footer { background: #f8f9fa; padding: 2rem; text-align: center; color: #777; font-size: 0.9rem; }
+
+        /* ---------- Теория ---------- */
+        .theory h2 { font-size: 1.5rem; color: #4c3a8f; margin: 2.2rem 0 0.8rem; display: flex; align-items: center; gap: 0.6rem; }
+        .theory h2:first-child { margin-top: 0; }
+        .theory h2 i { color: #764ba2; font-size: 1.2rem; }
+        .theory h3 { font-size: 1.1rem; margin: 1.4rem 0 0.4rem; color: #333; }
+        .theory p { margin-bottom: 0.8rem; }
+        .theory ul { margin: 0 0 1rem 1.4rem; }
+        .theory li { margin-bottom: 0.25rem; }
+        .theory code.i { background: #eef0fb; color: #4c3a8f; padding: 0.1rem 0.4rem; border-radius: 5px; font-family: 'Cascadia Mono', Consolas, monospace; font-size: 0.9em; }
+
+        .intro-box {
+            background: lightyellow; border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem;
+            border-left: 5px solid #E8A33D;
+        }
+        .callout { border-radius: 12px; padding: 1rem 1.3rem; margin: 1rem 0; border-left: 5px solid; }
+        .callout.tip  { background: #ecfdf5; border-color: #2A9D8F; }
+        .callout.warn { background: #fff4f4; border-color: #D1495B; }
+        .callout strong { display: block; margin-bottom: 0.2rem; }
+
+        .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+        .compare > div { border-radius: 12px; padding: 1.1rem 1.3rem; }
+        .compare .cls { background: #eef2ff; border: 2px solid #c7d2fe; }
+        .compare .obj { background: #fdf2f8; border: 2px solid #fbcfe8; }
+        .compare h4 { margin-bottom: 0.4rem; }
+        .compare ul { margin: 0 0 0 1.2rem; font-size: 0.95rem; }
+
+        table.tbl { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+        .tbl th, .tbl td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+        .tbl th { background: #f1f0fb; color: #4c3a8f; }
+
+        pre.code, .annot-code {
+            background: #1e1e2e; color: #cdd6f4;
+            border-radius: 12px; padding: 1rem 1.2rem; margin: 0.8rem 0;
+            font-family: 'Cascadia Mono', Consolas, 'Fira Code', monospace; font-size: 0.92rem; line-height: 1.6;
+            overflow: auto; white-space: pre;
+        }
+        .tk-kw { color: #cba6f7; }
+        .tk-str { color: #a6e3a1; }
+        .tk-num { color: #fab387; }
+        .tk-cm { color: #7f849c; font-style: italic; }
+        .tk-ty { color: #89dceb; }
+
+        /* Анотиран код */
+        .annot-wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; align-items: start; margin: 0.8rem 0; }
+        .annot-code { margin: 0; }
+        .ann { cursor: pointer; border-bottom: 2px dotted #f9e2af; border-radius: 3px; transition: background .2s; }
+        .ann:hover, .ann.sel { background: rgba(249, 226, 175, 0.25); }
+        .ann.sel { border-bottom-style: solid; }
+        .annot-info { background: #fffbea; border: 2px solid #f6e3a1; border-radius: 12px; padding: 1.1rem 1.3rem; min-height: 160px; position: sticky; top: 1rem; }
+        .annot-info h4 { color: #8a5a00; margin-bottom: 0.3rem; }
+        .annot-info .tag { display: inline-block; font-size: 0.75rem; font-weight: 700; background: #E8A33D; color: #1B2230; border-radius: 20px; padding: 0.05rem 0.7rem; margin-bottom: 0.4rem; }
+
+        /* ---------- Лаборатория ---------- */
+        .lab-grid { display: grid; grid-template-columns: 340px 1fr; gap: 1.2rem; align-items: start; }
+        .panel-card { background: #fafafa; border-radius: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.1); padding: 1.2rem; }
+        .panel-card h3 { font-size: 1.05rem; color: #4c3a8f; margin-bottom: 0.7rem; display: flex; gap: .5rem; align-items: center; }
+        .field { margin-bottom: 0.8rem; }
+        .field label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 0.2rem; }
+        .field input[type=range] { width: 100%; accent-color: #764ba2; }
+        .field input[type=text], .field select, .num-in {
+            width: 100%; padding: 0.5rem 0.7rem; border: 2px solid #e2e8f0; border-radius: 8px;
+            font-family: inherit; font-size: 0.95rem;
+        }
+        .field input:focus, .field select:focus, .num-in:focus { outline: none; border-color: #764ba2; }
+        .live-code { margin: 0.4rem 0 0.8rem; font-size: 0.82rem; padding: 0.7rem 0.9rem; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.45rem; justify-content: center;
+            padding: 0.6rem 1.1rem; border: none; border-radius: 10px; cursor: pointer;
+            font-family: inherit; font-weight: 600; font-size: 0.9rem; color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: transform .15s, box-shadow .15s;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,.4); }
+        .btn.full { width: 100%; }
+        .btn.ghost { background: white; color: #764ba2; border: 2px solid #d9d4f2; }
+        .btn.small { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+        .toggle { display: flex; gap: .5rem; align-items: flex-start; font-size: 0.85rem; margin-top: 0.8rem; cursor: pointer; }
+        .toggle input { margin-top: 0.3rem; accent-color: #764ba2; }
+
+        .objects { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .obj-card { background: white; border: 2px solid #e5e1f7; border-radius: 14px; padding: 1rem; }
+        .obj-card.flash { animation: flash .8s; }
+        @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(118,75,162,.7); } 100% { box-shadow: 0 0 0 14px rgba(118,75,162,0); } }
+        .obj-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; gap: .5rem; flex-wrap: wrap; }
+        .obj-id { font-size: 0.75rem; color: #888; font-weight: 600; }
+        .chips { display: flex; flex-wrap: wrap; gap: .3rem; }
+        .chip { background: #764ba2; color: white; border-radius: 20px; padding: 0.05rem 0.7rem; font-size: 0.8rem; font-family: 'Cascadia Mono', Consolas, monospace; }
+        .preview-box { height: 160px; display: flex; align-items: center; justify-content: center; background: repeating-conic-gradient(#f4f4f8 0% 25%, #fff 0% 50%) 0 0 / 16px 16px; border-radius: 10px; margin-bottom: .6rem; overflow: hidden; }
+        .preview-box .rect { border: 2px solid rgba(0,0,0,.35); border-radius: 3px; transition: width .25s, height .25s, background .25s; box-shadow: 0 3px 10px rgba(0,0,0,.2); }
+        .prop-row { display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: .5rem; margin-bottom: .4rem; font-size: 0.85rem; font-weight: 600; color: #555; }
+        .obj-actions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+        .console { background: #1e1e2e; color: #cdd6f4; border-radius: 12px; padding: .8rem 1rem; margin-top: 1rem; font-family: 'Cascadia Mono', Consolas, monospace; font-size: .85rem; max-height: 220px; overflow: auto; }
+        .console .cmd { color: #89b4fa; }
+        .console .out { color: #a6e3a1; }
+        .console .err { color: #f38ba8; }
+        .console .hdr { color: #7f849c; margin-bottom: .3rem; }
+        .empty { color: #888; text-align: center; padding: 2rem 1rem; }
+
+        /* ---------- Допълни кода ---------- */
+        .fill-code { white-space: pre-wrap; }
+        .fill-code select {
+            background: #313244; color: #f9e2af; border: 2px solid #585b70; border-radius: 6px;
+            font-family: inherit; font-size: .9rem; padding: .05rem .3rem; cursor: pointer;
+        }
+        .fill-code select.ok  { border-color: #a6e3a1; background: #1f3a2a; }
+        .fill-code select.bad { border-color: #f38ba8; background: #4a2230; }
+        .result-box { margin-top: 1rem; padding: 1rem 1.3rem; border-radius: 12px; background: #f1f0fb; font-weight: 600; }
+        .hint-list { margin: .6rem 0 0 1.2rem; font-weight: 400; font-size: .9rem; }
+
+        /* ---------- Куиз ---------- */
+        .quiz-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; font-weight: 600; color: #555; }
+        .progress { height: 10px; background: #e9e7f7; border-radius: 10px; overflow: hidden; margin-bottom: 1.4rem; }
+        .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, #667eea, #764ba2); transition: width .4s; }
+        .q-text { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
+        .q-code { margin: 0 0 1rem; }
+        .opt {
+            display: block; width: 100%; text-align: left; padding: .8rem 1.1rem; margin-bottom: .6rem;
+            border: 2px solid #e2e8f0; border-radius: 12px; background: white; cursor: pointer;
+            font-family: inherit; font-size: 1rem; color: #333; transition: all .2s;
+        }
+        .opt:hover:not(:disabled) { border-color: #764ba2; background: #faf8ff; }
+        .opt.correct { border-color: #2A9D8F; background: #e7f7f4; }
+        .opt.wrong { border-color: #D1495B; background: #fdeef0; }
+        .opt:disabled { cursor: default; }
+        .explain { margin: .8rem 0; padding: .9rem 1.2rem; border-radius: 12px; background: #fffbea; border-left: 5px solid #E8A33D; }
+        .final { text-align: center; padding: 2rem 1rem; }
+        .final .score { font-size: 3.2rem; font-weight: 800; color: #764ba2; }
+
+        @media (max-width: 900px) {
+            .lab-grid, .annot-wrap, .compare { grid-template-columns: 1fr; }
+            .annot-info { position: static; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .header p { font-size: 1rem; }
+            .content { padding: 2rem 1.2rem; }
+            .menu-btn { padding: 0.75rem 1.1rem; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-cube"></i> Класове и обекти</h1>
+                <p>Информатика - Модул 1</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="activity-menu">
+                <button class="menu-btn active" data-tab="theory" onclick="showTab('theory')">
+                    <i class="fas fa-book-open"></i> Теория
+                </button>
+                <button class="menu-btn" data-tab="mindmap" onclick="showTab('mindmap')">
+                    <i class="fas fa-diagram-project"></i> Мисловна карта
+                </button>
+                <button class="menu-btn" data-tab="lab" onclick="showTab('lab')">
+                    <i class="fas fa-flask"></i> Лаборатория
+                </button>
+                <button class="menu-btn" data-tab="fill" onclick="showTab('fill')">
+                    <i class="fas fa-pen-to-square"></i> Допълни кода
+                </button>
+                <button class="menu-btn" data-tab="quiz" onclick="showTab('quiz')">
+                    <i class="fas fa-circle-question"></i> Куиз
+                </button>
+            </div>
+
+            <!-- ===================== ТЕОРИЯ ===================== -->
+            <div id="panel-theory" class="tab-panel active">
+                <div class="theory">
+
+                    <div class="intro-box">
+                        <strong>След този урок ще можеш да:</strong>
+                        <ul>
+                            <li>обясниш разликата между клас и обект;</li>
+                            <li>опишеш свой клас с полета, свойства, методи и конструктор;</li>
+                            <li>създаваш обекти с <code class="i">new</code> и да разбираш какво се случва при <code class="i">r2 = r1</code>;</li>
+                            <li>избираш подходящ модификатор за достъп и добро име.</li>
+                        </ul>
+                    </div>
+
+                    <h2><i class="fas fa-lightbulb"></i> Клас и обект</h2>
+                    <p>
+                        Представи си формичка за курабии. Формичката не е курабия – тя е <b>образецът</b>.
+                        С нея можеш да изрежеш много курабии, всяка със собствена глазура. В програмирането:
+                    </p>
+                    <div class="compare">
+                        <div class="cls">
+                            <h4><i class="fas fa-drafting-compass"></i> Клас = формичката</h4>
+                            <ul>
+                                <li>описва <b>какви данни</b> и <b>какво поведение</b> ще има един вид обекти;</li>
+                                <li>пише се веднъж;</li>
+                                <li>е нов <b>тип данни</b>, като <code class="i">int</code> или <code class="i">string</code>.</li>
+                            </ul>
+                        </div>
+                        <div class="obj">
+                            <h4><i class="fas fa-cookie-bite"></i> Обект = курабията</h4>
+                            <ul>
+                                <li>конкретен екземпляр (<b>инстанция</b>) на класа;</li>
+                                <li>създава се с <code class="i">new</code>, по време на изпълнение;</li>
+                                <li>има <b>собствени стойности</b> на данните.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p>Вече си ползвал готов клас от .NET – <code class="i">DateTime</code>:</p>
+<pre class="code" data-hl>DateTime peterBirthday = new DateTime(1996, 11, 27);
+DateTime mariaBirthday = new DateTime(1995, 6, 14);
+
+Console.WriteLine($"Peter: {peterBirthday:d-MMM-yyyy}");
+var mariaAfter18Months = mariaBirthday.AddMonths(18);   // метод на обекта
+TimeSpan diff = peterBirthday.Subtract(mariaBirthday);
+Console.WriteLine($"Maria older by: {diff.Days} days");</pre>
+                    <p>
+                        <code class="i">peterBirthday</code> и <code class="i">mariaBirthday</code> са два <b>различни обекта</b> от един и същ клас.
+                        Методите (<code class="i">AddMonths</code>, <code class="i">Subtract</code>) работят върху данните на конкретния обект.
+                    </p>
+
+                    <h2><i class="fas fa-puzzle-piece"></i> Членове на класа</h2>
+                    <p>Ето прост клас <code class="i">Rectangle</code>. <b>Кликни върху подчертаните части на кода</b>, за да видиш какво означават.</p>
+
+                    <div class="annot-wrap">
+                        <div class="annot-code" id="annot-code" role="group" aria-label="Анотиран код на класа Rectangle"></div>
+                        <div class="annot-info" id="annot-info" aria-live="polite">
+                            <h4>Избери част от кода</h4>
+                            <p>Обяснението ще се покаже тук.</p>
+                        </div>
+                    </div>
+
+                    <table class="tbl">
+                        <tr><th>Член</th><th>Какво прави</th><th>Пример</th></tr>
+                        <tr><td><b>Поле</b></td><td>Променлива в класа, пази данни. Обикновено е <code class="i">private</code>.</td><td><code class="i">private int _width;</code></td></tr>
+                        <tr><td><b>Свойство</b></td><td>Контролиран достъп до данните чрез <code class="i">get</code> / <code class="i">set</code>.</td><td><code class="i">public int Width { get; set; }</code></td></tr>
+                        <tr><td><b>Метод</b></td><td>Действие, което обектът може да извърши.</td><td><code class="i">public int CalcArea()</code></td></tr>
+                        <tr><td><b>Конструктор</b></td><td>Задава началното състояние при <code class="i">new</code>.</td><td><code class="i">public Rectangle(...)</code></td></tr>
+                    </table>
+
+                    <h2><i class="fas fa-hammer"></i> Създаване на обекти</h2>
+<pre class="code" data-hl>var r1 = new Rectangle(30, 20, "white");
+var r2 = new Rectangle(15, 15, "green");
+
+Console.WriteLine($"r1 area: {r1.CalcArea()}");   // 600
+Console.WriteLine($"r2 area: {r2.CalcArea()}");   // 225
+
+r2.Width = 20;                                   // променяме само r2
+Console.WriteLine($"r2 area: {r2.CalcArea()}");   // 300</pre>
+                    <p>
+                        При <code class="i">new</code> се заделя памет за нов обект и се изпълнява конструкторът.
+                        Достъпът до членове е с точка: <code class="i">обект.Член</code>.
+                        Промяната на <code class="i">r2</code> не засяга <code class="i">r1</code> – всеки обект има свое състояние.
+                    </p>
+
+                    <h2><i class="fas fa-lock"></i> Модификатори за достъп</h2>
+                    <table class="tbl">
+                        <tr><th>Модификатор</th><th>Кой има достъп</th></tr>
+                        <tr><td><code class="i">public</code></td><td>Всеки, отвсякъде</td></tr>
+                        <tr><td><code class="i">private</code></td><td>Само кодът вътре в същия клас (по подразбиране за членовете)</td></tr>
+                        <tr><td><code class="i">protected</code></td><td>Класът и неговите наследници</td></tr>
+                        <tr><td><code class="i">internal</code></td><td>Всичко в същия проект (assembly)</td></tr>
+                    </table>
+
+                    <h3>Защо свойства, а не публични полета?</h3>
+                    <p>Свойството може да <b>пази данните валидни</b>. Това е <b>инкапсулация</b>:</p>
+<pre class="code" data-hl>public class Rectangle
+{
+    private int _width;                      // поле – скрито отвън
+
+    public int Width                         // свойство – контролиран достъп
+    {
+        get => _width;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("Width must be positive");
+            _width = value;
+        }
+    }
+}</pre>
+                    <div class="callout tip">
+                        <strong><i class="fas fa-flask"></i> Опитай в Лабораторията</strong>
+                        Включи и изключи „Валидация в setter“ и пробвай да зададеш ширина 0.
+                    </div>
+
+                    <h2><i class="fas fa-link"></i> Класовете са референтни типове</h2>
+                    <p>
+                        Променливата <code class="i">r1</code> не съдържа самия обект, а <b>референция</b> (адрес) към него.
+                        Затова присвояването копира адреса, а не обекта:
+                    </p>
+<pre class="code" data-hl>var r1 = new Rectangle(30, 20, "white");
+var r2 = r1;            // r2 сочи към СЪЩИЯ обект
+r2.Width = 50;
+
+Console.WriteLine(r1.Width);   // 50 !</pre>
+                    <div class="callout warn">
+                        <strong>Често срещана грешка</strong>
+                        <code class="i">var r2 = r1;</code> <u>не</u> създава нов обект. Нов обект се създава само с <code class="i">new</code>.
+                        Виж го на живо в Лабораторията – бутонът „Втора променлива към този обект“.
+                    </div>
+
+                    <h2><i class="fas fa-spell-check"></i> Добри практики</h2>
+                    <ul>
+                        <li>Имената на класове и методи са в <b>PascalCase</b>: <code class="i">Rectangle</code>, <code class="i">CalcArea</code>.</li>
+                        <li>Давай <b>описателни имена</b>: <code class="i">BankAccount</code>, не <code class="i">BA</code> или <code class="i">Class1</code>.</li>
+                        <li>Полетата са <code class="i">private</code>, достъпът е през свойства и методи.</li>
+                        <li>Един клас – една ясна отговорност.</li>
+                    </ul>
+
+                    <h2><i class="fas fa-sitemap"></i> Накъде след това: ООП</h2>
+                    <p>Класовете и обектите са основата на обектно-ориентираното програмиране, което стъпва на три идеи:
+                       <b>инкапсулация</b> (скриваме детайлите), <b>наследяване</b> (преизползваме клас) и <b>полиморфизъм</b> (един интерфейс, различно поведение).</p>
+
+                    <h2><i class="fas fa-flag-checkered"></i> Обобщение</h2>
+                    <ul>
+                        <li>Класът определя структура и поведение; обектът е конкретна инстанция.</li>
+                        <li>Полетата/свойствата пазят данните; методите реализират поведението.</li>
+                        <li>Конструкторът задава първоначалното състояние при <code class="i">new</code>.</li>
+                        <li>Класовете са референтни типове: <code class="i">=</code> копира референцията, <code class="i">new</code> създава обект.</li>
+                        <li>Именувай класовете с ясни, описателни имена в PascalCase.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ===================== МИСЛОВНА КАРТА ===================== -->
+            <div id="panel-mindmap" class="tab-panel">
+                <div class="mindmap-wrapper">
+                    <p class="mindmap-hint"><i class="fas fa-circle-info"></i> Кликни върху възел, за да разгънеш/свиеш клона му. Плъзгай за преместване, скрол/бутоните долу вдясно за мащаб.</p>
+                    <div class="markmap-host">
+                        <svg id="mindmap-svg"></svg>
+                        <div class="markmap-toolbar-host"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== ЛАБОРАТОРИЯ ===================== -->
+            <div id="panel-lab" class="tab-panel">
+                <p style="margin-bottom:1rem">
+                    Създавай обекти от класа <code>Rectangle</code>, променяй свойствата им, викай методи и наблюдавай как се държат референциите.
+                </p>
+                <div class="lab-grid">
+                    <div class="panel-card">
+                        <h3><i class="fas fa-wand-magic-sparkles"></i> new Rectangle(...)</h3>
+                        <div class="field">
+                            <label for="lab-name">Име на променливата</label>
+                            <input type="text" id="lab-name" value="r1" maxlength="20" autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <label for="lab-w">Width <span id="lab-w-v">8</span></label>
+                            <input type="range" id="lab-w" min="1" max="20" value="8">
+                        </div>
+                        <div class="field">
+                            <label for="lab-h">Height <span id="lab-h-v">5</span></label>
+                            <input type="range" id="lab-h" min="1" max="12" value="5">
+                        </div>
+                        <div class="field">
+                            <label for="lab-c">Color</label>
+                            <select id="lab-c">
+                                <option>green</option><option>red</option><option>blue</option>
+                                <option>orange</option><option>purple</option><option>white</option>
+                            </select>
+                        </div>
+                        <pre class="code live-code" id="lab-live"></pre>
+                        <button class="btn full" id="lab-create"><i class="fas fa-plus"></i> Създай обект</button>
+                        <label class="toggle">
+                            <input type="checkbox" id="lab-valid" checked>
+                            <span>Валидация в <b>setter</b> (инкапсулация): отхвърля стойности ≤ 0</span>
+                        </label>
+                        <button class="btn ghost full small" id="lab-reset" style="margin-top:.9rem"><i class="fas fa-rotate-left"></i> Изчисти всичко</button>
+                    </div>
+
+                    <div>
+                        <div class="objects" id="lab-objects"></div>
+                        <div class="console" id="lab-console"><div class="hdr">// Конзола</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== ДОПЪЛНИ КОДА ===================== -->
+            <div id="panel-fill" class="tab-panel">
+                <p style="margin-bottom:1rem">
+                    Избери правилните думи, за да стане кодът на класа <code>Book</code> валиден. После натисни „Провери“.
+                </p>
+                <pre class="code fill-code" id="fill-code"></pre>
+                <div style="display:flex; gap:.7rem; flex-wrap:wrap">
+                    <button class="btn" id="fill-check"><i class="fas fa-check"></i> Провери</button>
+                    <button class="btn ghost" id="fill-reset"><i class="fas fa-rotate-left"></i> Започни отначало</button>
+                </div>
+                <div class="result-box" id="fill-result" hidden></div>
+            </div>
+
+            <!-- ===================== КУИЗ ===================== -->
+            <div id="panel-quiz" class="tab-panel">
+                <div id="quiz-root"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+        </div>
+    </div>
+
+    <script>
+        // Случаен фон на страницата от папка backgrounds/
+        (function () {
+            const backgrounds = [
+                '../../../backgrounds/IT.jpg',
+                '../../../backgrounds/Informatics.jpg',
+                '../../../backgrounds/Lessons.jpg',
+                '../../../backgrounds/Malta.jpg',
+                '../../../backgrounds/Modul1.jpg',
+                '../../../backgrounds/Modul2.jpg',
+                '../../../backgrounds/Modul2.png',
+                '../../../backgrounds/Modul3.jpg',
+                '../../../backgrounds/Modul4.jpg',
+                '../../../backgrounds/Other.jpg',
+                '../../../backgrounds/Start.jpg'
+            ];
+            const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.body.style.backgroundImage =
+                `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('${pick}')`;
+        })();
+    </script>
+
+    <!-- markmap-embed: рендира мисловната карта като интерактивна (пан/зуум + клик за разгъване/свиване) -->
+    <script src="../../../libs/markmap-embed.js"></script>
+    <script>
+        /* =========================================================
+           Общо: табове (без localStorage/alert - състоянието е само в паметта)
+           ========================================================= */
+        const mindmapInitialized = { mindmap: false };
+
+        // markmap измерва размера при инициализация, затова "active" се слага ПРЕДИ
+        // renderMermaidMindmap(), а веднъж инициализираният таб не се пресъздава.
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`.menu-btn[data-tab="${name}"]`).classList.add('active');
+
+            if (name === 'mindmap' && !mindmapInitialized.mindmap) {
+                mindmapInitialized.mindmap = true;
+                renderMermaidMindmap('mindmap-svg', 'H5P/Urok3/Класове_и_обекти_мисловна_карта.mmd');
+            }
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        /* ---------- Подсветка на кода ---------- */
+        const KW = 'public|private|protected|internal|class|new|var|get|set|return|static|void|int|string|if|throw|value|this';
+        const HL_RE = new RegExp('(\\/\\/.*$)|(\\$?"(?:[^"\\\\]|\\\\.)*")|\\b(' + KW + ')\\b|\\b(\\d+)\\b|\\b([A-Z][A-Za-z0-9]*)\\b', 'gm');
+        function highlight(text) {
+            return esc(text).replace(HL_RE, (m, cm, str, kw, num, ty) =>
+                cm ? `<span class="tk-cm">${cm}</span>` :
+                str ? `<span class="tk-str">${str}</span>` :
+                kw ? `<span class="tk-kw">${kw}</span>` :
+                num ? `<span class="tk-num">${num}</span>` :
+                `<span class="tk-ty">${ty}</span>`);
+        }
+        document.querySelectorAll('pre[data-hl]').forEach(pre => { pre.innerHTML = highlight(pre.textContent); });
+
+        /* =========================================================
+           1. Анотиран код (Теория)
+           ========================================================= */
+        const ANN = {
+            cls:   ['Клас', 'Декларация на клас', '<code>class</code> въвежда нов тип. <code>public</code> го прави видим от всеки код. Името е в PascalCase и описва какво моделира класът.'],
+            prop:  ['Свойство', 'Свойство Width', 'Достъп до данните през <code>get</code> (чете) и <code>set</code> (записва). С <code>{ get; set; }</code> компилаторът сам създава скритото поле. Типът <code>int</code> казва какви стойности се пазят.'],
+            ctor:  ['Конструктор', 'Конструктор', 'Има <b>същото име като класа</b> и <b>няма върнат тип</b> (дори <code>void</code>). Изпълнява се при <code>new Rectangle(...)</code> и задава началното състояние.'],
+            param: ['Параметри', 'Параметри на конструктора', 'Стойностите, които подаваме при създаване на обекта: <code>new Rectangle(30, 20, "white")</code>. Присвояват се на свойствата.'],
+            assign:['Присвояване', 'Инициализация на състоянието', 'Тук данните от параметрите влизат в свойствата на <b>новия</b> обект. Всеки обект получава свои собствени стойности.'],
+            method:['Метод', 'Метод CalcArea', 'Поведение на обекта. Работи с данните на конкретния обект – <code>r1.CalcArea()</code> и <code>r2.CalcArea()</code> дават различни резултати. <code>=&gt;</code> е съкратен запис на метод с един израз.']
+        };
+        const CODE_LINES = [
+            [['public ', 'kw'], ['class ', 'kw', 'cls'], ['Rectangle', 'ty', 'cls']],
+            [['{']],
+            [['    '], ['// Свойства (инкапсулират данните)', 'cm']],
+            [['    '], ['public ', 'kw'], ['int ', 'kw'], ['Width ', 'ty', 'prop'], ['{ ', ''], ['get', 'kw', 'prop'], ['; ', ''], ['set', 'kw', 'prop'], ['; }', '']],
+            [['    '], ['public ', 'kw'], ['int ', 'kw'], ['Height ', 'ty', 'prop'], ['{ get; set; }', '']],
+            [['    '], ['public ', 'kw'], ['string ', 'kw'], ['Color ', 'ty', 'prop'], ['{ get; set; }', '']],
+            [['']],
+            [['    '], ['// Конструктор', 'cm']],
+            [['    '], ['public ', 'kw'], ['Rectangle', 'ty', 'ctor'], ['(', ''], ['int width, int height, string color', '', 'param'], [')', '']],
+            [['    {']],
+            [['        '], ['Width = width;', '', 'assign']],
+            [['        '], ['Height = height;', '', 'assign']],
+            [['        '], ['Color = color;', '', 'assign']],
+            [['    }']],
+            [['']],
+            [['    '], ['// Метод (поведение)', 'cm']],
+            [['    '], ['public ', 'kw'], ['int ', 'kw'], ['CalcArea', 'ty', 'method'], ['() ', ''], ['=> ', '', 'method'], ['Width * Height;', '', 'method']],
+            [['}']]
+        ];
+        (function buildAnnot() {
+            const host = document.getElementById('annot-code');
+            host.innerHTML = CODE_LINES.map(line => line.map(([t, c, a]) => {
+                const inner = esc(t);
+                const cls = (c ? `tk-${c}` : '') + (a ? ' ann' : '');
+                if (!cls) return inner;
+                return `<span class="${cls}"${a ? ` data-a="${a}" tabindex="0" role="button"` : ''}>${inner}</span>`;
+            }).join('')).join('\n');
+
+            const info = document.getElementById('annot-info');
+            function select(key) {
+                host.querySelectorAll('.ann').forEach(el => el.classList.toggle('sel', el.dataset.a === key));
+                const [tag, title, text] = ANN[key];
+                info.innerHTML = `<span class="tag">${tag}</span><h4>${title}</h4><p>${text}</p>`;
+            }
+            host.addEventListener('click', e => { const el = e.target.closest('.ann'); if (el) select(el.dataset.a); });
+            host.addEventListener('keydown', e => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                const el = e.target.closest('.ann'); if (el) { e.preventDefault(); select(el.dataset.a); }
+            });
+        })();
+
+        /* =========================================================
+           2. Лаборатория
+           ========================================================= */
+        (function lab() {
+            const $ = id => document.getElementById(id);
+            const state = { objs: [], vars: {}, nextId: 1, validate: true };
+            const nameIn = $('lab-name'), wIn = $('lab-w'), hIn = $('lab-h'), cIn = $('lab-c');
+            const IDENT = /^[A-Za-z_][A-Za-z0-9_]*$/;
+            const RESERVED = ['new', 'class', 'int', 'string', 'var', 'public', 'private', 'static', 'void', 'if', 'for', 'while', 'return', 'null', 'true', 'false'];
+
+            function freeName() {
+                let i = 1; while (state.vars['r' + i]) i++; return 'r' + i;
+            }
+            function log(kind, text) {
+                const c = $('lab-console');
+                const d = document.createElement('div');
+                d.className = kind; d.textContent = (kind === 'cmd' ? '> ' : '') + text;
+                c.appendChild(d); c.scrollTop = c.scrollHeight;
+            }
+            const objById = id => state.objs.find(o => o.id === id);
+            const namesOf = id => Object.keys(state.vars).filter(n => state.vars[n] === id);
+            const firstName = id => namesOf(id)[0];
+
+            function updateLive() {
+                $('lab-w-v').textContent = wIn.value;
+                $('lab-h-v').textContent = hIn.value;
+                $('lab-live').innerHTML = highlight(`var ${nameIn.value || '?'} = new Rectangle(${wIn.value}, ${hIn.value}, "${cIn.value}");`);
+            }
+
+            function create() {
+                const n = nameIn.value.trim();
+                if (!IDENT.test(n) || RESERVED.includes(n)) { log('err', `Невалидно име „${n}“. Букви, цифри и _; не започва с цифра; не е ключова дума.`); return; }
+                if (state.vars[n]) { log('err', `Променливата ${n} вече съществува (CS0128). Избери друго име.`); return; }
+                const obj = { id: state.nextId++, w: +wIn.value, h: +hIn.value, color: cIn.value };
+                state.objs.push(obj); state.vars[n] = obj.id;
+                log('cmd', `var ${n} = new Rectangle(${obj.w}, ${obj.h}, "${obj.color}");`);
+                log('out', `// създаден е обект #${obj.id}; променливата ${n} сочи към него`);
+                nameIn.value = freeName(); updateLive(); render(obj.id);
+            }
+
+            function render(flashId) {
+                const host = $('lab-objects');
+                if (!state.objs.length) {
+                    host.innerHTML = '<div class="empty panel-card" style="grid-column:1/-1"><i class="fas fa-cube" style="font-size:2rem;color:#c4b5fd"></i><br>Още няма обекти. Създай първия с бутона вляво.</div>';
+                    return;
+                }
+                host.innerHTML = state.objs.map(o => {
+                    const pw = Math.max(0, o.w) * 11, ph = Math.max(0, o.h) * 11;
+                    return `<div class="obj-card" data-id="${o.id}">
+                        <div class="obj-head">
+                            <div class="chips">${namesOf(o.id).map(n => `<span class="chip">${n}</span>`).join('')}</div>
+                            <span class="obj-id">обект #${o.id}</span>
+                        </div>
+                        <div class="preview-box"><div class="rect" style="width:${pw}px;height:${ph}px;background:${o.color}"></div></div>
+                        <div class="prop-row">Width <input class="num-in" type="number" data-prop="w" value="${o.w}"></div>
+                        <div class="prop-row">Height <input class="num-in" type="number" data-prop="h" value="${o.h}"></div>
+                        <div class="prop-row">Color <select class="num-in" data-prop="color">${['green', 'red', 'blue', 'orange', 'purple', 'white'].map(c => `<option${c === o.color ? ' selected' : ''}>${c}</option>`).join('')}</select></div>
+                        <div class="obj-actions">
+                            <button class="btn small" data-act="area"><i class="fas fa-calculator"></i> CalcArea()</button>
+                            <button class="btn small ghost" data-act="alias"><i class="fas fa-link"></i> Втора променлива към този обект</button>
+                            <button class="btn small ghost" data-act="clone"><i class="fas fa-clone"></i> new с тези стойности</button>
+                        </div>
+                    </div>`;
+                }).join('');
+                if (flashId) {
+                    const el = host.querySelector(`.obj-card[data-id="${flashId}"]`);
+                    if (el) el.classList.add('flash');
+                }
+            }
+
+            $('lab-objects').addEventListener('click', e => {
+                const btn = e.target.closest('button[data-act]'); if (!btn) return;
+                const id = +btn.closest('.obj-card').dataset.id, o = objById(id), me = firstName(id);
+                if (btn.dataset.act === 'area') {
+                    log('cmd', `${me}.CalcArea();`);
+                    log('out', String(o.w * o.h));
+                } else if (btn.dataset.act === 'alias') {
+                    const n = freeName(); state.vars[n] = id;
+                    log('cmd', `var ${n} = ${me};`);
+                    log('out', `// НЕ е нов обект! ${n} и ${me} сочат към един и същ обект #${id}`);
+                    render(id);
+                } else if (btn.dataset.act === 'clone') {
+                    const n = freeName(), c = { id: state.nextId++, w: o.w, h: o.h, color: o.color };
+                    state.objs.push(c); state.vars[n] = c.id;
+                    log('cmd', `var ${n} = new Rectangle(${o.w}, ${o.h}, "${o.color}");`);
+                    log('out', `// нов, независим обект #${c.id}`);
+                    render(c.id);
+                }
+                nameIn.value = freeName(); updateLive();
+            });
+
+            $('lab-objects').addEventListener('change', e => {
+                const inp = e.target.closest('[data-prop]'); if (!inp) return;
+                const id = +inp.closest('.obj-card').dataset.id, o = objById(id), me = firstName(id), p = inp.dataset.prop;
+                if (p === 'color') {
+                    o.color = inp.value; log('cmd', `${me}.Color = "${o.color}";`);
+                } else {
+                    const label = p === 'w' ? 'Width' : 'Height', v = parseInt(inp.value, 10);
+                    if (Number.isNaN(v)) { inp.value = o[p]; return; }
+                    if (state.validate && v <= 0) {
+                        log('cmd', `${me}.${label} = ${v};`);
+                        log('err', `ArgumentException: ${label} must be positive  // setter-ът отказа промяната`);
+                        inp.value = o[p]; return;
+                    }
+                    o[p] = Math.min(v, 40); log('cmd', `${me}.${label} = ${v};`);
+                    if (!state.validate && v <= 0) log('out', '// без валидация обектът е в невалидно състояние!');
+                }
+                const others = namesOf(id).filter(n => n !== me);
+                if (others.length) log('out', `// виждаш го и през: ${others.join(', ')} (същият обект)`);
+                render(id);
+            });
+
+            [nameIn, wIn, hIn, cIn].forEach(el => el.addEventListener('input', updateLive));
+            $('lab-create').addEventListener('click', create);
+            nameIn.addEventListener('keydown', e => { if (e.key === 'Enter') create(); });
+            $('lab-valid').addEventListener('change', e => { state.validate = e.target.checked; log('out', `// валидация в setter: ${state.validate ? 'включена' : 'изключена'}`); });
+            $('lab-reset').addEventListener('click', () => {
+                state.objs = []; state.vars = {}; state.nextId = 1;
+                $('lab-console').innerHTML = '<div class="hdr">// Конзола</div>';
+                nameIn.value = 'r1'; updateLive(); render();
+            });
+            updateLive(); render();
+        })();
+
+        /* =========================================================
+           3. Допълни кода
+           ========================================================= */
+        (function fill() {
+            const BLANKS = [
+                { ok: 'public', opts: ['public', 'private', 'static', 'void'], why: 'Класът трябва да е видим отвън: public.' },
+                { ok: 'get',    opts: ['get', 'read', 'return', 'value'], why: 'Свойството се чете чрез get.' },
+                { ok: 'Book',   opts: ['Book', 'book', 'void Book', 'new'], why: 'Конструкторът има същото име като класа и няма върнат тип.' },
+                { ok: 'new',    opts: ['new', 'class', 'create', 'Book'], why: 'Обектите се създават с ключовата дума new.' },
+                { ok: '.',      opts: ['.', '->', '::', ','], why: 'Достъпът до член на обект е с точка.' }
+            ];
+            const TPL = [
+                '{0} class Book\n{\n    public string Title { {1}; set; }\n    public int Pages { get; set; }\n\n',
+                '    public {2}(string title, int pages)\n    {\n        Title = title;\n        Pages = pages;\n    }\n\n    public string Describe() => $"{Title}: {Pages} стр.";\n}\n\n',
+                'var b = {3} Book("C#", 300);\nConsole.WriteLine(b{4}Describe());'
+            ].join('');
+            const host = document.getElementById('fill-code'), res = document.getElementById('fill-result');
+
+            function build() {
+                const html = esc(TPL).replace(/\{(\d)\}/g, (m, i) => {
+                    const b = BLANKS[+i];
+                    return `<select data-i="${i}"><option value="">  ?  </option>${b.opts.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}</select>`;
+                });
+                host.innerHTML = html; res.hidden = true;
+            }
+            document.getElementById('fill-check').addEventListener('click', () => {
+                let good = 0; const hints = [];
+                host.querySelectorAll('select').forEach(s => {
+                    const b = BLANKS[+s.dataset.i], right = s.value === b.ok;
+                    s.className = right ? 'ok' : 'bad';
+                    if (right) good++; else hints.push(`<li>Празно място ${+s.dataset.i + 1}: ${s.value ? b.why : 'не е избрано нищо.'}</li>`);
+                });
+                res.hidden = false;
+                res.innerHTML = good === BLANKS.length
+                    ? '<i class="fas fa-circle-check" style="color:#2A9D8F"></i> Браво! Всички 5 са верни. Кодът се компилира и печата: <code>C#: 300 стр.</code>'
+                    : `<i class="fas fa-circle-info" style="color:#E8A33D"></i> ${good} от ${BLANKS.length} са верни. Пробвай пак:<ul class="hint-list">${hints.join('')}</ul>`;
+            });
+            document.getElementById('fill-reset').addEventListener('click', build);
+            build();
+        })();
+
+        /* =========================================================
+           4. Куиз
+           ========================================================= */
+        (function quiz() {
+            const Q = [
+                { q: 'Какво е клас в C#?', opts: ['Шаблон, който описва структурата и поведението на обекти', 'Конкретен обект в паметта', 'Променлива от тип int', 'Съобщение за грешка'], a: 0, why: 'Класът е шаблон (тип). Обектите са конкретните му екземпляри.' },
+                { q: 'Коя ключова дума създава нов обект?', opts: ['create', 'new', 'class', 'object'], a: 1, why: 'Само new заделя памет за нов обект и извиква конструктора му.' },
+                { q: 'Кое е вярно за конструктора?', opts: ['Има върнат тип void', 'Има различно име от класа', 'Има същото име като класа и няма върнат тип', 'Вика се като обикновен метод след създаването'], a: 2, why: 'Конструкторът носи името на класа, няма върнат тип и се изпълнява при new.' },
+                { q: 'За какво служат свойствата (get/set)?', opts: ['Само за по-бърза програма', 'За контролиран достъп до данните (инкапсулация)', 'За създаване на нови класове', 'За изтриване на обекти'], a: 1, why: 'Свойствата позволяват да четем/пишем данни, като можем да добавим проверки.' },
+                { q: 'Какво ще отпечата кодът?', code: 'var r1 = new Rectangle(30, 20, "white");\nvar r2 = r1;\nr2.Width = 50;\nConsole.WriteLine(r1.Width);', opts: ['30', '50', '20', 'Грешка при компилация'], a: 1, why: 'r2 = r1 копира референцията – и двете променливи сочат към един обект.' },
+                { q: 'Кой модификатор позволява достъп само от кода вътре в същия клас?', opts: ['public', 'internal', 'protected', 'private'], a: 3, why: 'private е най-ограничителният: видим само в самия клас.' },
+                { q: 'Колко е стойността на израза?', code: 'new Rectangle(4, 5, "red").CalcArea()', opts: ['9', '20', '45', '4'], a: 1, why: 'CalcArea() връща Width * Height = 4 * 5 = 20.' },
+                { q: 'Кое име на клас следва конвенциите на C#?', opts: ['bank_account', 'bankAccount', 'BankAccount', 'BANKACCOUNT'], a: 2, why: 'Класовете се именуват в PascalCase: всяка дума започва с главна буква.' },
+                { q: 'Кое НЕ е основен принцип на ООП?', opts: ['Инкапсулация', 'Наследяване', 'Полиморфизъм', 'Компилация'], a: 3, why: 'Трите принципа са инкапсулация, наследяване и полиморфизъм. Компилацията е процес.' },
+                { q: 'Кое от изброеното описва поведение на клас?', opts: ['Поле', 'Метод', 'Име на пространство', 'Коментар'], a: 1, why: 'Методите са действията, които обектите могат да извършват.' }
+            ];
+            const root = document.getElementById('quiz-root');
+            let order, idx, score, answered;
+
+            const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+            function start() { order = shuffle(Q.map((_, i) => i)); idx = 0; score = 0; show(); }
+
+            function show() {
+                answered = false;
+                const q = Q[order[idx]];
+                const opts = shuffle(q.opts.map((t, i) => ({ t, ok: i === q.a })));
+                root.innerHTML = `
+                    <div class="quiz-top"><span>Въпрос ${idx + 1} от ${Q.length}</span><span><i class="fas fa-star" style="color:#E8A33D"></i> ${score}</span></div>
+                    <div class="progress"><div style="width:${idx / Q.length * 100}%"></div></div>
+                    <div class="q-text">${esc(q.q)}</div>
+                    ${q.code ? `<pre class="code q-code">${highlight(q.code)}</pre>` : ''}
+                    <div id="q-opts">${opts.map((o, i) => `<button class="opt" data-ok="${o.ok}">${esc(o.t)}</button>`).join('')}</div>
+                    <div id="q-after"></div>`;
+                root.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => pick(b, q)));
+            }
+
+            function pick(btn, q) {
+                if (answered) return; answered = true;
+                const right = btn.dataset.ok === 'true';
+                if (right) score++;
+                root.querySelectorAll('.opt').forEach(b => {
+                    b.disabled = true;
+                    if (b.dataset.ok === 'true') b.classList.add('correct');
+                });
+                if (!right) btn.classList.add('wrong');
+                const last = idx === Q.length - 1;
+                document.getElementById('q-after').innerHTML = `
+                    <div class="explain"><b>${right ? 'Вярно!' : 'Не точно.'}</b> ${esc(q.why)}</div>
+                    <button class="btn" id="q-next">${last ? 'Резултат' : 'Следващ въпрос'} <i class="fas fa-arrow-right"></i></button>`;
+                document.getElementById('q-next').addEventListener('click', () => { idx++; idx < Q.length ? show() : finish(); });
+            }
+
+            function finish() {
+                const pct = Math.round(score / Q.length * 100);
+                const msg = pct >= 90 ? 'Отлично! Класовете и обектите са ти ясни.' : pct >= 60 ? 'Добре! Прегледай въпросите, в които сгреши, и опитай пак.' : 'Върни се към Теорията и Лабораторията, после опитай отново.';
+                root.innerHTML = `<div class="final">
+                    <div class="progress"><div style="width:100%"></div></div>
+                    <div class="score">${score} / ${Q.length}</div>
+                    <p style="margin:.6rem 0 1.4rem">${msg}</p>
+                    <button class="btn" id="q-again"><i class="fas fa-rotate-left"></i> Опитай отново</button></div>`;
+                document.getElementById('q-again').addEventListener('click', start);
+            }
+            start();
+        })();
+    </script>
+
+<!-- fullscreen-toggle: мини бутон горе вдясно за цял екран (виж README). В Moodle iframe-ът трябва да има allowfullscreen, иначе бутонът се скрива сам. -->
+<style>
+#fs-toggle{position:fixed;top:10px;right:10px;z-index:2147483000;width:34px;height:34px;padding:0;border:0;border-radius:8px;background:rgba(15,23,42,.55);color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;opacity:.75;transition:opacity .2s,background .2s}
+#fs-toggle:hover,#fs-toggle:focus-visible{opacity:1;background:rgba(15,23,42,.9)}
+#fs-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<button id="fs-toggle" type="button" title="Цял екран" aria-label="Цял екран"></button>
+<script>
+(function () {
+    var btn = document.getElementById('fs-toggle');
+    var root = document.documentElement;
+    var enter = root.requestFullscreen || root.webkitRequestFullscreen;
+    var exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!btn || !enter || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;
+    var IN = '<svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>';
+    var OUT = '<svg viewBox="0 0 24 24"><path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"/></svg>';
+    function active() { return document.fullscreenElement || document.webkitFullscreenElement; }
+    function sync() {
+        btn.innerHTML = active() ? OUT : IN;
+        var t = active() ? 'Изход от цял екран' : 'Цял екран';
+        btn.title = t; btn.setAttribute('aria-label', t);
+    }
+    btn.addEventListener('click', function () {
+        try { active() ? exit.call(document) : enter.call(root); } catch (e) {}
+    });
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    sync();
+    btn.style.display = 'inline-flex';
+})();
+</script>
+</body>
+</html>
