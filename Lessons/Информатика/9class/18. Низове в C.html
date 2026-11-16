@@ -13,6 +13,9 @@
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
 
+    <!-- markmap-embed (интерактивна мисловна карта от H5P/Urok18/Низове_в_C_мисловна_карта.mmd - пан/зуум + клик за разширяване на клонове) -->
+    <link rel="stylesheet" href="../../../libs/markmap-embed.css">
+
     <style>
         :root {
             --bg: #F6F7FB;
@@ -166,9 +169,9 @@
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; border: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; font-weight: 600; font-size: .95rem; cursor: pointer; justify-self: start; transition: transform .15s, box-shadow .15s; }
         .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,.4); }
         .btn.ghost { background: white; color: #764ba2; border: 2px solid #d9d4f2; }
-        details.mm { margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
-        details.mm summary { cursor: pointer; padding: 14px 18px; font-weight: 600; }
-        details.mm .mm-body { display: grid; gap: 12px; padding: 0 18px 18px; }
+        .mindmap-wrapper { border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.15); padding: 1rem; background: #fafafa; }
+        .mindmap-hint { margin: 0 0 .75rem; font-size: .85rem; color: #666; }
+        .mindmap-hint i { color: #764ba2; }
 
         /* lab */
         .lab { display: grid; gap: 20px; padding: 24px; border-radius: 20px; background: #fafafa; box-shadow: 0 4px 18px rgba(0,0,0,.1); }
@@ -255,7 +258,10 @@
         <!-- Content -->
         <div class="content">
             <div class="activity-menu">
-                <button class="menu-btn active" data-tab="map" onclick="showTab('map')">
+                <button class="menu-btn active" data-tab="lesson" onclick="showTab('lesson')">
+                    <i class="fas fa-book-open"></i> Урок
+                </button>
+                <button class="menu-btn" data-tab="mindmap" onclick="showTab('mindmap')">
                     <i class="fas fa-diagram-project"></i> Мисловна карта
                 </button>
                 <button class="menu-btn" data-tab="lab" onclick="showTab('lab')">
@@ -266,11 +272,11 @@
                 </button>
             </div>
 
-            <!-- Мисловна карта -->
-            <div id="panel-map" class="tab-panel active">
+            <!-- Урок -->
+            <div id="panel-lesson" class="tab-panel active">
                 <div class="sec-head">
-                    <h2>Мисловна карта</h2>
-                    <p>Избери клон от картата, за да видиш правилата и пример с код.</p>
+                    <h2>Урок: низове в C#</h2>
+                    <p>Избери тема от картата, за да видиш правилата и пример с код.</p>
                 </div>
                 <div class="map-layout">
                     <div class="map" id="map">
@@ -279,14 +285,17 @@
                     </div>
                     <aside class="detail" id="detail" aria-live="polite"></aside>
                 </div>
-                <details class="mm">
-                    <summary>Кодът на картата в Mermaid</summary>
-                    <div class="mm-body">
-                        <p class="hint">Постави кода в редактор на Mermaid, например в Obsidian, Notion или mermaid.live.</p>
-                        <button class="btn ghost" type="button" id="copyMm">Копирай кода</button>
-                        <pre class="code" id="mmCode"></pre>
+            </div>
+
+            <!-- Мисловна карта (интерактивна, от H5P/Urok18/Низове_в_C_мисловна_карта.mmd чрез markmap-embed) -->
+            <div id="panel-mindmap" class="tab-panel">
+                <div class="mindmap-wrapper">
+                    <p class="mindmap-hint"><i class="fas fa-circle-info"></i> Кликни върху възел, за да разгънеш/свиеш клона му. Плъзгай за преместване, скрол/бутоните долу вдясно за мащаб.</p>
+                    <div class="markmap-host">
+                        <svg id="mindmap-svg"></svg>
+                        <div class="markmap-toolbar-host"></div>
                     </div>
-                </details>
+                </div>
             </div>
 
             <!-- Лаборатория -->
@@ -359,14 +368,24 @@
 
         // Превключване между табовете. Връзките на мисловната карта се прерисуват
         // автоматично (ResizeObserver), когато панелът стане видим.
+        const mindmapInitialized = { mindmap: false };
+
         function showTab(name) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('panel-' + name).classList.add('active');
             document.querySelector(`.menu-btn[data-tab="${name}"]`).classList.add('active');
+
+            // markmap измерва размера при инициализация, затова панелът първо става
+            // видим (класът "active"), и чак тогава се рисува; веднъж не се пресъздава.
+            if (name === 'mindmap' && !mindmapInitialized.mindmap) {
+                mindmapInitialized.mindmap = true;
+                renderMermaidMindmap('mindmap-svg', 'H5P/Urok18/Низове_в_C_мисловна_карта.mmd');
+            }
             window.dispatchEvent(new Event('resize'));
         }
     </script>
+    <script src="../../../libs/markmap-embed.js"></script>
 
     <script>
 (function () {
@@ -447,7 +466,6 @@
 char d = (char)1040;   // също 'А' (кирилица)
 string s = "Здравей";
 string empty = "";     // празен низ, Length е 0`,
-      mm: ["Последователност от char", "Низ в кавички, знак в апострофи", "char = 2 байта (Unicode)", "Главни ≠ малки букви"],
       lab: { s: "Hello", op: "charAt", i: 0 } },
     { id: "init", t: "Променлива и константа", sub: "деклариране и стойност", col: "--b2",
       pts: ["Деклариране: <code>string name;</code>", "Преди първото използване променливата трябва да има стойност. Иначе компилаторът казва: <code>Use of unassigned local variable</code>.", "Стойност се взема от литерал, от друга променлива, от <code>Console.ReadLine()</code> или от <code>textBox1.Text</code>.", "<code>const</code> прави именувана константа – стойността ѝ не може да се променя."],
@@ -456,14 +474,12 @@ name = textBox1.Text;        // от текстово поле
 string city = "Бургас";      // деклариране + стойност
 string copy = city;          // от друга променлива
 const string HELLO = "Здравей";`,
-      mm: ["Деклариране: string name;", "Стойност преди използване", "Console.ReadLine(), textBox1.Text", "const – не се променя"],
       lab: { s: "Бургас", op: "length" } },
     { id: "esc", t: "Специални символи", sub: "\\\" \\\\ \\n и низ с @", col: "--b3",
       pts: ["Някои знаци се пишат с обратна черта: <code>\\\"</code> кавичка, <code>\\\\</code> обратна черта, <code>\\n</code> нов ред, <code>\\t</code> табулация.", "Низ с <code>@</code> пред кавичките е буквален: обратната черта си е обикновен знак.", "В низ с <code>@</code> кавичката се пише двойно: <code>\"\"</code>.", "В лабораторията пишеш текста както ще се отпечата, а изразът отгоре показва как изглежда в C#."],
       code: String.raw`string a = "Той каза: \"Здравей\"";
 string p = "C:\\Pics\\Rila2010.jpg";
 string q = @"C:\Pics\Rila2010.jpg";   // същият низ`,
-      mm: ["\\\" кавичка, \\\\ черта", "\\n нов ред, \\t табулация", "@ – всичко буквално"],
       lab: { s: "C:\\Pics\\Rila2010.jpg", op: "lastIndexOf", x: "\\" } },
     { id: "plus", t: "Долепване", sub: "операторът +", col: "--b4",
       pts: ["Знакът <code>+</code> долепва два низа в нов низ (конкатенация).", "Редът има значение: <code>\"Иван\" + \"Борис\"</code> дава <code>\"ИванБорис\"</code>, а обратното – <code>\"БорисИван\"</code>.", "Число в израз с низ се превръща в текст: <code>\"Иван е на \" + 14 + \" години\"</code>.", "Интервал между думите добавяме сами: <code>a + \" \" + b</code>.", "<code>s += \"!\"</code> добавя текст в края на s."],
@@ -472,7 +488,6 @@ string s3 = s1 + s2;       // "ИванБорис"
 string s4 = s2 + s1;       // "БорисИван"
 string t = "Иван е на " + 14 + " години";
 textBox3.Text = textBox1.Text + " " + textBox2.Text;`,
-      mm: ["+ долепва низове", "Редът има значение", "Числото става текст", "+= добавя в края"],
       lab: { s: "Иван е на 14 години", op: "length" } },
     { id: "idx", t: "Length и индекси", sub: "s.Length и s[i]", col: "--b5",
       pts: ["<code>s.Length</code> е броят на знаците в низа.", "Индексите започват от 0 и стигат до <code>s.Length - 1</code>.", "<code>s[i]</code> дава знака (char) на позиция i.", "Знаците могат само да се четат: <code>s[0] = 'h';</code> е грешка при компилация.", "Позиция извън низа спира програмата с <code>IndexOutOfRangeException</code>."],
@@ -480,7 +495,6 @@ textBox3.Text = textBox1.Text + " " + textBox2.Text;`,
 int n = s.Length;              // 7
 char first = s[0];             // 'З'
 char last = s[s.Length - 1];   // 'й'`,
-      mm: ["s.Length – брой знаци", "Индекси от 0 до Length − 1", "s[i] само за четене", "IndexOutOfRangeException"],
       lab: { s: "Здравей", op: "charAt", i: 6 } },
     { id: "find", t: "Търсене", sub: "IndexOf, LastIndexOf", col: "--b6",
       pts: ["<code>IndexOf(x)</code> търси отляво надясно и връща позицията на първото срещане.", "<code>LastIndexOf(x)</code> търси отдясно наляво и връща последното срещане.", "Ако няма такъв подниз, резултатът е <code>-1</code>.", "С втори аргумент задаваме откъде да започне търсенето.", "Търсенето различава главни и малки букви."],
@@ -491,7 +505,6 @@ t.IndexOf("ааа")        // -1
 
 string str = "C# Programming Course";
 str.IndexOf("r", 5)     // 7`,
-      mm: ["IndexOf → първо срещане", "LastIndexOf → последно", "Няма го → −1", "Втори аргумент: откъде"],
       lab: { s: "алабаланица", op: "lastIndexOf", x: "ала" } },
     { id: "sub", t: "Част от низ", sub: "Substring", col: "--b7",
       pts: ["<code>Substring(начало, дължина)</code> връща част от низа.", "Вторият аргумент е <b>дължина</b>, а не крайна позиция.", "<code>Substring(начало)</code> взима всичко до края.", "Ако начало + дължина е повече от Length: <code>ArgumentOutOfRangeException</code>.", "Удобно е заедно с IndexOf: име на файл от път, сървър от e-mail."],
@@ -502,7 +515,6 @@ s.Substring(3)        // "вен"
 string e = "ivo@abv.bg";
 int i = e.IndexOf("@");
 e.Substring(i + 1)    // "abv.bg"`,
-      mm: ["Substring(начало, дължина)", "Substring(начало) → до края", "С IndexOf: файл, e-mail"],
       lab: { s: "Плевен", op: "substring", a: 1, n: 3, useN: true } },
     { id: "new", t: "Нов низ от стария", sub: "Replace, ToUpper, ToLower", col: "--b8",
       pts: ["Низът е неизменим: методите не го променят, а връщат <b>нов</b> низ.", "<code>Replace(стар, нов)</code> заменя <b>всички</b> срещания.", "<code>ToUpper()</code> прави всички букви главни, <code>ToLower()</code> – малки.", "За да запазиш резултата, го присвои: <code>s = s.Replace(…);</code>", "Сравнение без значение от регистъра: <code>a.ToLower() == b.ToLower()</code>."],
@@ -512,7 +524,6 @@ s = s.Replace("Мариа", "Мария");   // и двете
 string g = "Георги";
 g.ToUpper()     // "ГЕОРГИ"
 g.ToLower()     // "георги"`,
-      mm: ["Низът е неизменим", "Replace – всички срещания", "ToUpper(), ToLower()", "s = s.Replace(…);"],
       lab: { s: "Георги Георгиев", op: "replace", a: "Георги", b: "Петър" } }
   ];
 
@@ -562,27 +573,6 @@ g.ToLower()     // "георги"`,
   if ("ResizeObserver" in window) new ResizeObserver(drawLinks).observe($("map"));
   else window.addEventListener("resize", drawLinks);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawLinks);
-
-  // Mermaid code
-  const mmQ = (t) => t.replace(/"/g, "#quot;");
-  let mm = 'mindmap\n  root(("Низове в C#"))\n';
-  BR.forEach((b, k) => {
-    mm += '    b' + k + '["' + mmQ(b.t) + '"]\n';
-    b.mm.forEach((l, j) => { mm += '      b' + k + "_" + j + '["' + mmQ(l) + '"]\n'; });
-  });
-  $("mmCode").textContent = mm;
-  $("copyMm").addEventListener("click", () => {
-    const btn = $("copyMm");
-    const done = () => { btn.textContent = "Копирано"; setTimeout(() => (btn.textContent = "Копирай кода"), 1800); };
-    try {
-      navigator.clipboard.writeText(mm).then(done, selectMm);
-    } catch (e) { selectMm(); }
-    function selectMm() {
-      const r = document.createRange(); r.selectNodeContents($("mmCode"));
-      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-      btn.textContent = "Маркирано – натисни Ctrl+C";
-    }
-  });
 
   /* ---------- lab ---------- */
   const OPS = [

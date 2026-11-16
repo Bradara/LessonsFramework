@@ -1,0 +1,67 @@
+---
+config:
+  layout: tidy-tree
+  theme: base
+  fontFamily: "MapFont, Calibri, Carlito, sans-serif"
+  themeVariables:
+    fontFamily: "MapFont, Calibri, Carlito, sans-serif"
+    fontSize: 15px
+    primaryColor: "#F2F4F7"
+    primaryTextColor: "#1B2230"
+    cScale0: "#E8A33D"
+    cScaleLabel0: "#1B2230"
+    cScale1: "#2A9D8F"
+    cScaleLabel1: "#FFFFFF"
+    cScale2: "#7FA7D9"
+    cScaleLabel2: "#1B2230"
+    cScale3: "#D1495B"
+    cScaleLabel3: "#FFFFFF"
+    cScale4: "#9CCB86"
+    cScaleLabel4: "#1B2230"
+    cScale5: "#B49FDA"
+    cScaleLabel5: "#1B2230"
+    cScale6: "#F08A5D"
+    cScaleLabel6: "#1B2230"
+    cScale7: "#8A97A8"
+    cScaleLabel7: "#1B2230"
+---
+mindmap
+  root(("Низове в C#"))
+    b0["Типът string"]
+      b0_0["Последователност от char"]
+      b0_1["Низ в кавички, знак в апострофи"]
+      b0_2["char = 2 байта (Unicode)"]
+      b0_3["Главни ≠ малки букви"]
+    b1["Променлива и константа"]
+      b1_0["Деклариране: string name;"]
+      b1_1["Стойност преди използване"]
+      b1_2["Console.ReadLine(), textBox1.Text"]
+      b1_3["const – не се променя"]
+    b2["Специални символи"]
+      b2_0["Обратна черта + знак: \ пред знака"]
+      b2_1["\n нов ред, \t табулация"]
+      b2_2["@ – всичко буквално"]
+    b3["Долепване"]
+      b3_0["+ долепва низове"]
+      b3_1["Редът има значение"]
+      b3_2["Числото става текст"]
+      b3_3["+= добавя в края"]
+    b4["Length и индекси"]
+      b4_0["s.Length – брой знаци"]
+      b4_1["Индекси от 0 до Length − 1"]
+      b4_2["s[i] само за четене"]
+      b4_3["IndexOutOfRangeException"]
+    b5["Търсене"]
+      b5_0["IndexOf → първо срещане"]
+      b5_1["LastIndexOf → последно"]
+      b5_2["Няма го → −1"]
+      b5_3["Втори аргумент: откъде"]
+    b6["Част от низ"]
+      b6_0["Substring(начало, дължина)"]
+      b6_1["Substring(начало) → до края"]
+      b6_2["С IndexOf: файл, e-mail"]
+    b7["Нов низ от стария"]
+      b7_0["Низът е неизменим"]
+      b7_1["Replace – всички срещания"]
+      b7_2["ToUpper(), ToLower()"]
+      b7_3["s = s.Replace(…);"]
