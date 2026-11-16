@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Низове в C# - Образователен Портал</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
+
+    <style>
+        :root {
+            --bg: #F6F7FB;
+            --surface: #FFFFFF;
+            --ink: #1B2230;
+            --muted: #55627A;
+            --line: #DAE0EA;
+            --cell: #E9EEF5;
+            --accent: #764ba2;
+            --accent-soft: #EFE9F8;
+            --teal: #1D8073;
+            --teal-soft: #D6EFEB;
+            --red: #C23B4B;
+            --red-soft: #F8DDE0;
+            --code-bg: #1B2230;
+            --code-fg: #E4E9F2;
+            --code-kw: #F0B254;
+            --code-str: #9FD68A;
+            --code-com: #8C98AC;
+            --on-fill: #1B2230;
+            --b1: #F0B254; --b2: #5CC2B3; --b3: #9DB9EC; --b4: #F08F99;
+            --b5: #A9D691; --b6: #C3AEEA; --b7: #F5A877; --b8: #B7C2D2;
+            --f-code: "Cascadia Mono", Consolas, "Fira Code", "Courier New", monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            overflow: clip;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .header-content { position: relative; z-index: 1; }
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); line-height: 1.2; }
+        .header p { font-size: 1.1rem; font-weight: 300; opacity: 0.95; }
+        .hero-strip { margin-top: 1.6rem; display: flex; justify-content: center; }
+        .hero-strip .strip-scroll { max-width: 100%; }
+        .header .cell i { color: rgba(255,255,255,.85); }
+        .header .strip.big .cell.hit b { background: #fff; color: #4c3a8f; }
+        .header .strip.big .cell.hit i { color: #fff; font-weight: 600; }
+
+        .content { padding: 3rem 2.5rem; }
+
+        /* Меню за превключване между активностите */
+        .activity-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .menu-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.9rem 1.8rem;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            background: white; color: #555;
+            font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease;
+        }
+        .menu-btn:hover { border-color: #764ba2; color: #764ba2; }
+        .menu-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent; color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        .footer { background: #f8f9fa; padding: 2rem; text-align: center; color: #777; font-size: 0.9rem; }
+
+        /* ---------- Съдържание на урока ---------- */
+        h2, h3 { margin: 0; line-height: 1.25; }
+        h2 { font-size: 1.5rem; font-weight: 700; color: #4c3a8f; }
+        h3 { font-size: 1.15rem; font-weight: 600; }
+        code, .mono { font-family: var(--f-code); }
+        button { font: inherit; color: inherit; }
+        :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+        .strip-scroll { overflow-x: auto; padding-bottom: 6px; }
+        .strip { display: flex; gap: 4px; width: max-content; }
+        .cell { display: grid; grid-template-rows: auto auto; justify-items: center; gap: 3px; }
+        .cell b { display: grid; place-items: center; width: 40px; height: 46px; border-radius: 8px; background: var(--cell); font-family: var(--f-code); font-size: 21px; font-weight: 600; color: var(--ink); transition: background .2s, color .2s; }
+        .cell b.space { color: var(--muted); font-weight: 400; }
+        .cell i { font-style: normal; font-family: var(--f-code); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+        .cell.hit b { background: var(--teal); color: #FFFFFF; }
+        .cell.hit i { color: var(--teal); font-weight: 600; }
+        .cell.from b { box-shadow: inset 0 0 0 3px var(--accent); }
+        .cell.from i { color: var(--accent); font-weight: 600; }
+        .cell.err b { background: var(--red-soft); }
+        .strip.big .cell b { width: 52px; height: 58px; font-size: 26px; }
+        .strip.big .cell.hit b { background: var(--accent); color: #FFFFFF; }
+        .strip.big .cell.hit i { color: var(--accent); }
+
+        .sec-head { display: grid; gap: 8px; margin-bottom: 26px; max-width: 760px; }
+        .sec-head p { color: var(--muted); }
+
+        /* map */
+        .map-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+        .map { position: relative; }
+        .map svg.links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        .map-grid { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 18px; }
+        .node { position: relative; display: grid; gap: 4px; align-content: center; min-height: 108px; padding: 14px 16px; border-radius: 16px; border: 2px solid transparent; background: var(--surface); box-shadow: 0 2px 10px rgba(27,34,48,.12); text-align: left; cursor: pointer; transition: transform .15s, border-color .15s; }
+        .node:hover { transform: translateY(-2px); }
+        .node .dot { width: 14px; height: 14px; border-radius: 50%; }
+        .node strong { font-weight: 600; font-size: 16px; line-height: 1.25; }
+        .node small { font-size: 13px; color: var(--muted); line-height: 1.3; }
+        .node[aria-pressed="true"] { border-color: var(--accent); }
+        .center { display: grid; place-items: center; text-align: center; min-height: 108px; border-radius: 50%; aspect-ratio: 1; max-width: 170px; width: 100%; justify-self: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 16px; }
+        .center strong { font-size: 20px; line-height: 1.15; }
+        .center span { font-family: var(--f-code); font-size: 12px; opacity: .85; }
+        .detail { position: sticky; top: 16px; display: grid; gap: 16px; padding: 24px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 4px 18px rgba(0,0,0,.08); min-width: 0; }
+        .detail .chip { justify-self: start; padding: 4px 12px; border-radius: 999px; color: var(--on-fill); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+        .detail ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+        .detail li::marker { color: var(--accent); }
+        .detail code, .why code { background: #eef0fb; color: #4c3a8f; padding: .05rem .35rem; border-radius: 5px; font-size: .9em; }
+        pre.code { margin: 0; padding: 16px 18px; border-radius: 12px; background: var(--code-bg); color: var(--code-fg); font-family: var(--f-code); font-size: 14px; line-height: 1.6; overflow-x: auto; }
+        .k { color: var(--code-kw); } .s { color: var(--code-str); } .c { color: var(--code-com); }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; border: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; font-weight: 600; font-size: .95rem; cursor: pointer; justify-self: start; transition: transform .15s, box-shadow .15s; }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,.4); }
+        .btn.ghost { background: white; color: #764ba2; border: 2px solid #d9d4f2; }
+        details.mm { margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+        details.mm summary { cursor: pointer; padding: 14px 18px; font-weight: 600; }
+        details.mm .mm-body { display: grid; gap: 12px; padding: 0 18px 18px; }
+
+        /* lab */
+        .lab { display: grid; gap: 20px; padding: 24px; border-radius: 20px; background: #fafafa; box-shadow: 0 4px 18px rgba(0,0,0,.1); }
+        .lab-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+        .field { display: grid; gap: 6px; }
+        .field label, .lbl { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .03em; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 10px 14px; border-radius: 10px; border: 2px solid var(--line); background: #fff; color: var(--ink); font-family: var(--f-code); font-size: 17px; }
+        input:focus { border-color: var(--accent); outline: none; }
+        .ops { display: flex; flex-wrap: wrap; gap: 8px; }
+        .ops button { padding: 8px 14px; border-radius: 999px; border: 2px solid var(--line); background: #fff; font-family: var(--f-code); font-size: 14px; cursor: pointer; transition: all .2s; }
+        .ops button:hover { border-color: var(--accent); }
+        .ops button[aria-pressed="true"] { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-color: transparent; }
+        .params { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: end; }
+        .check { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+        .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+        .out { display: grid; gap: 14px; align-content: start; padding: 20px; border-radius: 16px; background: #fff; border: 2px solid #e5e1f7; min-width: 0; }
+        .out .expr { font-family: var(--f-code); font-size: 15px; padding: 10px 14px; border-radius: 10px; background: var(--code-bg); color: var(--code-fg); overflow-x: auto; white-space: nowrap; }
+        .out .val { font-family: var(--f-code); font-size: 28px; font-weight: 600; word-break: break-all; line-height: 1.3; }
+        .out .val.err { font-size: 19px; color: var(--red); }
+        .out .why { color: var(--muted); font-size: .95rem; }
+        .hint { font-size: 14px; color: var(--muted); }
+
+        /* quiz */
+        .score { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 18px; margin-bottom: 20px; border-radius: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; box-shadow: 0 4px 15px rgba(102,126,234,.35); }
+        .score .bar { flex: 1 1 200px; height: 10px; border-radius: 999px; background: rgba(255,255,255,.25); overflow: hidden; }
+        .score .bar span { display: block; height: 100%; width: 0; background: #fff; transition: width .3s; }
+        .score strong { font-family: var(--f-code); font-variant-numeric: tabular-nums; }
+        .score .btn { background: #fff; color: #4c3a8f; padding: 8px 14px; }
+        .qs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .q { display: grid; gap: 12px; align-content: start; padding: 20px; border-radius: 16px; background: #fafafa; border: 2px solid #e5e1f7; min-width: 0; }
+        .q .qn { font-family: var(--f-code); font-size: 13px; font-weight: 600; color: var(--accent); }
+        .q .prompt { font-weight: 700; font-size: 1.05rem; line-height: 1.4; }
+        .q pre.code { font-size: 13.5px; }
+        .opts { display: grid; gap: 8px; }
+        .opt { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; text-align: left; cursor: pointer; transition: all .2s; }
+        .opt:hover:not(:disabled) { border-color: var(--accent); background: #faf8ff; }
+        .opt:disabled { cursor: default; }
+        .opt .l { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--cell); font-weight: 700; font-size: 14px; }
+        .opt .t { font-family: var(--f-code); font-size: 14px; word-break: break-word; }
+        .opt.right { border-color: var(--teal); background: var(--teal-soft); }
+        .opt.right .l { background: var(--teal); color: #FFFFFF; }
+        .opt.wrong { border-color: var(--red); background: var(--red-soft); }
+        .opt.wrong .l { background: var(--red); color: #FFFFFF; }
+        .fb { display: grid; gap: 8px; padding: 12px 14px; border-radius: 10px; font-size: 15px; }
+        .fb.ok { background: var(--teal-soft); }
+        .fb.no { background: var(--red-soft); }
+        .fb .btn { padding: 7px 12px; font-size: 13px; }
+        .final { margin-top: 20px; padding: 20px 24px; border-radius: 16px; background: #fffbea; border-left: 5px solid #E8A33D; font-weight: 600; font-size: 1.05rem; }
+
+        @media (max-width: 900px) {
+            .map-layout, .lab-row, .qs { grid-template-columns: minmax(0, 1fr); }
+            .detail { position: static; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .header p { font-size: 1rem; }
+            .content { padding: 2rem 1.2rem; }
+            .menu-btn { padding: 0.75rem 1.1rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 640px) {
+            .map svg.links { display: none; }
+            .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .center { grid-column: 1 / -1; order: -1; max-width: 140px; }
+            .node { min-height: 92px; }
+            .cell b { width: 34px; height: 40px; font-size: 18px; }
+            .strip.big .cell b { width: 40px; height: 46px; font-size: 21px; }
+            .lab, .detail { padding: 18px; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-quote-right"></i> Низове в C#</h1>
+                <p>Информатика - 9 клас · Уроци 18–20</p>
+                <div class="hero-strip" aria-hidden="true"><div class="strip-scroll"><div class="strip big" id="heroStrip"></div></div></div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="activity-menu">
+                <button class="menu-btn active" data-tab="map" onclick="showTab('map')">
+                    <i class="fas fa-diagram-project"></i> Мисловна карта
+                </button>
+                <button class="menu-btn" data-tab="lab" onclick="showTab('lab')">
+                    <i class="fas fa-flask"></i> Лаборатория
+                </button>
+                <button class="menu-btn" data-tab="quiz" onclick="showTab('quiz')">
+                    <i class="fas fa-circle-question"></i> Тест
+                </button>
+            </div>
+
+            <!-- Мисловна карта -->
+            <div id="panel-map" class="tab-panel active">
+                <div class="sec-head">
+                    <h2>Мисловна карта</h2>
+                    <p>Избери клон от картата, за да видиш правилата и пример с код.</p>
+                </div>
+                <div class="map-layout">
+                    <div class="map" id="map">
+                        <svg class="links" id="links" aria-hidden="true"></svg>
+                        <div class="map-grid" id="mapGrid"></div>
+                    </div>
+                    <aside class="detail" id="detail" aria-live="polite"></aside>
+                </div>
+                <details class="mm">
+                    <summary>Кодът на картата в Mermaid</summary>
+                    <div class="mm-body">
+                        <p class="hint">Постави кода в редактор на Mermaid, например в Obsidian, Notion или mermaid.live.</p>
+                        <button class="btn ghost" type="button" id="copyMm">Копирай кода</button>
+                        <pre class="code" id="mmCode"></pre>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Лаборатория -->
+            <div id="panel-lab" class="tab-panel">
+                <div class="sec-head">
+                    <h2>Лаборатория</h2>
+                    <p>Напиши свой текст, избери метод и виж какво връща C#. Оцветените клетки показват кои знаци участват.</p>
+                </div>
+                <div class="lab">
+                    <div class="field">
+                        <label for="labS">Низът s (пиши текста без кавички)</label>
+                        <input type="text" id="labS" value="C# Programming Course" autocomplete="off" spellcheck="false">
+                    </div>
+                    <div class="strip-scroll"><div class="strip" id="labStrip"></div></div>
+                    <div class="lab-row">
+                        <div class="field" style="gap:14px">
+                            <p class="lbl">Метод или свойство</p>
+                            <div class="ops" id="ops" role="group" aria-label="Метод"></div>
+                            <div class="params" id="params"></div>
+                        </div>
+                        <div class="out" id="out" aria-live="polite"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тест -->
+            <div id="panel-quiz" class="tab-panel">
+                <div class="sec-head">
+                    <h2>Тест: провери се</h2>
+                    <p>15 въпроса. Щракни върху отговор, за да видиш дали е верен и защо. Някои въпроси имат бутон, който отваря примера в лабораторията.</p>
+                </div>
+                <div class="score" id="score">
+                    <span>Отговорени <strong id="answered">0</strong> от <strong id="total">15</strong></span>
+                    <span>Верни <strong id="correct">0</strong></span>
+                    <div class="bar" aria-hidden="true"><span id="barFill"></span></div>
+                    <button class="btn" type="button" id="resetQuiz">Започни отначало</button>
+                </div>
+                <div class="qs" id="qs"></div>
+                <p class="final" id="final" hidden></p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+            <p style="margin-top:.4rem;font-size:.85rem">По учебния материал за типа string (уроци 18–20) и презентацията „Символни низове в C#“.</p>
+        </div>
+    </div>
+
+    <script>
+        // Случаен фон на страницата от папка backgrounds/
+        (function () {
+            const backgrounds = [
+                '../../../backgrounds/IT.jpg',
+                '../../../backgrounds/Informatics.jpg',
+                '../../../backgrounds/Lessons.jpg',
+                '../../../backgrounds/Malta.jpg',
+                '../../../backgrounds/Modul1.jpg',
+                '../../../backgrounds/Modul2.jpg',
+                '../../../backgrounds/Modul2.png',
+                '../../../backgrounds/Modul3.jpg',
+                '../../../backgrounds/Modul4.jpg',
+                '../../../backgrounds/Other.jpg',
+                '../../../backgrounds/Start.jpg'
+            ];
+            const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.body.style.backgroundImage =
+                `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('${pick}')`;
+        })();
+
+        // Превключване между табовете. Връзките на мисловната карта се прерисуват
+        // автоматично (ResizeObserver), когато панелът стане видим.
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`.menu-btn[data-tab="${name}"]`).classList.add('active');
+            window.dispatchEvent(new Event('resize'));
+        }
+    </script>
+
+    <script>
+(function () {
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const csStr = (t) => '"' + String(t).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\t/g, "\\t") + '"';
+  const csChar = (c) => "'" + (c === "\\" ? "\\\\" : c === "'" ? "\\'" : c) + "'";
+  const KW = /^(string|char|int|const|new|null|var|using|true|false)$/;
+
+  function highlight(code) {
+    const re = /(\/\/[^\n]*)|(@"(?:""|[^"])*")|("(?:\\.|[^"\\\n])*")|('(?:\\.|[^'\\\n])*')|([A-Za-z_]\w*)/g;
+    let out = "", last = 0, m;
+    while ((m = re.exec(code)) !== null) {
+      out += esc(code.slice(last, m.index));
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + "</span>";
+      else if (m[2] || m[3] || m[4]) out += '<span class="s">' + esc(m[0]) + "</span>";
+      else out += KW.test(m[5]) ? '<span class="k">' + esc(m[5]) + "</span>" : esc(m[5]);
+      last = re.lastIndex;
+    }
+    return out + esc(code.slice(last));
+  }
+
+  function renderStrip(el, text, marks) {
+    marks = marks || {};
+    const chars = Array.from(text);
+    if (!chars.length) { el.innerHTML = '<p class="hint">Празен низ: s.Length е 0 и няма нито един индекс.</p>'; return; }
+    el.innerHTML = chars.map((ch, i) => {
+      const cls = ["cell"];
+      if (marks.hit && marks.hit.has(i)) cls.push("hit");
+      if (marks.from === i) cls.push("from");
+      const shown = ch === " " ? "␣" : ch;
+      return '<div class="' + cls.join(" ") + '"><b class="' + (ch === " " ? "space" : "") + '">' + esc(shown) + "</b><i>" + i + "</i></div>";
+    }).join("");
+  }
+  const range = (a, n) => new Set(Array.from({ length: Math.max(0, n) }, (_, k) => a + k));
+
+  renderStrip($("heroStrip"), "string", { hit: new Set([0]) });
+
+  /* ---------- C# string semantics (pure) ---------- */
+  const CS = {
+    indexOf(s, x, from) {
+      if (from !== undefined && (from < 0 || from > s.length)) return { err: "ArgumentOutOfRangeException" };
+      return { v: s.indexOf(x, from === undefined ? 0 : from) };
+    },
+    lastIndexOf(s, x, from) {
+      if (from === undefined) return { v: s.lastIndexOf(x) };
+      if (s.length === 0) return { v: x === "" ? 0 : -1 };
+      if (from < 0 || from >= s.length) return { err: "ArgumentOutOfRangeException" };
+      const start = from - x.length + 1;
+      if (start < 0) return { v: -1 };
+      return { v: s.lastIndexOf(x, start) };
+    },
+    substring(s, a, n) {
+      if (a < 0 || a > s.length) return { err: "ArgumentOutOfRangeException" };
+      if (n === undefined) return { v: s.slice(a) };
+      if (n < 0 || a + n > s.length) return { err: "ArgumentOutOfRangeException" };
+      return { v: s.substr(a, n) };
+    },
+    charAt(s, i) {
+      if (i < 0 || i >= s.length) return { err: "IndexOutOfRangeException" };
+      return { v: s[i] };
+    },
+    replace(s, a, b) {
+      if (a === "") return { err: "ArgumentException" };
+      return { v: s.split(a).join(b), count: s.split(a).length - 1 };
+    }
+  };
+  window.__CS = CS;
+
+  /* ---------- mind map ---------- */
+  const BR = [
+    { id: "tip", t: "Типът string", sub: "текст в кавички", col: "--b1",
+      pts: ["Низът е последователност от знаци от тип <code>char</code>.", "Низ се пише в кавички: <code>\"Здравей\"</code>. Един знак (char) се пише в апострофи: <code>'З'</code>.", "Всеки знак заема 2 байта – номера си в таблицата Unicode, която има 65 536 знака.", "Променливата от тип string пази адреса на низа, затова размерът ѝ не зависи от дължината на текста.", "<code>\"Hello\"</code> и <code>\"hello\"</code> са различни низове: главните и малките букви са различни знаци."],
+      code: String.raw`char c = 'А';
+char d = (char)1040;   // също 'А' (кирилица)
+string s = "Здравей";
+string empty = "";     // празен низ, Length е 0`,
+      mm: ["Последователност от char", "Низ в кавички, знак в апострофи", "char = 2 байта (Unicode)", "Главни ≠ малки букви"],
+      lab: { s: "Hello", op: "charAt", i: 0 } },
+    { id: "init", t: "Променлива и константа", sub: "деклариране и стойност", col: "--b2",
+      pts: ["Деклариране: <code>string name;</code>", "Преди първото използване променливата трябва да има стойност. Иначе компилаторът казва: <code>Use of unassigned local variable</code>.", "Стойност се взема от литерал, от друга променлива, от <code>Console.ReadLine()</code> или от <code>textBox1.Text</code>.", "<code>const</code> прави именувана константа – стойността ѝ не може да се променя."],
+      code: String.raw`string name;                 // деклариране
+name = textBox1.Text;        // от текстово поле
+string city = "Бургас";      // деклариране + стойност
+string copy = city;          // от друга променлива
+const string HELLO = "Здравей";`,
+      mm: ["Деклариране: string name;", "Стойност преди използване", "Console.ReadLine(), textBox1.Text", "const – не се променя"],
+      lab: { s: "Бургас", op: "length" } },
+    { id: "esc", t: "Специални символи", sub: "\\\" \\\\ \\n и низ с @", col: "--b3",
+      pts: ["Някои знаци се пишат с обратна черта: <code>\\\"</code> кавичка, <code>\\\\</code> обратна черта, <code>\\n</code> нов ред, <code>\\t</code> табулация.", "Низ с <code>@</code> пред кавичките е буквален: обратната черта си е обикновен знак.", "В низ с <code>@</code> кавичката се пише двойно: <code>\"\"</code>.", "В лабораторията пишеш текста както ще се отпечата, а изразът отгоре показва как изглежда в C#."],
+      code: String.raw`string a = "Той каза: \"Здравей\"";
+string p = "C:\\Pics\\Rila2010.jpg";
+string q = @"C:\Pics\Rila2010.jpg";   // същият низ`,
+      mm: ["\\\" кавичка, \\\\ черта", "\\n нов ред, \\t табулация", "@ – всичко буквално"],
+      lab: { s: "C:\\Pics\\Rila2010.jpg", op: "lastIndexOf", x: "\\" } },
+    { id: "plus", t: "Долепване", sub: "операторът +", col: "--b4",
+      pts: ["Знакът <code>+</code> долепва два низа в нов низ (конкатенация).", "Редът има значение: <code>\"Иван\" + \"Борис\"</code> дава <code>\"ИванБорис\"</code>, а обратното – <code>\"БорисИван\"</code>.", "Число в израз с низ се превръща в текст: <code>\"Иван е на \" + 14 + \" години\"</code>.", "Интервал между думите добавяме сами: <code>a + \" \" + b</code>.", "<code>s += \"!\"</code> добавя текст в края на s."],
+      code: String.raw`string s1 = "Иван", s2 = "Борис";
+string s3 = s1 + s2;       // "ИванБорис"
+string s4 = s2 + s1;       // "БорисИван"
+string t = "Иван е на " + 14 + " години";
+textBox3.Text = textBox1.Text + " " + textBox2.Text;`,
+      mm: ["+ долепва низове", "Редът има значение", "Числото става текст", "+= добавя в края"],
+      lab: { s: "Иван е на 14 години", op: "length" } },
+    { id: "idx", t: "Length и индекси", sub: "s.Length и s[i]", col: "--b5",
+      pts: ["<code>s.Length</code> е броят на знаците в низа.", "Индексите започват от 0 и стигат до <code>s.Length - 1</code>.", "<code>s[i]</code> дава знака (char) на позиция i.", "Знаците могат само да се четат: <code>s[0] = 'h';</code> е грешка при компилация.", "Позиция извън низа спира програмата с <code>IndexOutOfRangeException</code>."],
+      code: String.raw`string s = "Здравей";
+int n = s.Length;              // 7
+char first = s[0];             // 'З'
+char last = s[s.Length - 1];   // 'й'`,
+      mm: ["s.Length – брой знаци", "Индекси от 0 до Length − 1", "s[i] само за четене", "IndexOutOfRangeException"],
+      lab: { s: "Здравей", op: "charAt", i: 6 } },
+    { id: "find", t: "Търсене", sub: "IndexOf, LastIndexOf", col: "--b6",
+      pts: ["<code>IndexOf(x)</code> търси отляво надясно и връща позицията на първото срещане.", "<code>LastIndexOf(x)</code> търси отдясно наляво и връща последното срещане.", "Ако няма такъв подниз, резултатът е <code>-1</code>.", "С втори аргумент задаваме откъде да започне търсенето.", "Търсенето различава главни и малки букви."],
+      code: String.raw`string t = "алабаланица";
+t.IndexOf("ала")        // 0
+t.LastIndexOf("ала")    // 4
+t.IndexOf("ааа")        // -1
+
+string str = "C# Programming Course";
+str.IndexOf("r", 5)     // 7`,
+      mm: ["IndexOf → първо срещане", "LastIndexOf → последно", "Няма го → −1", "Втори аргумент: откъде"],
+      lab: { s: "алабаланица", op: "lastIndexOf", x: "ала" } },
+    { id: "sub", t: "Част от низ", sub: "Substring", col: "--b7",
+      pts: ["<code>Substring(начало, дължина)</code> връща част от низа.", "Вторият аргумент е <b>дължина</b>, а не крайна позиция.", "<code>Substring(начало)</code> взима всичко до края.", "Ако начало + дължина е повече от Length: <code>ArgumentOutOfRangeException</code>.", "Удобно е заедно с IndexOf: име на файл от път, сървър от e-mail."],
+      code: String.raw`string s = "Плевен";
+s.Substring(1, 3)     // "лев"
+s.Substring(3)        // "вен"
+
+string e = "ivo@abv.bg";
+int i = e.IndexOf("@");
+e.Substring(i + 1)    // "abv.bg"`,
+      mm: ["Substring(начало, дължина)", "Substring(начало) → до края", "С IndexOf: файл, e-mail"],
+      lab: { s: "Плевен", op: "substring", a: 1, n: 3, useN: true } },
+    { id: "new", t: "Нов низ от стария", sub: "Replace, ToUpper, ToLower", col: "--b8",
+      pts: ["Низът е неизменим: методите не го променят, а връщат <b>нов</b> низ.", "<code>Replace(стар, нов)</code> заменя <b>всички</b> срещания.", "<code>ToUpper()</code> прави всички букви главни, <code>ToLower()</code> – малки.", "За да запазиш резултата, го присвои: <code>s = s.Replace(…);</code>", "Сравнение без значение от регистъра: <code>a.ToLower() == b.ToLower()</code>."],
+      code: String.raw`string s = "Мариа и Мариа";
+s = s.Replace("Мариа", "Мария");   // и двете
+
+string g = "Георги";
+g.ToUpper()     // "ГЕОРГИ"
+g.ToLower()     // "георги"`,
+      mm: ["Низът е неизменим", "Replace – всички срещания", "ToUpper(), ToLower()", "s = s.Replace(…);"],
+      lab: { s: "Георги Георгиев", op: "replace", a: "Георги", b: "Петър" } }
+  ];
+
+  const grid = $("mapGrid");
+  // 3×3 slots: 0 1 2 / 3 [center] 5 / 6 7 8
+  const slots = [0, 1, 2, 3, 5, 6, 7, 8];
+  const cells = new Array(9);
+  BR.forEach((b, k) => {
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "node"; btn.id = "node-" + b.id;
+    btn.setAttribute("aria-pressed", "false");
+    btn.innerHTML = '<span class="dot" style="background:var(' + b.col + ')"></span><strong>' + esc(b.t) + "</strong><small>" + esc(b.sub) + "</small>";
+    btn.addEventListener("click", () => select(k));
+    cells[slots[k]] = btn;
+  });
+  const c = document.createElement("div");
+  c.className = "center"; c.innerHTML = "<div><strong>string</strong><br><span>низове в C#</span></div>";
+  cells[4] = c;
+  cells.forEach((el) => grid.appendChild(el));
+
+  function drawLinks() {
+    const svg = $("links"), map = $("map");
+    const r = map.getBoundingClientRect();
+    svg.setAttribute("viewBox", "0 0 " + r.width + " " + r.height);
+    const cr = c.getBoundingClientRect();
+    const cx = cr.left - r.left + cr.width / 2, cy = cr.top - r.top + cr.height / 2;
+    svg.innerHTML = BR.map((b) => {
+      const nr = document.getElementById("node-" + b.id).getBoundingClientRect();
+      const x = nr.left - r.left + nr.width / 2, y = nr.top - r.top + nr.height / 2;
+      return '<line x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="var(' + b.col + ')" stroke-width="5" stroke-linecap="round"/>';
+    }).join("");
+  }
+
+  function select(k) {
+    const b = BR[k];
+    BR.forEach((x, j) => document.getElementById("node-" + x.id).setAttribute("aria-pressed", j === k ? "true" : "false"));
+    $("detail").innerHTML =
+      '<span class="chip" style="background:var(' + b.col + ')">' + (k + 1) + " от 8</span>" +
+      "<h3>" + esc(b.t) + "</h3>" +
+      "<ul>" + b.pts.map((p) => "<li>" + p + "</li>").join("") + "</ul>" +
+      '<pre class="code">' + highlight(b.code) + "</pre>" +
+      '<button class="btn" type="button" id="tryBranch">Пробвай в лабораторията</button>';
+    $("tryBranch").addEventListener("click", () => loadLab(b.lab));
+  }
+  select(0);
+  drawLinks();
+  if ("ResizeObserver" in window) new ResizeObserver(drawLinks).observe($("map"));
+  else window.addEventListener("resize", drawLinks);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawLinks);
+
+  // Mermaid code
+  const mmQ = (t) => t.replace(/"/g, "#quot;");
+  let mm = 'mindmap\n  root(("Низове в C#"))\n';
+  BR.forEach((b, k) => {
+    mm += '    b' + k + '["' + mmQ(b.t) + '"]\n';
+    b.mm.forEach((l, j) => { mm += '      b' + k + "_" + j + '["' + mmQ(l) + '"]\n'; });
+  });
+  $("mmCode").textContent = mm;
+  $("copyMm").addEventListener("click", () => {
+    const btn = $("copyMm");
+    const done = () => { btn.textContent = "Копирано"; setTimeout(() => (btn.textContent = "Копирай кода"), 1800); };
+    try {
+      navigator.clipboard.writeText(mm).then(done, selectMm);
+    } catch (e) { selectMm(); }
+    function selectMm() {
+      const r = document.createRange(); r.selectNodeContents($("mmCode"));
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      btn.textContent = "Маркирано – натисни Ctrl+C";
+    }
+  });
+
+  /* ---------- lab ---------- */
+  const OPS = [
+    { id: "length", label: "Length" },
+    { id: "charAt", label: "s[i]" },
+    { id: "indexOf", label: "IndexOf" },
+    { id: "lastIndexOf", label: "LastIndexOf" },
+    { id: "substring", label: "Substring" },
+    { id: "replace", label: "Replace" },
+    { id: "toUpper", label: "ToUpper()" },
+    { id: "toLower", label: "ToLower()" }
+  ];
+  const st = { op: "indexOf", i: 0, x: "r", from: 5, useFrom: true, a: 3, n: 11, useN: true, ra: "Course", rb: "Lesson" };
+  const opsEl = $("ops");
+  OPS.forEach((o) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = o.label; b.dataset.op = o.id;
+    b.addEventListener("click", () => { st.op = o.id; buildParams(); run(); });
+    opsEl.appendChild(b);
+  });
+
+  function numField(id, label, val) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label><input type="number" id="' + id + '" value="' + val + '" step="1"></div>';
+  }
+  function txtField(id, label, val) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label><input type="text" id="' + id + '" value="' + esc(val) + '" autocomplete="off" spellcheck="false"></div>';
+  }
+  function chk(id, label, on) {
+    return '<label class="check" for="' + id + '"><input type="checkbox" id="' + id + '"' + (on ? " checked" : "") + ">" + label + "</label>";
+  }
+
+  function buildParams() {
+    opsEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.op === st.op ? "true" : "false"));
+    let h = "";
+    if (st.op === "charAt") h = numField("pI", "Индекс i", st.i);
+    if (st.op === "indexOf" || st.op === "lastIndexOf")
+      h = txtField("pX", "Търсим x", st.x) + chk("pUseFrom", st.op === "indexOf" ? "от позиция" : "назад от позиция", st.useFrom) + numField("pFrom", "Позиция", st.from);
+    if (st.op === "substring")
+      h = numField("pA", "Начало", st.a) + chk("pUseN", "с дължина", st.useN) + numField("pN", "Дължина", st.n);
+    if (st.op === "replace") h = txtField("pRa", "Стар текст", st.ra) + txtField("pRb", "Нов текст", st.rb);
+    if (!h) h = '<p class="hint">Този метод няма аргументи.</p>';
+    $("params").innerHTML = h;
+    const bind = (id, key, kind) => {
+      const el = $(id); if (!el) return;
+      el.addEventListener("input", () => {
+        st[key] = kind === "num" ? (el.value === "" ? 0 : Math.trunc(Number(el.value))) : kind === "chk" ? el.checked : el.value;
+        syncDisabled(); run();
+      });
+    };
+    bind("pI", "i", "num"); bind("pX", "x", "txt"); bind("pFrom", "from", "num"); bind("pUseFrom", "useFrom", "chk");
+    bind("pA", "a", "num"); bind("pN", "n", "num"); bind("pUseN", "useN", "chk"); bind("pRa", "ra", "txt"); bind("pRb", "rb", "txt");
+    syncDisabled();
+  }
+  function syncDisabled() {
+    if ($("pFrom")) $("pFrom").disabled = !st.useFrom;
+    if ($("pN")) $("pN").disabled = !st.useN;
+  }
+
+  function run() {
+    const s = $("labS").value;
+    const N = s.length;
+    let expr = "", val = "", why = "", err = false, marks = {}, resStr = null;
+    const lowerHint = (fn, x, from) => {
+      const r = fn(s.toLowerCase(), x.toLowerCase(), from);
+      return r.v !== undefined && r.v >= 0 ? " Ако не се различаваха главни и малки букви, щеше да се намери на позиция " + r.v + "." : "";
+    };
+    switch (st.op) {
+      case "length":
+        expr = "s.Length"; val = String(N);
+        why = N ? "Низът има " + N + (N === 1 ? " знак" : " знака") + ". Индексите са от 0 до " + (N - 1) + "." : "Празният низ няма нито един знак.";
+        marks.hit = range(0, N); break;
+      case "charAt": {
+        expr = "s[" + st.i + "]";
+        const r = CS.charAt(s, st.i);
+        if (r.err) { err = true; val = r.err; why = "Позиция " + st.i + " не съществува" + (N ? ": индексите са от 0 до " + (N - 1) + "." : ", защото низът е празен.") + " Програмата спира с грешка."; }
+        else { val = csChar(r.v); why = "На позиция " + st.i + " е знакът " + csChar(r.v) + ". Резултатът е от тип char."; marks.hit = new Set([st.i]); }
+        break;
+      }
+      case "indexOf":
+      case "lastIndexOf": {
+        const isLast = st.op === "lastIndexOf";
+        const from = st.useFrom ? st.from : undefined;
+        expr = "s." + (isLast ? "LastIndexOf" : "IndexOf") + "(" + csStr(st.x) + (from !== undefined ? ", " + from : "") + ")";
+        const r = CS[st.op](s, st.x, from);
+        if (from !== undefined && from >= 0 && from < N) marks.from = from;
+        if (r.err) { err = true; val = r.err; why = "Позицията " + from + " е извън низа" + (isLast ? " (трябва да е от 0 до " + (N - 1) + ")." : " (трябва да е от 0 до " + N + ")."); }
+        else if (r.v < 0) {
+          val = "-1";
+          why = "„" + st.x + "“ не е намерен" + (from !== undefined ? (isLast ? " назад от позиция " + from : " от позиция " + from + " нататък") : "") + ", затова резултатът е −1." + lowerHint(CS[st.op], st.x, from);
+          if (isLast && from !== undefined && s.indexOf(st.x) >= 0) why += " При LastIndexOf с позиция целият подниз трябва да се побира до тази позиция.";
+        } else {
+          val = String(r.v); marks.hit = range(r.v, Array.from(st.x).length || 0);
+          why = "„" + st.x + "“ е намерен " + (isLast ? "за последен път" : "за първи път") + " на позиция " + r.v + "." +
+            (from !== undefined ? (isLast ? " Търсенето тръгва от позиция " + from + " наляво." : " Търсенето тръгва от позиция " + from + " надясно.") : (isLast ? " Търсенето върви отдясно наляво." : " Търсенето върви отляво надясно."));
+        }
+        break;
+      }
+      case "substring": {
+        const n = st.useN ? st.n : undefined;
+        expr = "s.Substring(" + st.a + (n !== undefined ? ", " + n : "") + ")";
+        const r = CS.substring(s, st.a, n);
+        if (r.err) {
+          err = true; val = r.err;
+          why = st.a < 0 || st.a > N ? "Началото " + st.a + " е извън низа (може от 0 до " + N + ")." : n < 0 ? "Дължината не може да е отрицателна." : "Начало + дължина = " + (st.a + n) + ", а низът има само " + N + " знака.";
+        } else {
+          val = csStr(r.v); resStr = r.v; marks.hit = range(st.a, r.v.length);
+          why = n !== undefined ? "Взимаме " + n + " знака, като започваме от позиция " + st.a + "." : "Взимаме всичко от позиция " + st.a + " до края.";
+        }
+        break;
+      }
+      case "replace": {
+        expr = "s.Replace(" + csStr(st.ra) + ", " + csStr(st.rb) + ")";
+        const r = CS.replace(s, st.ra, st.rb);
+        if (r.err) { err = true; val = r.err; why = "Текстът, който заменяме, не може да е празен."; }
+        else {
+          val = csStr(r.v); resStr = r.v;
+          let p = s.indexOf(st.ra); const hit = new Set();
+          while (p >= 0) { range(p, st.ra.length).forEach((k) => hit.add(k)); p = s.indexOf(st.ra, p + st.ra.length); }
+          marks.hit = hit;
+          why = r.count ? "Заменени са " + r.count + (r.count === 1 ? " срещане" : " срещания") + ". Получава се нов низ; s не се променя." : "„" + st.ra + "“ не се среща в s, затова резултатът е същият текст.";
+        }
+        break;
+      }
+      case "toUpper":
+      case "toLower": {
+        const up = st.op === "toUpper";
+        expr = "s." + (up ? "ToUpper()" : "ToLower()");
+        resStr = up ? s.toUpperCase() : s.toLowerCase(); val = csStr(resStr);
+        why = "Получава се нов низ с " + (up ? "главни" : "малки") + " букви. Знаците, които не са букви, остават същите, а s не се променя.";
+        break;
+      }
+    }
+    renderStrip($("labStrip"), s, marks);
+    let h = '<p class="lbl">Израз</p><div class="expr">' + highlight(expr) + "</div>" +
+      '<p class="lbl">Резултат</p><p class="val' + (err ? " err" : "") + '">' + esc(val) + "</p>";
+    if (resStr !== null) h += '<div class="strip-scroll"><div class="strip" id="resStrip"></div></div>';
+    h += '<p class="why">' + esc(why) + "</p>";
+    $("out").innerHTML = h;
+    if (resStr !== null) renderStrip($("resStrip"), resStr, {});
+  }
+
+  function loadLab(p) {
+    $("labS").value = p.s;
+    st.op = p.op;
+    if (p.op === "charAt") st.i = p.i;
+    if (p.op === "indexOf" || p.op === "lastIndexOf") { st.x = p.x; st.useFrom = p.from !== undefined; if (p.from !== undefined) st.from = p.from; }
+    if (p.op === "substring") { st.a = p.a; st.useN = !!p.useN; if (p.n !== undefined) st.n = p.n; }
+    if (p.op === "replace") { st.ra = p.a; st.rb = p.b; }
+    buildParams(); run();
+    if (window.showTab) showTab("lab");
+    $("panel-lab").scrollIntoView({ block: "start" });
+  }
+  $("labS").addEventListener("input", run);
+  buildParams(); run();
+
+  /* ---------- quiz ---------- */
+  const Q = [
+    { p: "Каква е дължината на низа t?", code: String.raw`string t = "Иван е на " + 14 + " години";`,
+      o: ["19", "17", "18", "20"],
+      e: "„Иван е на “ има 10 знака, числото 14 става текстът „14“ (2 знака), а „ години“ има 7. Общо 10 + 2 + 7 = 19.",
+      lab: { s: "Иван е на 14 години", op: "length" } },
+    { p: "Какво връща t.LastIndexOf(\"ала\")?", code: String.raw`string t = "алабаланица";`,
+      o: ["4", "0", "6", "2"],
+      e: "„ала“ се среща на позиции 0 и 4. LastIndexOf връща последното срещане – 4.",
+      lab: { s: "алабаланица", op: "lastIndexOf", x: "ала" } },
+    { p: "Какво връща s.IndexOf(\"р\", 3)?", code: String.raw`string s = "Програмиране";`,
+      o: ["4", "1", "3", "8"],
+      e: "„р“ има на позиции 1, 4 и 8. Търсенето започва от позиция 3, затова първото намерено „р“ е на 4.",
+      lab: { s: "Програмиране", op: "indexOf", x: "р", from: 3 } },
+    { p: "Какво връща str.LastIndexOf(\"Course\", 19)?", code: String.raw`string str = "C# Programming Course";`,
+      o: ["-1", "15", "14", "19"],
+      e: "„Course“ заема позиции 15–20. Когато търсим назад от позиция 19, целият подниз не се побира, затова резултатът е −1.",
+      lab: { s: "C# Programming Course", op: "lastIndexOf", x: "Course", from: 19 } },
+    { p: "Какво ще се отпечата?", code: String.raw`string s = "HELLO";
+s.Replace("L", "l");
+Console.WriteLine(s);`,
+      o: ["HELLO", "HEllO", "HElLO", "Грешка при компилация"],
+      e: "Replace връща нов низ, но той не е присвоен на променлива. s остава \"HELLO\". Правилно е: s = s.Replace(\"L\", \"l\");" },
+    { p: "Кой ред ще даде грешка при компилация?", code: String.raw`string s = "Hello";`,
+      o: ["s[0] = 'h';", "s += 'h';", "char c = s[0];", "s = s.ToLower();"],
+      e: "Знаците на низа могат само да се четат. s += 'h' е позволено: долепва знака в края и създава нов низ." },
+    { p: "Кое твърдение е вярно?", code: String.raw`string a = null;
+string b = "";`,
+      o: ["b.Length е 0, а a.Length спира програмата с грешка", "a.Length и b.Length са равни на 0", "a == b връща true", "a и b сочат към един и същ празен низ"],
+      e: "\"\" е низ без знаци, затова дължината му е 0. null означава, че низ изобщо няма, и a.Length хвърля NullReferenceException." },
+    { p: "Какво връща s.Replace(\"Георги\", \"Петър\")?", code: String.raw`string s = "Георги Георгиев";`,
+      o: ["\"Петър Петърев\"", "\"Петър Георгиев\"", "\"Петърев\"", "\"Георги Георгиев\""],
+      e: "Replace заменя всички срещания, включително „Георги“ в началото на „Георгиев“.",
+      lab: { s: "Георги Георгиев", op: "replace", a: "Георги", b: "Петър" } },
+    { p: "Какво ще се отпечата?", code: String.raw`Console.WriteLine(@"Път: C:\new\test");`,
+      o: [String.raw`Път: C:\new\test`, String.raw`Път: C:\\new\\test`, "Път: C:newtest", "Път: C:, после нов ред и табулация"],
+      e: "Със знака @ обратната черта е обикновен знак, затова \\n и \\t не стават нов ред и табулация." },
+    { p: "Каква е стойността на s след тези редове?", code: String.raw`string s = "abc";
+s += s[0];`,
+      o: ["\"abca\"", "\"abc97\"", "\"aabc\"", "\"abc\""],
+      e: "s[0] е знакът 'a'. Когато знак се долепя към низ, той се добавя като текст в края." },
+    { p: "Кое сравнение връща true?", code: String.raw`string a = "Иван";
+string b = "иВАН";`,
+      o: ["a.ToLower() == b.ToLower()", "a == b", "a.ToLower() == b", "a.ToUpper() == b"],
+      e: "Главните и малките букви са различни знаци. Само когато и двата низа са в един и същ регистър, сравнението дава true." },
+    { p: "Колко байта заема в паметта един знак от тип char в C#?", code: "",
+      o: ["2 байта", "1 байт", "4 байта", "Зависи от азбуката"],
+      e: "C# пази всеки знак като номер в таблицата Unicode – 2 байта, т.е. 65 536 различни знака. Затова кирилица и латиница се пазят по един и същ начин." },
+    { p: "Какво ще стане при компилиране?", code: String.raw`string s;
+label1.Text = s;`,
+      o: ["Грешка: s няма стойност", "Етикетът ще остане празен", "В етикета ще пише null", "Програмата ще спре с NullReferenceException"],
+      e: "Променливата трябва да получи стойност, преди да се използва. Компилаторът съобщава: Use of unassigned local variable 's'." },
+    { p: "Какво връща s.Substring(3, 7)?", code: String.raw`string s = "C# Programming Course";`,
+      o: ["\"Program\"", "\"Programm\"", "\" Progra\"", "\"Prog\""],
+      e: "Вторият аргумент е дължина, а не крайна позиция: 7 знака от позиция 3 – P, r, o, g, r, a, m.",
+      lab: { s: "C# Programming Course", op: "substring", a: 3, n: 7, useN: true } },
+    { p: "Кой израз връща \"abv.bg\"?", code: String.raw`string e = "ivo@abv.bg";
+int i = e.IndexOf("@");`,
+      o: ["e.Substring(i + 1)", "e.Substring(i)", "e.Substring(0, i)", "e.Substring(i + 1, i)"],
+      e: "i е 3 – позицията на @. Сървърът започва след него, на позиция i + 1, и продължава до края. e.Substring(i) би върнал \"@abv.bg\".",
+      lab: { s: "ivo@abv.bg", op: "substring", a: 4, useN: false } }
+  ];
+
+  const LET = ["а", "б", "в", "г"];
+  let answered = 0, correct = 0;
+  $("total").textContent = Q.length;
+
+  function shuffle(a) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+
+  function renderQuiz() {
+    answered = 0; correct = 0; updateScore();
+    $("final").hidden = true;
+    $("qs").innerHTML = "";
+    Q.forEach((q, qi) => {
+      const card = document.createElement("article");
+      card.className = "q";
+      const order = shuffle(q.o.map((t, k) => ({ t, ok: k === 0 })));
+      card.innerHTML = '<p class="qn">Въпрос ' + (qi + 1) + "</p>" +
+        '<p class="prompt">' + esc(q.p) + "</p>" +
+        (q.code ? '<pre class="code">' + highlight(q.code) + "</pre>" : "") +
+        '<div class="opts">' + order.map((o, k) => '<button type="button" class="opt" data-ok="' + (o.ok ? 1 : 0) + '"><span class="l">' + LET[k] + '</span><span class="t">' + esc(o.t) + "</span></button>").join("") + "</div>" +
+        '<div class="fb-slot"></div>';
+      card.querySelectorAll(".opt").forEach((btn) => btn.addEventListener("click", () => answer(card, btn, q)));
+      $("qs").appendChild(card);
+    });
+  }
+
+  function answer(card, btn, q) {
+    const ok = btn.dataset.ok === "1";
+    card.querySelectorAll(".opt").forEach((b) => {
+      b.disabled = true;
+      if (b.dataset.ok === "1") b.classList.add("right");
+    });
+    if (!ok) btn.classList.add("wrong");
+    answered++; if (ok) correct++;
+    const fb = document.createElement("div");
+    fb.className = "fb " + (ok ? "ok" : "no");
+    fb.innerHTML = "<p><strong>" + (ok ? "Вярно." : "Не точно.") + "</strong> " + esc(q.e) + "</p>";
+    if (q.lab) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "btn"; b.textContent = "Виж в лабораторията";
+      b.addEventListener("click", () => loadLab(q.lab));
+      fb.appendChild(b);
+    }
+    card.querySelector(".fb-slot").appendChild(fb);
+    updateScore();
+  }
+
+  function updateScore() {
+    $("answered").textContent = answered;
+    $("correct").textContent = correct;
+    $("barFill").style.width = (answered / Q.length * 100) + "%";
+    if (answered === Q.length) {
+      const pct = correct / Q.length;
+      $("final").hidden = false;
+      $("final").textContent = "Резултат: " + correct + " от " + Q.length + ". " +
+        (pct >= 0.87 ? "Отлично! Владееш низовете." : pct >= 0.6 ? "Добре! Прегледай обясненията при грешните отговори и ги пробвай в лабораторията." : "Върни се на мисловната карта и пробвай примерите в лабораторията, после опитай пак.");
+    }
+  }
+  $("resetQuiz").addEventListener("click", () => { renderQuiz(); $("panel-quiz").scrollIntoView({ block: "start" }); });
+  renderQuiz();
+})();
+    </script>
+<!-- fullscreen-toggle: мини бутон горе вдясно за цял екран (виж README). В Moodle iframe-ът трябва да има allowfullscreen, иначе бутонът се скрива сам. -->
+<style>
+#fs-toggle{position:fixed;top:10px;right:10px;z-index:2147483000;width:34px;height:34px;padding:0;border:0;border-radius:8px;background:rgba(15,23,42,.55);color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;opacity:.75;transition:opacity .2s,background .2s}
+#fs-toggle:hover,#fs-toggle:focus-visible{opacity:1;background:rgba(15,23,42,.9)}
+#fs-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<button id="fs-toggle" type="button" title="Цял екран" aria-label="Цял екран"></button>
+<script>
+(function () {
+    var btn = document.getElementById('fs-toggle');
+    var root = document.documentElement;
+    var enter = root.requestFullscreen || root.webkitRequestFullscreen;
+    var exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!btn || !enter || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;
+    var IN = '<svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>';
+    var OUT = '<svg viewBox="0 0 24 24"><path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"/></svg>';
+    function active() { return document.fullscreenElement || document.webkitFullscreenElement; }
+    function sync() {
+        btn.innerHTML = active() ? OUT : IN;
+        var t = active() ? 'Изход от цял екран' : 'Цял екран';
+        btn.title = t; btn.setAttribute('aria-label', t);
+    }
+    btn.addEventListener('click', function () {
+        try { active() ? exit.call(document) : enter.call(root); } catch (e) {}
+    });
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    sync();
+    btn.style.display = 'inline-flex';
+})();
+</script>
+</body>
+</html>
