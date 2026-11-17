@@ -1,0 +1,69 @@
+---
+config:
+  layout: tidy-tree
+  theme: base
+  fontFamily: "MapFont, Calibri, Carlito, sans-serif"
+  themeVariables:
+    fontFamily: "MapFont, Calibri, Carlito, sans-serif"
+    fontSize: 15px
+    primaryColor: "#F2F4F7"
+    primaryTextColor: "#1B2230"
+    cScale0: "#E8A33D"
+    cScaleLabel0: "#1B2230"
+    cScale1: "#2A9D8F"
+    cScaleLabel1: "#FFFFFF"
+    cScale2: "#7FA7D9"
+    cScaleLabel2: "#1B2230"
+    cScale3: "#D1495B"
+    cScaleLabel3: "#FFFFFF"
+    cScale4: "#9CCB86"
+    cScaleLabel4: "#1B2230"
+    cScale5: "#B49FDA"
+    cScaleLabel5: "#1B2230"
+    cScale6: "#F08A5D"
+    cScaleLabel6: "#1B2230"
+    cScale7: "#8A97A8"
+    cScaleLabel7: "#1B2230"
+---
+mindmap
+  root(("Тип данни char"))
+    b0["Типът char"]
+      b0_0["Единичен символ"]
+      b0_1["16-битов номер от Unicode"]
+      b0_2["2 байта, от 0 до 65 535"]
+      b0_3["По подразбиране '\u0000'"]
+    b1["Unicode и ASCII"]
+      b1_0["Код – номер на знака"]
+      b1_1["Unicode: 65 536 знака"]
+      b1_2["ASCII: 256 знака"]
+      b1_3["'A' = 65, 'a' = 97, '0' = 48"]
+    b2["Деклариране"]
+      b2_0["char x;"]
+      b2_1["char a, b, c;"]
+      b2_2["Заделя 2 байта"]
+      b2_3["Стойност преди използване"]
+    b3["Инициализиране"]
+      b3_0["От литерал: x = '*';"]
+      b3_1["От променлива: z = x;"]
+      b3_2["char.Parse(Console.ReadLine())"]
+      b3_3["Деклариране + стойност"]
+    b4["Символни литерали"]
+      b4_0["Символ в апострофи: 'A'"]
+      b4_1["Код на символ: 'e'"]
+      b4_2["Escaping: '\\'"]
+      b4_3["Двойни кавички са за string"]
+    b5["Escaping последователности"]
+      b5_0["\' апостроф, \\ черта"]
+      b5_1["\n нов ред, \t табулация"]
+      b5_2["\uXXXX – код по Unicode"]
+      b5_3["\ е екраниращ символ"]
+    b6["Код ↔ символ"]
+      b6_0["(int)c → код"]
+      b6_1["(char)n → символ"]
+      b6_2["Нужно е явно преобразуване"]
+      b6_3["Кодът е от 0 до 65 535"]
+    b7["Операции с char"]
+      b7_0["'a' + 1 е int (98)"]
+      b7_1["(char)(c + 1) е 'b'"]
+      b7_2["Сравнение по код"]
+      b7_3["IsLetter, IsDigit, ToUpper"]

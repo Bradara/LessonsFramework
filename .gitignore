@@ -40,3 +40,4 @@ sets-app/src-tauri/target/
 
 # Claude AI
 CLAUDE.md
+.claude/

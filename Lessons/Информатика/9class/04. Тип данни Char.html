@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тип данни char - Образователен Портал</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
+
+    <!-- markmap-embed (интерактивна мисловна карта от H5P/Urok4/Тип_данни_char_мисловна_карта.mmd - пан/зуум + клик за разширяване на клонове) -->
+    <link rel="stylesheet" href="../../../libs/markmap-embed.css">
+
+    <style>
+        :root {
+            --bg: #F6F7FB;
+            --surface: #FFFFFF;
+            --ink: #1B2230;
+            --muted: #55627A;
+            --line: #DAE0EA;
+            --cell: #E9EEF5;
+            --accent: #764ba2;
+            --accent-soft: #EFE9F8;
+            --teal: #1D8073;
+            --teal-soft: #D6EFEB;
+            --red: #C23B4B;
+            --red-soft: #F8DDE0;
+            --code-bg: #1B2230;
+            --code-fg: #E4E9F2;
+            --code-kw: #F0B254;
+            --code-str: #9FD68A;
+            --code-com: #8C98AC;
+            --on-fill: #1B2230;
+            --b1: #F0B254; --b2: #5CC2B3; --b3: #9DB9EC; --b4: #F08F99;
+            --b5: #A9D691; --b6: #C3AEEA; --b7: #F5A877; --b8: #B7C2D2;
+            --f-code: "Cascadia Mono", Consolas, "Fira Code", "Courier New", monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            overflow: clip;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .header-content { position: relative; z-index: 1; }
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); line-height: 1.2; }
+        .header p { font-size: 1.1rem; font-weight: 300; opacity: 0.95; }
+        .hero-strip { margin-top: 1.6rem; display: flex; justify-content: center; }
+        .hero-strip .strip-scroll { max-width: 100%; }
+        .header .cell i { color: rgba(255,255,255,.85); }
+        .header .strip.big .cell.hit b { background: #fff; color: #4c3a8f; }
+        .header .strip.big .cell.hit i { color: #fff; font-weight: 600; }
+
+        .content { padding: 3rem 2.5rem; }
+
+        /* Меню за превключване между активностите */
+        .activity-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .menu-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.9rem 1.8rem;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            background: white; color: #555;
+            font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease;
+        }
+        .menu-btn:hover { border-color: #764ba2; color: #764ba2; }
+        .menu-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent; color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        .footer { background: #f8f9fa; padding: 2rem; text-align: center; color: #777; font-size: 0.9rem; }
+
+        /* ---------- Съдържание на урока ---------- */
+        h2, h3 { margin: 0; line-height: 1.25; }
+        h2 { font-size: 1.5rem; font-weight: 700; color: #4c3a8f; }
+        h3 { font-size: 1.15rem; font-weight: 600; }
+        code, .mono { font-family: var(--f-code); }
+        button { font: inherit; color: inherit; }
+        :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+        .strip-scroll { overflow-x: auto; padding-bottom: 6px; }
+        .strip { display: flex; gap: 4px; width: max-content; }
+        .cell { display: grid; grid-template-rows: auto auto; justify-items: center; gap: 3px; }
+        .cell b { display: grid; place-items: center; width: 40px; height: 46px; border-radius: 8px; background: var(--cell); font-family: var(--f-code); font-size: 21px; font-weight: 600; color: var(--ink); transition: background .2s, color .2s; }
+        .cell b.space { color: var(--muted); font-weight: 400; }
+        .cell i { font-style: normal; font-family: var(--f-code); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+        .cell.hit b { background: var(--teal); color: #FFFFFF; }
+        .cell.hit i { color: var(--teal); font-weight: 600; }
+        .cell.from b { box-shadow: inset 0 0 0 3px var(--accent); }
+        .cell.from i { color: var(--accent); font-weight: 600; }
+        .cell.err b { background: var(--red-soft); }
+        .strip.big .cell b { width: 52px; height: 58px; font-size: 26px; }
+        .strip.big .cell.hit b { background: var(--accent); color: #FFFFFF; }
+        .strip.big .cell.hit i { color: var(--accent); }
+
+        .sec-head { display: grid; gap: 8px; margin-bottom: 26px; max-width: 760px; }
+        .sec-head p { color: var(--muted); }
+
+        /* map */
+        .map-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+        .map { position: relative; }
+        .map svg.links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        .map-grid { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 18px; }
+        .node { position: relative; display: grid; gap: 4px; align-content: center; min-height: 108px; padding: 14px 16px; border-radius: 16px; border: 2px solid transparent; background: var(--surface); box-shadow: 0 2px 10px rgba(27,34,48,.12); text-align: left; cursor: pointer; transition: transform .15s, border-color .15s; }
+        .node:hover { transform: translateY(-2px); }
+        .node .dot { width: 14px; height: 14px; border-radius: 50%; }
+        .node strong { font-weight: 600; font-size: 16px; line-height: 1.25; }
+        .node small { font-size: 13px; color: var(--muted); line-height: 1.3; }
+        .node[aria-pressed="true"] { border-color: var(--accent); }
+        .center { display: grid; place-items: center; text-align: center; min-height: 108px; border-radius: 50%; aspect-ratio: 1; max-width: 170px; width: 100%; justify-self: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 16px; }
+        .center strong { font-size: 20px; line-height: 1.15; }
+        .center span { font-family: var(--f-code); font-size: 12px; opacity: .85; }
+        .detail { position: sticky; top: 16px; display: grid; gap: 16px; padding: 24px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 4px 18px rgba(0,0,0,.08); min-width: 0; }
+        .detail .chip { justify-self: start; padding: 4px 12px; border-radius: 999px; color: var(--on-fill); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+        .detail ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+        .detail li::marker { color: var(--accent); }
+        .detail code, .why code { background: #eef0fb; color: #4c3a8f; padding: .05rem .35rem; border-radius: 5px; font-size: .9em; }
+        pre.code { margin: 0; padding: 16px 18px; border-radius: 12px; background: var(--code-bg); color: var(--code-fg); font-family: var(--f-code); font-size: 14px; line-height: 1.6; overflow-x: auto; }
+        .k { color: var(--code-kw); } .s { color: var(--code-str); } .c { color: var(--code-com); }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; border: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; font-weight: 600; font-size: .95rem; cursor: pointer; justify-self: start; transition: transform .15s, box-shadow .15s; }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,.4); }
+        .btn.ghost { background: white; color: #764ba2; border: 2px solid #d9d4f2; }
+        .mindmap-wrapper { border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.15); padding: 1rem; background: #fafafa; }
+        .mindmap-hint { margin: 0 0 .75rem; font-size: .85rem; color: #666; }
+        .mindmap-hint i { color: #764ba2; }
+
+        /* lab */
+        .lab { display: grid; gap: 20px; padding: 24px; border-radius: 20px; background: #fafafa; box-shadow: 0 4px 18px rgba(0,0,0,.1); }
+        .lab-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+        .field { display: grid; gap: 6px; }
+        .field label, .lbl { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .03em; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 10px 14px; border-radius: 10px; border: 2px solid var(--line); background: #fff; color: var(--ink); font-family: var(--f-code); font-size: 17px; }
+        input:focus { border-color: var(--accent); outline: none; }
+        .ops { display: flex; flex-wrap: wrap; gap: 8px; }
+        .ops button { padding: 8px 14px; border-radius: 999px; border: 2px solid var(--line); background: #fff; font-family: var(--f-code); font-size: 14px; cursor: pointer; transition: all .2s; }
+        .ops button:hover { border-color: var(--accent); }
+        .ops button[aria-pressed="true"] { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-color: transparent; }
+        .params { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: end; }
+        .check { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+        .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+        .out { display: grid; gap: 14px; align-content: start; padding: 20px; border-radius: 16px; background: #fff; border: 2px solid #e5e1f7; min-width: 0; }
+        .out .expr { font-family: var(--f-code); font-size: 15px; padding: 10px 14px; border-radius: 10px; background: var(--code-bg); color: var(--code-fg); overflow-x: auto; white-space: nowrap; }
+        .out .val { font-family: var(--f-code); font-size: 28px; font-weight: 600; word-break: break-all; line-height: 1.3; }
+        .out .val.err { font-size: 19px; color: var(--red); }
+        .out .why { color: var(--muted); font-size: .95rem; }
+        .hint { font-size: 14px; color: var(--muted); }
+
+        /* quiz */
+        .score { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 18px; margin-bottom: 20px; border-radius: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; box-shadow: 0 4px 15px rgba(102,126,234,.35); }
+        .score .bar { flex: 1 1 200px; height: 10px; border-radius: 999px; background: rgba(255,255,255,.25); overflow: hidden; }
+        .score .bar span { display: block; height: 100%; width: 0; background: #fff; transition: width .3s; }
+        .score strong { font-family: var(--f-code); font-variant-numeric: tabular-nums; }
+        .score .btn { background: #fff; color: #4c3a8f; padding: 8px 14px; }
+        .qs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .q { display: grid; gap: 12px; align-content: start; padding: 20px; border-radius: 16px; background: #fafafa; border: 2px solid #e5e1f7; min-width: 0; }
+        .q .qn { font-family: var(--f-code); font-size: 13px; font-weight: 600; color: var(--accent); }
+        .q .prompt { font-weight: 700; font-size: 1.05rem; line-height: 1.4; }
+        .q pre.code { font-size: 13.5px; }
+        .opts { display: grid; gap: 8px; }
+        .opt { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; text-align: left; cursor: pointer; transition: all .2s; }
+        .opt:hover:not(:disabled) { border-color: var(--accent); background: #faf8ff; }
+        .opt:disabled { cursor: default; }
+        .opt .l { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--cell); font-weight: 700; font-size: 14px; }
+        .opt .t { font-family: var(--f-code); font-size: 14px; word-break: break-word; }
+        .opt.right { border-color: var(--teal); background: var(--teal-soft); }
+        .opt.right .l { background: var(--teal); color: #FFFFFF; }
+        .opt.wrong { border-color: var(--red); background: var(--red-soft); }
+        .opt.wrong .l { background: var(--red); color: #FFFFFF; }
+        .fb { display: grid; gap: 8px; padding: 12px 14px; border-radius: 10px; font-size: 15px; }
+        .fb.ok { background: var(--teal-soft); }
+        .fb.no { background: var(--red-soft); }
+        .fb .btn { padding: 7px 12px; font-size: 13px; }
+        .final { margin-top: 20px; padding: 20px 24px; border-radius: 16px; background: #fffbea; border-left: 5px solid #E8A33D; font-weight: 600; font-size: 1.05rem; }
+
+        @media (max-width: 900px) {
+            .map-layout, .lab-row, .qs { grid-template-columns: minmax(0, 1fr); }
+            .detail { position: static; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .header p { font-size: 1rem; }
+            .content { padding: 2rem 1.2rem; }
+            .menu-btn { padding: 0.75rem 1.1rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 640px) {
+            .map svg.links { display: none; }
+            .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .center { grid-column: 1 / -1; order: -1; max-width: 140px; }
+            .node { min-height: 92px; }
+            .cell b { width: 34px; height: 40px; font-size: 18px; }
+            .strip.big .cell b { width: 40px; height: 46px; font-size: 21px; }
+            .lab, .detail { padding: 18px; }
+        }
+
+
+        /* char: таблица с кодове */
+        .codegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 5px; max-height: 260px; overflow-y: auto; padding: 4px; }
+        .pick { display: grid; justify-items: center; gap: 0; padding: 4px 2px; border-radius: 8px; border: 2px solid var(--line); background: #fff; cursor: pointer; font-family: var(--f-code); transition: all .15s; }
+        .pick b { font-size: 18px; line-height: 1.3; }
+        .pick i { font-style: normal; font-size: 11px; color: var(--muted); }
+        .pick:hover { border-color: var(--accent); }
+        .pick.sel { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: transparent; color: #fff; }
+        .pick.sel i { color: rgba(255,255,255,.85); }
+        .lab .hint a { color: var(--accent); }
+        .lbl a { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-font"></i> Символен тип char</h1>
+                <p>Информатика - 9 клас · Урок 4</p>
+                <div class="hero-strip" aria-hidden="true"><div class="strip-scroll"><div class="strip big" id="heroStrip"></div></div></div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="activity-menu">
+                <button class="menu-btn active" data-tab="lesson" onclick="showTab('lesson')">
+                    <i class="fas fa-book-open"></i> Урок
+                </button>
+                <button class="menu-btn" data-tab="mindmap" onclick="showTab('mindmap')">
+                    <i class="fas fa-diagram-project"></i> Мисловна карта
+                </button>
+                <button class="menu-btn" data-tab="lab" onclick="showTab('lab')">
+                    <i class="fas fa-flask"></i> Лаборатория
+                </button>
+                <button class="menu-btn" data-tab="quiz" onclick="showTab('quiz')">
+                    <i class="fas fa-circle-question"></i> Тест
+                </button>
+            </div>
+
+            <!-- Урок -->
+            <div id="panel-lesson" class="tab-panel active">
+                <div class="sec-head">
+                    <h2>Урок: символен тип char</h2>
+                    <p>Избери тема от картата, за да видиш правилата и пример с код.</p>
+                </div>
+                <div class="map-layout">
+                    <div class="map" id="map">
+                        <svg class="links" id="links" aria-hidden="true"></svg>
+                        <div class="map-grid" id="mapGrid"></div>
+                    </div>
+                    <aside class="detail" id="detail" aria-live="polite"></aside>
+                </div>
+            </div>
+
+            <!-- Мисловна карта (интерактивна, от H5P/Urok4/Тип_данни_char_мисловна_карта.mmd чрез markmap-embed) -->
+            <div id="panel-mindmap" class="tab-panel">
+                <div class="mindmap-wrapper">
+                    <p class="mindmap-hint"><i class="fas fa-circle-info"></i> Кликни върху възел, за да разгънеш/свиеш клона му. Плъзгай за преместване, скрол/бутоните долу вдясно за мащаб.</p>
+                    <div class="markmap-host">
+                        <svg id="mindmap-svg"></svg>
+                        <div class="markmap-toolbar-host"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Лаборатория -->
+            <div id="panel-lab" class="tab-panel">
+                <div class="sec-head">
+                    <h2>Лаборатория</h2>
+                    <p>Въведи един знак, избери операция и виж какво връща C#. Под всяка клетка е кодът на знака. Можеш да избираш знаци и направо от таблицата долу.</p>
+                </div>
+                <div class="lab">
+                    <div class="field">
+                        <label for="labC">Знакът c (един символ, без апострофи)</label>
+                        <input type="text" id="labC" value="a" maxlength="4" autocomplete="off" spellcheck="false" style="max-width:220px">
+                    </div>
+                    <div class="strip-scroll"><div class="strip big" id="labStrip"></div></div>
+                    <p class="hint mono" id="labInfo"></p>
+                    <div class="lab-row">
+                        <div class="field" style="gap:14px">
+                            <p class="lbl">Операция</p>
+                            <div class="ops" id="ops" role="group" aria-label="Операция"></div>
+                            <div class="params" id="params"></div>
+                        </div>
+                        <div class="out" id="out" aria-live="polite"></div>
+                    </div>
+                    <div class="field" style="gap:10px">
+                        <p class="lbl">Таблица с кодове – кликни върху знак (още знаци: <a href="https://unicode-table.com" target="_blank" rel="noopener">unicode-table.com</a>)</p>
+                        <div class="ops" id="tblSets" role="group" aria-label="Набор от знаци"></div>
+                        <div class="codegrid" id="codegrid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тест -->
+            <div id="panel-quiz" class="tab-panel">
+                <div class="sec-head">
+                    <h2>Тест: провери се</h2>
+                    <p>15 въпроса. Щракни върху отговор, за да видиш дали е верен и защо. Някои въпроси имат бутон, който отваря примера в лабораторията.</p>
+                </div>
+                <div class="score" id="score">
+                    <span>Отговорени <strong id="answered">0</strong> от <strong id="total">15</strong></span>
+                    <span>Верни <strong id="correct">0</strong></span>
+                    <div class="bar" aria-hidden="true"><span id="barFill"></span></div>
+                    <button class="btn" type="button" id="resetQuiz">Започни отначало</button>
+                </div>
+                <div class="qs" id="qs"></div>
+                <p class="final" id="final" hidden></p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+            <p style="margin-top:.4rem;font-size:.85rem">По презентацията „Символен тип данни char“ от Таня Евтимова.</p>
+        </div>
+    </div>
+
+    <script>
+        // Случаен фон на страницата от папка backgrounds/
+        (function () {
+            const backgrounds = [
+                '../../../backgrounds/IT.jpg',
+                '../../../backgrounds/Informatics.jpg',
+                '../../../backgrounds/Lessons.jpg',
+                '../../../backgrounds/Malta.jpg',
+                '../../../backgrounds/Modul1.jpg',
+                '../../../backgrounds/Modul2.jpg',
+                '../../../backgrounds/Modul2.png',
+                '../../../backgrounds/Modul3.jpg',
+                '../../../backgrounds/Modul4.jpg',
+                '../../../backgrounds/Other.jpg',
+                '../../../backgrounds/Start.jpg'
+            ];
+            const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.body.style.backgroundImage =
+                `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('${pick}')`;
+        })();
+
+        // Превключване между табовете. Връзките на мисловната карта се прерисуват
+        // автоматично (ResizeObserver), когато панелът стане видим.
+        const mindmapInitialized = { mindmap: false };
+
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`.menu-btn[data-tab="${name}"]`).classList.add('active');
+
+            // markmap измерва размера при инициализация, затова панелът първо става
+            // видим (класът "active"), и чак тогава се рисува; веднъж не се пресъздава.
+            if (name === 'mindmap' && !mindmapInitialized.mindmap) {
+                mindmapInitialized.mindmap = true;
+                renderMermaidMindmap('mindmap-svg', 'H5P/Urok4/Тип_данни_char_мисловна_карта.mmd');
+            }
+            window.dispatchEvent(new Event('resize'));
+        }
+    </script>
+    <script src="../../../libs/markmap-embed.js"></script>
+
+    <script>
+(function () {
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const KW = /^(char|int|bool|string|const|new|null|var|using|true|false|default)$/;
+
+  function highlight(code) {
+    const re = /(\/\/[^\n]*)|(@"(?:""|[^"])*")|("(?:\\.|[^"\\\n])*")|('(?:\\.|[^'\\\n])*')|([A-Za-z_]\w*)/g;
+    let out = "", last = 0, m;
+    while ((m = re.exec(code)) !== null) {
+      out += esc(code.slice(last, m.index));
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + "</span>";
+      else if (m[2] || m[3] || m[4]) out += '<span class="s">' + esc(m[0]) + "</span>";
+      else out += KW.test(m[5]) ? '<span class="k">' + esc(m[5]) + "</span>" : esc(m[5]);
+      last = re.lastIndex;
+    }
+    return out + esc(code.slice(last));
+  }
+
+  const hex4 = (n) => n.toString(16).toUpperCase().padStart(4, "0");
+  const bin16 = (n) => n.toString(2).padStart(16, "0").replace(/(.{4})(?=.)/g, "$1 ");
+
+  // как се вижда знакът в клетка (контролните знаци получават символ)
+  function vis(code) {
+    if (code === 32) return "␣";
+    if (code === 10) return "↵";
+    if (code === 9) return "⇥";
+    if (code === 13) return "⏎";
+    if (code === 0) return "␀";
+    if (code < 32 || (code >= 127 && code < 160)) return "·";
+    return String.fromCharCode(code);
+  }
+  // как се записва знакът като C# литерал
+  function charLit(code) {
+    const m = { 39: "\\'", 92: "\\\\", 10: "\\n", 9: "\\t", 13: "\\r", 0: "\\0" };
+    if (m[code]) return "'" + m[code] + "'";
+    if (code < 32 || (code >= 127 && code < 160) || code === 0xA0 || code === 0x2028 || code === 0x2029 || (code >= 0xD800 && code <= 0xDFFF))
+      return "'\\u" + hex4(code) + "'";
+    return "'" + String.fromCharCode(code) + "'";
+  }
+
+  function renderCodes(el, codes, hit) {
+    if (!codes.length) { el.innerHTML = '<p class="hint">Няма знак за показване.</p>'; return; }
+    el.innerHTML = codes.map((code, i) => {
+      const cls = ["cell"];
+      if (hit && hit.has(i)) cls.push("hit");
+      return '<div class="' + cls.join(" ") + '"><b class="' + (code === 32 ? "space" : "") + '">' + esc(vis(code)) + "</b><i>" + code + "</i></div>";
+    }).join("");
+  }
+
+  renderCodes($("heroStrip"), Array.from("char").map((ch) => ch.charCodeAt(0)), new Set([2]));
+
+  /* ---------- свойства на char (pure) ---------- */
+  const CS = {
+    toCode: (c) => c,
+    fromCode(n) {
+      if (!Number.isInteger(n) || n < 0 || n > 65535) return { err: "Извън диапазона" };
+      return { v: n };
+    },
+    add(c, k) {
+      const sum = c + k;
+      return { sum, wrapped: ((sum % 65536) + 65536) % 65536, out: sum < 0 || sum > 65535 };
+    },
+    upper(c) { const r = String.fromCharCode(c).toUpperCase(); return r.length === 1 ? r.charCodeAt(0) : c; },
+    lower(c) { const r = String.fromCharCode(c).toLowerCase(); return r.length === 1 ? r.charCodeAt(0) : c; },
+    isLetter: (c) => /\p{L}/u.test(String.fromCharCode(c)),
+    isDigit: (c) => /\p{Nd}/u.test(String.fromCharCode(c))
+  };
+  window.__CS = CS;
+
+  /* ---------- мисловна карта на урока ---------- */
+  const BR = [
+    { id: "tip", t: "Типът char", sub: "един символ, 2 байта", col: "--b1",
+      pts: ["Единичен символ – 16-битов номер на знак от таблицата Unicode.", "Заема 2 байта (16 бита).", "Минимална стойност 0, максимална 65 535.", "Стойност по подразбиране: <code>'\\u0000'</code>.", "Примери: <code>'a'</code>, <code>'1'</code>, <code>'F'</code>, <code>'@'</code>."],
+      code: String.raw`char letter = 'a';
+char digit = '1';
+char sign = '@';
+char empty = default(char);   // '\u0000'`,
+      lab: { c: "a", op: "code" } },
+    { id: "code", t: "Unicode и ASCII", sub: "всеки знак има код", col: "--b2",
+      pts: ["Всеки знак отговаря на определен номер в таблицата – наричан <b>код</b> (например <code>'a'</code> ↔ 97).", "<b>Unicode</b> съпоставя цяло число на всеки знак от писменостите по света: 2<sup>16</sup> = 65 536 знака.", "<b>ASCII</b> е по-стар стандарт с 2<sup>8</sup> = 256 знака. Кодовете 0–127 са еднакви в двата стандарта.", "Главните и малките латински букви се различават с 32: <code>'A'</code> е 65, <code>'a'</code> е 97.", "Цифрата <code>'0'</code> има код 48, а не 0."],
+      code: String.raw`(int)'A'    // 65
+(int)'a'    // 97
+(int)'0'    // 48
+(int)'А'    // 1040 – кирилица`,
+      lab: { c: "A", op: "code" } },
+    { id: "decl", t: "Деклариране", sub: "заделя се поле от 2 байта", col: "--b3",
+      pts: ["Декларирането заделя поле с размер 2 байта.", "Може да се декларират няколко променливи наведнъж, разделени със запетая.", "Преди първото използване променливата трябва да получи стойност."],
+      code: String.raw`char x;
+char a, b, c;`,
+      lab: { c: "x", op: "code" } },
+    { id: "init", t: "Инициализиране", sub: "три начина", col: "--b4",
+      pts: ["От <b>литерал</b>: <code>x = '*';</code>", "От <b>друга променлива</b> от тип char: <code>z = x;</code>", "От <b>клавиатурата</b>: <code>char.Parse(Console.ReadLine())</code>.", "<code>char.Parse</code> приема низ от точно един знак. Иначе програмата спира с <code>FormatException</code>.", "Деклариране и инициализиране може да се запишат заедно: <code>char w = 'w';</code>"],
+      code: String.raw`char x, y, z, a;
+x = '*';                              // от литерал
+y = 'a';
+z = x;                                // от променлива
+a = char.Parse(Console.ReadLine());   // от клавиатурата
+char w = 'w';                         // деклариране + стойност`,
+      lab: { c: "*", op: "code" } },
+    { id: "lit", t: "Символни литерали", sub: "знак в апострофи", col: "--b5",
+      pts: ["Единичен символ, ограден в <b>апострофи</b> (единични кавички).", "Стойността на литерала може да бъде <b>символ</b> – <code>'A'</code>; <b>код на символ</b> – <code>'\\u0065'</code>; <b>escaping последователност</b> – <code>'\\\\'</code>.", "<code>'\\u003A'</code> е двоеточието <code>':'</code>.", "Двойните кавички са за string: <code>\"a\"</code> е низ, а не char."],
+      code: String.raw`char symbol = 'a';
+Console.WriteLine(symbol);   // a
+symbol = '\u003A';
+Console.WriteLine(symbol);   // :
+symbol = '\'';
+Console.WriteLine(symbol);   // '
+symbol = '\\';
+Console.WriteLine(symbol);   // обратна черта`,
+      lab: { op: "unicode", hex: "003A" } },
+    { id: "esc", t: "Escaping последователности", sub: "\\' \\\" \\\\ \\n \\t \\uXXXX", col: "--b6",
+      pts: ["Дават начин да изпишем символ, липсващ на клавиатурата или със специално значение, като „нов ред“ и „табулация“.", "Символите, които не могат да се запишат директно: апостроф, обратна наклонена черта (и кавичка в низ).", "<code>\\'</code> апостроф, <code>\\\"</code> двойна кавичка, <code>\\\\</code> обратна черта.", "<code>\\n</code> нов ред, <code>\\t</code> табулация, <code>\\uXXXX</code> символ по Unicode номер.", "Символът <code>\\</code> се нарича <b>екраниращ символ</b> (escaping character)."],
+      code: String.raw`char q1 = '\'';       // апостроф
+char q2 = '\"';       // двойна кавичка
+char bs = '\\';       // обратна черта
+char nl = '\n';       // нов ред
+char tb = '\t';       // табулация
+char u  = '\u03A7';   // Χ (гръцка буква хи)`,
+      lab: { op: "unicode", hex: "0009" } },
+    { id: "conv", t: "Код ↔ символ", sub: "(int)c и (char)n", col: "--b7",
+      pts: ["<code>(int)c</code> дава кода на знака.", "<code>(char)n</code> дава знака с код n.", "Преобразуването от int към char трябва да е <b>явно</b> – записва се в скоби.", "Кодът трябва да е между 0 и 65 535, иначе не се побира в char."],
+      code: String.raw`int code = (int)'a';      // 97
+char c = (char)97;        // 'a'
+char d = (char)(c + 1);   // 'b'`,
+      lab: { op: "fromCode", n: 97 } },
+    { id: "arith", t: "Операции с char", sub: "c + 1, c++, сравнение", col: "--b8",
+      pts: ["Операциите работят върху <b>кода</b>: <code>'a' + 1</code> е <code>int</code> със стойност 98.", "За знак като резултат: <code>(char)(c + 1)</code>.", "<code>c++</code> е позволено – знакът става следващият по код.", "Сравнението е по код: <code>'a' &lt; 'b'</code> е true, а <code>'Z' &lt; 'a'</code> също (90 &lt; 97).", "Полезни методи: <code>char.IsLetter</code>, <code>char.IsDigit</code>, <code>char.ToUpper</code>, <code>char.ToLower</code>."],
+      code: String.raw`char c = 'a';
+c++;                            // 'b'
+bool less = 'Z' < 'a';          // true (90 < 97)
+char big = char.ToUpper(c);     // 'B'
+bool isD = char.IsDigit('7');   // true`,
+      lab: { c: "a", op: "add", k: 1 } }
+  ];
+
+  const grid = $("mapGrid");
+  // 3×3 слота: 0 1 2 / 3 [център] 5 / 6 7 8
+  const slots = [0, 1, 2, 3, 5, 6, 7, 8];
+  const cells = new Array(9);
+  BR.forEach((b, k) => {
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "node"; btn.id = "node-" + b.id;
+    btn.setAttribute("aria-pressed", "false");
+    btn.innerHTML = '<span class="dot" style="background:var(' + b.col + ')"></span><strong>' + esc(b.t) + "</strong><small>" + esc(b.sub) + "</small>";
+    btn.addEventListener("click", () => select(k));
+    cells[slots[k]] = btn;
+  });
+  const center = document.createElement("div");
+  center.className = "center"; center.innerHTML = "<div><strong>char</strong><br><span>символи в C#</span></div>";
+  cells[4] = center;
+  cells.forEach((el) => grid.appendChild(el));
+
+  function drawLinks() {
+    const svg = $("links"), map = $("map");
+    const r = map.getBoundingClientRect();
+    svg.setAttribute("viewBox", "0 0 " + r.width + " " + r.height);
+    const cr = center.getBoundingClientRect();
+    const cx = cr.left - r.left + cr.width / 2, cy = cr.top - r.top + cr.height / 2;
+    svg.innerHTML = BR.map((b) => {
+      const nr = document.getElementById("node-" + b.id).getBoundingClientRect();
+      const x = nr.left - r.left + nr.width / 2, y = nr.top - r.top + nr.height / 2;
+      return '<line x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="var(' + b.col + ')" stroke-width="5" stroke-linecap="round"/>';
+    }).join("");
+  }
+
+  function select(k) {
+    const b = BR[k];
+    BR.forEach((x, j) => document.getElementById("node-" + x.id).setAttribute("aria-pressed", j === k ? "true" : "false"));
+    $("detail").innerHTML =
+      '<span class="chip" style="background:var(' + b.col + ')">' + (k + 1) + " от " + BR.length + "</span>" +
+      "<h3>" + esc(b.t) + "</h3>" +
+      "<ul>" + b.pts.map((p) => "<li>" + p + "</li>").join("") + "</ul>" +
+      '<pre class="code">' + highlight(b.code) + "</pre>" +
+      '<button class="btn" type="button" id="tryBranch">Пробвай в лабораторията</button>';
+    $("tryBranch").addEventListener("click", () => loadLab(b.lab));
+  }
+  select(0);
+  drawLinks();
+  if ("ResizeObserver" in window) new ResizeObserver(drawLinks).observe($("map"));
+  else window.addEventListener("resize", drawLinks);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawLinks);
+
+  /* ---------- лаборатория ---------- */
+  const OPS = [
+    { id: "code", label: "(int)c" },
+    { id: "fromCode", label: "(char)n" },
+    { id: "add", label: "c + k" },
+    { id: "unicode", label: "'\\uXXXX'" },
+    { id: "upper", label: "ToUpper" },
+    { id: "lower", label: "ToLower" },
+    { id: "isLetter", label: "IsLetter" },
+    { id: "isDigit", label: "IsDigit" }
+  ];
+  const st = { op: "code", n: 97, k: 1, hex: "0041" };
+  const opsEl = $("ops");
+  OPS.forEach((o) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = o.label; b.dataset.op = o.id;
+    b.addEventListener("click", () => { st.op = o.id; buildParams(); run(); });
+    opsEl.appendChild(b);
+  });
+
+  function numField(id, label, val) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label><input type="number" id="' + id + '" value="' + val + '" step="1"></div>';
+  }
+  function txtField(id, label, val) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label><input type="text" id="' + id + '" value="' + esc(val) + '" maxlength="8" autocomplete="off" spellcheck="false"></div>';
+  }
+
+  function buildParams() {
+    opsEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.op === st.op ? "true" : "false"));
+    let h = "";
+    if (st.op === "fromCode") h = numField("pN", "Число n (код)", st.n);
+    if (st.op === "add") h = numField("pK", "Число k", st.k);
+    if (st.op === "unicode") h = txtField("pHex", "Шестнадесетичен код (4 цифри)", st.hex);
+    if (!h) h = '<p class="hint">Тази операция работи върху знака c от полето отгоре.</p>';
+    $("params").innerHTML = h;
+    const bind = (id, key, kind) => {
+      const el = $(id); if (!el) return;
+      el.addEventListener("input", () => {
+        st[key] = kind === "num" ? (el.value === "" ? 0 : Math.trunc(Number(el.value))) : el.value;
+        run();
+      });
+    };
+    bind("pN", "n", "num"); bind("pK", "k", "num"); bind("pHex", "hex", "txt");
+  }
+
+  function readChar() {
+    const arr = Array.from($("labC").value);
+    if (!arr.length) return { err: "Въведи един знак." };
+    const cp = arr[0].codePointAt(0);
+    if (cp > 0xFFFF) return { err: "Този знак има код над 65 535 и не се побира в 16 бита на char (в C# се пази като два char). Избери друг знак." };
+    return { code: cp, extra: arr.length > 1 };
+  }
+
+  function run() {
+    const needC = st.op !== "fromCode" && st.op !== "unicode";
+    const rc = readChar();
+    const blocks = [];
+    let why = "", srcCodes = [], info = null;
+
+    if (needC && rc.err) {
+      blocks.push({ expr: "char c = ?;", val: "Грешка", err: true });
+      why = rc.err;
+    } else {
+      const c = rc.code, lit = needC ? charLit(c) : "";
+      switch (st.op) {
+        case "code":
+          blocks.push({ expr: "(int)" + lit, val: String(c) });
+          why = "Знакът " + lit + " е записан в паметта като числото " + c + " от таблицата Unicode. Резултатът е от тип int.";
+          srcCodes = [c]; info = c; break;
+        case "fromCode": {
+          const r = CS.fromCode(st.n);
+          if (r.err) {
+            blocks.push({ expr: "(char)" + st.n, val: r.err, err: true });
+            why = "char пази числа от 0 до 65 535 (16 бита). " + st.n + " не се побира: за константа компилаторът дава грешка CS0221, а за променлива резултатът се отрязва до 16 бита.";
+          } else {
+            blocks.push({ expr: "(char)" + st.n, val: charLit(st.n), codes: [st.n] });
+            why = "Явното преобразуване (char) връща знака с код " + st.n + ".";
+            srcCodes = [st.n]; info = st.n;
+          }
+          break;
+        }
+        case "add": {
+          const k = st.k, kk = k < 0 ? "(" + k + ")" : String(k), r = CS.add(c, k);
+          blocks.push({ expr: lit + " + " + kk, val: String(r.sum) });
+          blocks.push({ expr: "(char)(" + lit + " + " + kk + ")", val: charLit(r.wrapped), codes: [r.wrapped] });
+          why = "Събират се кодовете: " + c + " + " + kk + " = " + r.sum + ". Резултатът от аритметика с char е int. За знак е нужно явно (char)." +
+            (r.out ? " Сборът е извън 0–65 535, затова (char) оставя само последните 16 бита." : "");
+          srcCodes = [c]; info = c; break;
+        }
+        case "unicode": {
+          const hx = st.hex.trim();
+          if (!/^[0-9a-fA-F]{4}$/.test(hx)) {
+            blocks.push({ expr: "'\\u" + hx + "'", val: "Грешка", err: true });
+            why = "След \\u трябват точно 4 шестнадесетични цифри (0–9, A–F), например \\u0041.";
+          } else {
+            const n = parseInt(hx, 16);
+            blocks.push({ expr: "'\\u" + hx.toUpperCase() + "'", val: charLit(n), codes: [n] });
+            why = "Шестнадесетичният код " + hx.toUpperCase() + " е числото " + n + " – знакът " + charLit(n) + ".";
+            srcCodes = [n]; info = n;
+          }
+          break;
+        }
+        case "upper":
+        case "lower": {
+          const up = st.op === "upper", r = up ? CS.upper(c) : CS.lower(c);
+          blocks.push({ expr: "char." + (up ? "ToUpper(" : "ToLower(") + lit + ")", val: charLit(r), codes: [r] });
+          why = r === c ? "Този знак няма " + (up ? "главна" : "малка") + " форма и остава същият." : "Върнат е знакът с код " + r + ". Методът връща нов знак, а c не се променя.";
+          srcCodes = [c]; info = c; break;
+        }
+        case "isLetter":
+        case "isDigit": {
+          const isL = st.op === "isLetter", r = isL ? CS.isLetter(c) : CS.isDigit(c);
+          blocks.push({ expr: "char." + (isL ? "IsLetter(" : "IsDigit(") + lit + ")", val: String(r) });
+          why = isL ? (r ? "Знакът е буква (от всякаква азбука)." : "Знакът не е буква.") : (r ? "Знакът е цифра." : "Знакът не е цифра. Забележи, че цифрата '7' е знак с код 55, а не числото 7.");
+          srcCodes = [c]; info = c; break;
+        }
+      }
+      if (needC && rc.extra) why += " Въведени са няколко знака – взет е само първият, защото char е един символ.";
+    }
+
+    renderCodes($("labStrip"), srcCodes, null);
+    $("labInfo").textContent = info === null ? "" : "Код: " + info + "  ·  \\u" + hex4(info) + "  ·  бинарно: " + bin16(info);
+    let h = "";
+    blocks.forEach((b, i) => {
+      h += '<p class="lbl">Израз</p><div class="expr">' + highlight(b.expr) + "</div>" +
+        '<p class="lbl">Резултат</p><p class="val' + (b.err ? " err" : "") + '">' + esc(b.val) + "</p>";
+      if (b.codes) h += '<div class="strip-scroll"><div class="strip" id="resStrip' + i + '"></div></div>';
+    });
+    h += '<p class="why">' + esc(why) + "</p>";
+    $("out").innerHTML = h;
+    blocks.forEach((b, i) => { if (b.codes) renderCodes($("resStrip" + i), b.codes, new Set([0])); });
+    markPicked(needC && !rc.err ? rc.code : (srcCodes.length ? srcCodes[0] : -1));
+  }
+
+  function loadLab(p) {
+    if (p.c !== undefined) { $("labC").value = p.c; st.n = p.c.charCodeAt(0); st.hex = hex4(st.n); }
+    st.op = p.op;
+    if (p.n !== undefined) st.n = p.n;
+    if (p.k !== undefined) st.k = p.k;
+    if (p.hex !== undefined) st.hex = p.hex;
+    buildParams(); run();
+    if (window.showTab) showTab("lab");
+    $("panel-lab").scrollIntoView({ block: "start" });
+  }
+  $("labC").addEventListener("input", run);
+
+  /* ---------- таблица с кодове ---------- */
+  const SETS = [
+    { label: "Латиница, цифри, знаци (32–126)", from: 32, to: 126 },
+    { label: "Кирилица (А–я)", from: 1040, to: 1103 }
+  ];
+  let curSet = 0;
+  function renderGrid() {
+    const s = SETS[curSet];
+    let h = "";
+    for (let code = s.from; code <= s.to; code++)
+      h += '<button type="button" class="pick" data-code="' + code + '" aria-label="Знак с код ' + code + '"><b>' + esc(vis(code)) + "</b><i>" + code + "</i></button>";
+    $("codegrid").innerHTML = h;
+    $("tblSets").querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-pressed", i === curSet ? "true" : "false"));
+  }
+  function markPicked(code) {
+    $("codegrid").querySelectorAll(".pick").forEach((b) => b.classList.toggle("sel", +b.dataset.code === code));
+  }
+  SETS.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = s.label;
+    b.addEventListener("click", () => { curSet = i; renderGrid(); run(); });
+    $("tblSets").appendChild(b);
+  });
+  $("codegrid").addEventListener("click", (e) => {
+    const b = e.target.closest(".pick"); if (!b) return;
+    const code = +b.dataset.code;
+    $("labC").value = String.fromCharCode(code);
+    st.n = code; st.hex = hex4(code);
+    buildParams(); run();
+  });
+
+  renderGrid(); buildParams(); run();
+
+  /* ---------- тест ---------- */
+  const Q = [
+    { p: "Колко байта заема в паметта една променлива от тип char?", code: "",
+      o: ["2 байта", "1 байт", "4 байта", "8 байта"],
+      e: "char пази 16-битов номер на знак от Unicode. 16 бита са 2 байта." },
+    { p: "Каква е максималната стойност на char?", code: "",
+      o: ["65 535", "255", "32 767", "65 536"],
+      e: "16 бита дават 2^16 = 65 536 различни стойности – от 0 до 65 535." },
+    { p: "Каква е стойността по подразбиране на променлива от тип char?", code: "",
+      o: ["'\\u0000'", "' ' (интервал)", "'0'", "null"],
+      e: "По подразбиране char е знакът с код 0 – '\\u0000'. char е стойностен тип и не може да е null." },
+    { p: "Колко различни знака може да представи char (Unicode, 16 бита)?", code: "",
+      o: ["65 536", "256", "1 024", "4 294 967 296"],
+      e: "2^16 = 65 536. ASCII има само 2^8 = 256 знака." },
+    { p: "Кое е валиден литерал от тип char?", code: "",
+      o: ["'a'", "\"a\"", "'ab'", "a"],
+      e: "Единичен символ в апострофи. \"a\" е string, 'ab' са два знака, а a е име на променлива." },
+    { p: "Каква е стойността на израза?", code: String.raw`(int)'a'`,
+      o: ["97", "65", "48", "0"],
+      e: "'a' има код 97. За сравнение: 'A' е 65, а '0' е 48.",
+      lab: { c: "a", op: "code" } },
+    { p: "Какво ще отпечата кодът?", code: String.raw`char c = 'a';
+c++;
+Console.WriteLine(c);`,
+      o: ["b", "98", "a", "Грешка при компилация"],
+      e: "c++ преминава към следващия код – 98, т.е. знакът 'b'. Променливата е от тип char, затова се печата знак.",
+      lab: { c: "a", op: "add", k: 1 } },
+    { p: "Какъв е типът и стойността на израза?", code: String.raw`'a' + 1`,
+      o: ["int със стойност 98", "char със стойност 'b'", "string със стойност \"a1\"", "Грешка при компилация"],
+      e: "Събират се кодовете (97 + 1). Аритметиката с char дава int. За знак е нужно (char)('a' + 1).",
+      lab: { c: "a", op: "add", k: 1 } },
+    { p: "Как се записва апострофът като char литерал?", code: "",
+      o: [String.raw`'\''`, "'''", "\"'\"", String.raw`'\"'`],
+      e: "Апострофът се екранира с обратна черта: '\\''. Без нея компилаторът смята, че литералът свършва." },
+    { p: "Какво ще се отпечата?", code: String.raw`Console.WriteLine('\u0041');`,
+      o: ["A", "\\u0041", "65", "0041"],
+      e: "\\u0041 е знакът с шестнадесетичен код 0041 (десетично 65) – 'A'.",
+      lab: { op: "unicode", hex: "0041" } },
+    { p: "Коя escaping последователност означава нов ред?", code: "",
+      o: ["\\n", "\\t", "\\\\", "\\'"],
+      e: "\\n е нов ред, \\t – табулация, \\\\ – обратна черта, \\' – апостроф." },
+    { p: "Какво ще стане, ако потребителят въведе ab?", code: String.raw`char c = char.Parse(Console.ReadLine());`,
+      o: ["FormatException – въведеното не е един знак", "c ще е 'a'", "c ще е 'b'", "c ще е '\\u0000'"],
+      e: "char.Parse приема низ от точно един знак. Всичко друго води до FormatException." },
+    { p: "Кой ред дава грешка при компилация?", code: "",
+      o: ["char x = \"w\";", "char x = 'w';", String.raw`char x = '\u0077';`, "char x = (char)119;"],
+      e: "\"w\" е string, а не char. Останалите три реда са валидни и дават знака 'w'." },
+    { p: "Какъв знак е (char)65?", code: "",
+      o: ["'A'", "'a'", "'6'", "Числото 65"],
+      e: "Знакът с код 65 е главната латинска буква 'A'.",
+      lab: { op: "fromCode", n: 65 } },
+    { p: "Кое сравнение е вярно?", code: "",
+      o: ["'Z' < 'a'", "'a' < 'Z'", "'A' > 'a'", "'1' > 'a'"],
+      e: "Сравнява се по код: 'Z' е 90, а 'a' е 97, затова 'Z' < 'a'. Цифрата '1' е с код 49.",
+      lab: { c: "Z", op: "code" } }
+  ];
+
+  const LET = ["а", "б", "в", "г"];
+  let answered = 0, correct = 0;
+  $("total").textContent = Q.length;
+
+  function shuffle(a) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+
+  function renderQuiz() {
+    answered = 0; correct = 0; updateScore();
+    $("final").hidden = true;
+    $("qs").innerHTML = "";
+    Q.forEach((q, qi) => {
+      const card = document.createElement("article");
+      card.className = "q";
+      const order = shuffle(q.o.map((t, k) => ({ t, ok: k === 0 })));
+      card.innerHTML = '<p class="qn">Въпрос ' + (qi + 1) + "</p>" +
+        '<p class="prompt">' + esc(q.p) + "</p>" +
+        (q.code ? '<pre class="code">' + highlight(q.code) + "</pre>" : "") +
+        '<div class="opts">' + order.map((o, k) => '<button type="button" class="opt" data-ok="' + (o.ok ? 1 : 0) + '"><span class="l">' + LET[k] + '</span><span class="t">' + esc(o.t) + "</span></button>").join("") + "</div>" +
+        '<div class="fb-slot"></div>';
+      card.querySelectorAll(".opt").forEach((btn) => btn.addEventListener("click", () => answer(card, btn, q)));
+      $("qs").appendChild(card);
+    });
+  }
+
+  function answer(card, btn, q) {
+    const ok = btn.dataset.ok === "1";
+    card.querySelectorAll(".opt").forEach((b) => {
+      b.disabled = true;
+      if (b.dataset.ok === "1") b.classList.add("right");
+    });
+    if (!ok) btn.classList.add("wrong");
+    answered++; if (ok) correct++;
+    const fb = document.createElement("div");
+    fb.className = "fb " + (ok ? "ok" : "no");
+    fb.innerHTML = "<p><strong>" + (ok ? "Вярно." : "Не точно.") + "</strong> " + esc(q.e) + "</p>";
+    if (q.lab) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "btn"; b.textContent = "Виж в лабораторията";
+      b.addEventListener("click", () => loadLab(q.lab));
+      fb.appendChild(b);
+    }
+    card.querySelector(".fb-slot").appendChild(fb);
+    updateScore();
+  }
+
+  function updateScore() {
+    $("answered").textContent = answered;
+    $("correct").textContent = correct;
+    $("barFill").style.width = (answered / Q.length * 100) + "%";
+    if (answered === Q.length) {
+      const pct = correct / Q.length;
+      $("final").hidden = false;
+      $("final").textContent = "Резултат: " + correct + " от " + Q.length + ". " +
+        (pct >= 0.87 ? "Отлично! Владееш типа char." : pct >= 0.6 ? "Добре! Прегледай обясненията при грешните отговори и ги пробвай в лабораторията." : "Върни се на урока и пробвай примерите в лабораторията, после опитай пак.");
+    }
+  }
+  $("resetQuiz").addEventListener("click", () => { renderQuiz(); $("panel-quiz").scrollIntoView({ block: "start" }); });
+  renderQuiz();
+})();
+    </script>
+<!-- fullscreen-toggle: мини бутон горе вдясно за цял екран (виж README). В Moodle iframe-ът трябва да има allowfullscreen, иначе бутонът се скрива сам. -->
+<style>
+#fs-toggle{position:fixed;top:10px;right:10px;z-index:2147483000;width:34px;height:34px;padding:0;border:0;border-radius:8px;background:rgba(15,23,42,.55);color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;opacity:.75;transition:opacity .2s,background .2s}
+#fs-toggle:hover,#fs-toggle:focus-visible{opacity:1;background:rgba(15,23,42,.9)}
+#fs-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<button id="fs-toggle" type="button" title="Цял екран" aria-label="Цял екран"></button>
+<script>
+(function () {
+    var btn = document.getElementById('fs-toggle');
+    var root = document.documentElement;
+    var enter = root.requestFullscreen || root.webkitRequestFullscreen;
+    var exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!btn || !enter || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;
+    var IN = '<svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>';
+    var OUT = '<svg viewBox="0 0 24 24"><path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"/></svg>';
+    function active() { return document.fullscreenElement || document.webkitFullscreenElement; }
+    function sync() {
+        btn.innerHTML = active() ? OUT : IN;
+        var t = active() ? 'Изход от цял екран' : 'Цял екран';
+        btn.title = t; btn.setAttribute('aria-label', t);
+    }
+    btn.addEventListener('click', function () {
+        try { active() ? exit.call(document) : enter.call(root); } catch (e) {}
+    });
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    sync();
+    btn.style.display = 'inline-flex';
+})();
+</script>
+</body>
+</html>
