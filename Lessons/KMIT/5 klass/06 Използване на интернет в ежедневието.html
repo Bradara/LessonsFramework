@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Използване на интернет в ежедневието - Образователен Портал</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="../../../libs/font-awesome/all.min.css">
+
+    <!-- markmap-embed (интерактивна мисловна карта от H5P/Urok6/Интернет_мисловна_карта.mmd) -->
+    <link rel="stylesheet" href="../../../libs/markmap-embed.css">
+
+    <style>
+        :root {
+            --surface: #FFFFFF;
+            --ink: #1B2230;
+            --muted: #55627A;
+            --line: #DAE0EA;
+            --cell: #E9EEF5;
+            --accent: #764ba2;
+            --accent-soft: #EFE9F8;
+            --teal: #1D8073;
+            --teal-soft: #D6EFEB;
+            --red: #C23B4B;
+            --red-soft: #F8DDE0;
+            --on-fill: #1B2230;
+            --b1: #F0B254; --b2: #5CC2B3; --b3: #9DB9EC; --b4: #F08F99;
+            --b5: #A9D691; --b6: #C3AEEA; --b7: #F5A877; --b8: #B7C2D2;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            overflow: clip;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .header-content { position: relative; z-index: 1; }
+        .header h1 { font-size: 2.3rem; font-weight: 700; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); line-height: 1.2; }
+        .header p { font-size: 1.1rem; font-weight: 300; opacity: 0.95; }
+
+        .content { padding: 3rem 2.5rem; }
+
+        /* Меню за превключване между активностите */
+        .activity-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .menu-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.9rem 1.6rem;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            background: white; color: #555;
+            font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease;
+        }
+        .menu-btn:hover { border-color: #764ba2; color: #764ba2; }
+        .menu-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent; color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        .footer { background: #f8f9fa; padding: 2rem; text-align: center; color: #777; font-size: 0.9rem; }
+
+        /* ---------- Общи ---------- */
+        h2, h3 { margin: 0; line-height: 1.25; }
+        h2 { font-size: 1.5rem; font-weight: 700; color: #4c3a8f; }
+        h3 { font-size: 1.15rem; font-weight: 600; }
+        button { font: inherit; color: inherit; }
+        :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+        .sec-head { display: grid; gap: 8px; margin-bottom: 26px; max-width: 780px; }
+        .sec-head p { color: var(--muted); }
+        .section { margin-top: 3rem; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; border: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; font-weight: 600; font-size: .95rem; cursor: pointer; justify-self: start; transition: transform .15s, box-shadow .15s; }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,.4); }
+        .btn.ghost { background: white; color: #764ba2; border: 2px solid #d9d4f2; }
+        .kbd { display: inline-block; padding: 0 .45rem; border-radius: 6px; border: 1px solid #c9cfdb; border-bottom-width: 3px; background: #f6f7fb; font-size: .85em; font-weight: 600; line-height: 1.5; }
+
+        /* ---------- Урок: карта с теми ---------- */
+        .map-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+        .map { position: relative; }
+        .map svg.links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        .map-grid { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 18px; }
+        .node { position: relative; display: grid; gap: 4px; align-content: center; min-height: 108px; padding: 14px 16px; border-radius: 16px; border: 2px solid transparent; background: var(--surface); box-shadow: 0 2px 10px rgba(27,34,48,.12); text-align: left; cursor: pointer; transition: transform .15s, border-color .15s; }
+        .node:hover { transform: translateY(-2px); }
+        .node .ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: var(--on-fill); font-size: 16px; }
+        .node strong { font-weight: 600; font-size: 15px; line-height: 1.25; }
+        .node small { font-size: 12.5px; color: var(--muted); line-height: 1.3; }
+        .node[aria-pressed="true"] { border-color: var(--accent); }
+        .node.seen::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: 8px; right: 10px; font-size: 12px; color: var(--teal); }
+        .center { display: grid; place-items: center; text-align: center; border-radius: 50%; aspect-ratio: 1; max-width: 170px; width: 100%; justify-self: center; align-self: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 16px; }
+        .center i { font-size: 34px; margin-bottom: 4px; }
+        .center strong { font-size: 19px; line-height: 1.15; display: block; }
+        .detail { position: sticky; top: 16px; display: grid; gap: 16px; padding: 24px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 4px 18px rgba(0,0,0,.08); min-width: 0; }
+        .detail .chip { justify-self: start; padding: 4px 12px; border-radius: 999px; color: var(--on-fill); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+        .detail ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+        .detail li::marker { color: var(--accent); }
+        .detail .fun { padding: 12px 14px; border-radius: 12px; background: #fffbea; border-left: 4px solid #E8A33D; font-size: .95rem; }
+        .detail .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .detail .tags span { padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: #4c3a8f; font-size: 13px; font-weight: 600; }
+
+        /* правила за безопасност */
+        .rules { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+        .rule { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; padding: 16px; border-radius: 16px; background: #fafafa; border: 2px solid #eee8f8; }
+        .rule .ri { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--red-soft); color: var(--red); font-size: 18px; }
+        .rule.good .ri { background: var(--teal-soft); color: var(--teal); }
+        .rule p { font-size: .95rem; line-height: 1.5; }
+        .rule b { display: block; margin-bottom: 2px; }
+
+        .boxes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .box { padding: 20px 22px; border-radius: 16px; background: #fafafa; border: 2px solid #e5e1f7; display: grid; gap: 10px; align-content: start; }
+        .box h3 { color: #4c3a8f; display: flex; align-items: center; gap: 8px; }
+        .box ul, .box ol { padding-left: 20px; display: grid; gap: 6px; }
+        .box a { color: var(--accent); font-weight: 600; }
+        details { border-radius: 10px; background: #fff; border: 1px solid var(--line); padding: 8px 12px; }
+        details summary { cursor: pointer; font-weight: 600; }
+        details p { margin-top: 6px; color: var(--muted); font-size: .95rem; }
+
+        .mindmap-wrapper { border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.15); padding: 1rem; background: #fafafa; }
+        .mindmap-hint { margin: 0 0 .75rem; font-size: .85rem; color: #666; }
+        .mindmap-hint i { color: #764ba2; }
+
+        /* ---------- Браузър-тренажор ---------- */
+        .sim-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+        .browser { border-radius: 14px; overflow: hidden; border: 1px solid #c9cfdb; box-shadow: 0 10px 30px rgba(0,0,0,.15); background: #fff; min-width: 0; }
+        .b-tabs { display: flex; align-items: flex-end; gap: 6px; padding: 8px 10px 0; background: #dfe3ea; }
+        .b-tab { display: flex; align-items: center; gap: 8px; max-width: 240px; padding: 7px 14px; border-radius: 10px 10px 0 0; background: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .b-tab i { color: var(--accent); }
+        .b-bar { display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: #fff; border-bottom: 1px solid #e3e6ec; }
+        .b-btn { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; cursor: pointer; color: #3c4453; font-size: 15px; flex: none; }
+        .b-btn:hover:not(:disabled) { background: #eef0f5; }
+        .b-btn:disabled { color: #b8bec9; cursor: default; }
+        .b-btn.on { color: #E8A33D; }
+        .b-addr { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 36px; border-radius: 999px; background: #eef0f5; border: 2px solid transparent; }
+        .b-addr:focus-within { border-color: var(--accent); background: #fff; }
+        .b-addr i { color: #8a93a3; font-size: 13px; }
+        .b-addr input { flex: 1; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 14px; color: var(--ink); outline: none; }
+        .b-zoom { font-size: 12px; font-weight: 700; color: var(--muted); min-width: 40px; text-align: center; }
+        .b-marks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 34px; padding: 4px 12px; background: #fff; border-bottom: 1px solid #e3e6ec; font-size: 12.5px; color: var(--muted); }
+        .b-marks button { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 8px; border: 0; background: #f2f3f7; cursor: pointer; font-size: 12.5px; color: var(--ink); }
+        .b-marks button:hover { background: #e6e8ef; }
+        .b-marks button i { color: #E8A33D; }
+        .b-view { position: relative; height: 430px; overflow: auto; background: #fff; }
+        .b-page { padding: 22px 26px; transform-origin: 0 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
+        .b-status { height: 26px; padding: 0 12px; display: flex; align-items: center; font-size: 12px; color: var(--muted); background: #f4f5f8; border-top: 1px solid #e3e6ec; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .b-loading { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(255,255,255,.85); font-size: 28px; color: var(--accent); }
+
+        /* измислените сайтове в тренажора */
+        .site-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; margin: -22px -26px 18px; color: #fff; }
+        .site-head .logo { font-size: 30px; }
+        .site-head b { font-size: 20px; }
+        .site-nav { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: -8px 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .b-page a { color: #1a5fd0; text-decoration: underline; cursor: pointer; font-weight: 600; }
+        .b-page a:hover { color: #0d3f94; }
+        .b-page h4 { font-size: 18px; margin: 4px 0 8px; }
+        .b-page p + p { margin-top: 8px; }
+        .animals { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 10px; }
+        .animals a { display: grid; justify-items: center; gap: 4px; padding: 14px 8px; border-radius: 14px; background: #f3f7ef; text-decoration: none; color: var(--ink); }
+        .animals a span { font-size: 44px; line-height: 1; }
+        .animals a:hover { background: #e4efd9; }
+        .big-emoji { font-size: 80px; line-height: 1.1; }
+        .weather { display: flex; align-items: center; gap: 20px; padding: 18px; border-radius: 16px; background: linear-gradient(135deg, #d6ecff, #f2f8ff); }
+        .weather .t { font-size: 46px; font-weight: 800; color: #1a5fd0; }
+        .newtab { display: grid; place-items: center; text-align: center; gap: 12px; min-height: 340px; color: var(--muted); }
+        .newtab i { font-size: 54px; color: #c3b6e2; }
+        .tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .tiles code { padding: 4px 10px; border-radius: 8px; background: #f2f3f7; color: var(--ink); font-size: 13px; }
+        .err-page { display: grid; gap: 10px; max-width: 520px; margin: 30px auto; text-align: center; }
+        .err-page i { font-size: 50px; color: #b8bec9; }
+        .popup-back { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(15,23,42,.45); padding: 16px; }
+        .popup { max-width: 340px; padding: 22px; border-radius: 18px; background: #fff7d6; border: 3px dashed #E8A33D; text-align: center; display: grid; gap: 10px; position: relative; }
+        .popup .x { position: absolute; top: 6px; right: 8px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: #fff; cursor: pointer; font-size: 15px; }
+        .popup .big { font-size: 22px; font-weight: 800; color: #c2410c; }
+        .popup button.grab { padding: 10px; border-radius: 10px; border: 0; background: #16a34a; color: #fff; font-weight: 700; cursor: pointer; }
+
+        .missions { display: grid; gap: 10px; padding: 18px; border-radius: 18px; background: #fafafa; border: 2px solid #e5e1f7; position: sticky; top: 16px; }
+        .missions h3 { color: #4c3a8f; }
+        .mprog { height: 10px; border-radius: 999px; background: #e6e2f3; overflow: hidden; }
+        .mprog span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #667eea, #764ba2); transition: width .3s; }
+        .mission { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: start; font-size: 14px; line-height: 1.45; }
+        .mission .mi { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #e6e8ef; color: #fff; font-size: 11px; }
+        .mission.done .mi { background: var(--teal); }
+        .mission.done .mt { color: var(--muted); text-decoration: line-through; }
+        .mission.cur .mi { background: var(--accent); }
+        .mission.cur .mt { font-weight: 700; }
+        .mission small { display: block; color: var(--muted); font-size: 12.5px; text-decoration: none; font-weight: 400; }
+        .sim-msg { padding: 10px 12px; border-radius: 10px; font-size: 14px; }
+        .sim-msg.ok { background: var(--teal-soft); }
+        .sim-msg.no { background: var(--red-soft); }
+
+        /* ---------- Упражнения ---------- */
+        .ex { padding: 24px; border-radius: 20px; background: #fafafa; border: 2px solid #e5e1f7; display: grid; gap: 16px; }
+        .ex + .ex { margin-top: 26px; }
+        .ex-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+        .ex-head h3 { color: #4c3a8f; display: flex; gap: 10px; align-items: center; }
+        .ex-head h3 .num { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; font-size: 14px; }
+        .ex .hint { color: var(--muted); font-size: .95rem; }
+        .result { padding: 12px 16px; border-radius: 12px; font-weight: 600; }
+        .result.ok { background: var(--teal-soft); }
+        .result.no { background: #fffbea; }
+
+        /* сортиране */
+        .pool { display: flex; flex-wrap: wrap; gap: 10px; min-height: 60px; padding: 12px; border-radius: 14px; border: 2px dashed #cfc8e8; background: #fff; }
+        .bins { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .bin { min-height: 180px; padding: 12px; border-radius: 16px; border: 3px dashed; display: flex; flex-direction: column; gap: 8px; transition: background .15s; }
+        .bin h4 { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; }
+        .bin.safe { border-color: #7cc8bd; background: #f0faf8; }
+        .bin.safe h4 { color: var(--teal); }
+        .bin.danger { border-color: #ec9aa4; background: #fdf3f4; }
+        .bin.danger h4 { color: var(--red); }
+        .bin.over { background: #efe9f8; }
+        .dcard { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: #fff; border: 2px solid var(--line); box-shadow: 0 2px 6px rgba(0,0,0,.06); font-size: 14px; line-height: 1.4; cursor: grab; touch-action: none; user-select: none; max-width: 100%; }
+        .dcard i.grip { color: #b8bec9; }
+        .dcard.sel { border-color: var(--accent); box-shadow: 0 0 0 3px #ddd2f2; }
+        .dcard.right { border-color: var(--teal); background: var(--teal-soft); }
+        .dcard.wrong { border-color: var(--red); background: var(--red-soft); }
+        .dcard .why { display: block; font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+        .dcard.ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: .9; transform: rotate(-2deg); box-shadow: 0 10px 24px rgba(0,0,0,.2); }
+        .dcard.placeholder { opacity: .35; }
+
+        /* попълване на пропуски */
+        .bank { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-radius: 14px; background: #fff; border: 2px dashed #cfc8e8; min-height: 56px; }
+        .word { padding: 6px 14px; border-radius: 999px; border: 2px solid #d9d4f2; background: var(--accent-soft); color: #4c3a8f; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .word:hover { border-color: var(--accent); }
+        .word.used { visibility: hidden; }
+        .fill-text { font-size: 1.05rem; line-height: 2.3; padding: 16px 18px; border-radius: 14px; background: #fff; }
+        .blank { display: inline-flex; align-items: center; justify-content: center; min-width: 120px; padding: 0 10px; height: 34px; margin: 0 2px; vertical-align: middle; border: 0; border-bottom: 3px solid #b6abd9; border-radius: 8px 8px 0 0; background: #f6f3fc; cursor: pointer; font-weight: 600; color: #4c3a8f; font-size: .98rem; }
+        .blank.focus { border-bottom-color: var(--accent); background: #ece4fa; box-shadow: 0 0 0 2px #ddd2f2; }
+        .blank.right { background: var(--teal-soft); border-bottom-color: var(--teal); color: var(--teal); }
+        .blank.wrong { background: var(--red-soft); border-bottom-color: var(--red); color: var(--red); }
+
+        /* свързване */
+        .match { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 12px 26px; }
+        .match .col { display: grid; gap: 10px; align-content: start; }
+        .mbtn { padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: #fff; text-align: left; cursor: pointer; font-size: 14px; line-height: 1.4; transition: all .15s; }
+        .mbtn.term { font-weight: 700; }
+        .mbtn:hover:not(:disabled) { border-color: var(--accent); }
+        .mbtn.sel { border-color: var(--accent); background: var(--accent-soft); }
+        .mbtn.done { border-color: var(--teal); background: var(--teal-soft); cursor: default; }
+        .mbtn.shake { animation: shake .35s; border-color: var(--red); }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+        .mbtn .pair { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 6px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 12px; }
+
+        /* ---------- Флаш карти ---------- */
+        .fc-wrap { display: grid; justify-items: center; gap: 18px; }
+        .fc { width: min(560px, 100%); height: 300px; perspective: 1200px; cursor: pointer; border: 0; background: transparent; padding: 0; }
+        .fc-inner { position: relative; width: 100%; height: 100%; transition: transform .6s; transform-style: preserve-3d; }
+        .fc.flipped .fc-inner { transform: rotateY(180deg); }
+        .fc-face { position: absolute; inset: 0; display: grid; place-items: center; gap: 10px; align-content: center; padding: 28px; border-radius: 22px; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+        .fc-front { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
+        .fc-front i { font-size: 46px; opacity: .9; }
+        .fc-front b { font-size: 1.6rem; line-height: 1.25; }
+        .fc-front small { opacity: .8; font-size: .85rem; }
+        .fc-back { background: #fff; border: 3px solid #d9d4f2; color: var(--ink); transform: rotateY(180deg); font-size: 1.1rem; line-height: 1.55; }
+        .fc-nav { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; }
+        .fc-count { font-weight: 700; color: var(--muted); min-width: 70px; text-align: center; }
+        .dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+        .dots button { width: 12px; height: 12px; border-radius: 50%; border: 0; background: #d9d4f2; cursor: pointer; padding: 0; }
+        .dots button.on { background: var(--accent); }
+
+        /* ---------- Тест ---------- */
+        .score { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 18px; margin-bottom: 20px; border-radius: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; box-shadow: 0 4px 15px rgba(102,126,234,.35); }
+        .score .bar { flex: 1 1 200px; height: 10px; border-radius: 999px; background: rgba(255,255,255,.25); overflow: hidden; }
+        .score .bar span { display: block; height: 100%; width: 0; background: #fff; transition: width .3s; }
+        .score .btn { background: #fff; color: #4c3a8f; padding: 8px 14px; }
+        .qs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .q { display: grid; gap: 12px; align-content: start; padding: 20px; border-radius: 16px; background: #fafafa; border: 2px solid #e5e1f7; min-width: 0; }
+        .q .qn { font-size: 13px; font-weight: 700; color: var(--accent); }
+        .q .prompt { font-weight: 700; font-size: 1.05rem; line-height: 1.4; }
+        .opts { display: grid; gap: 8px; }
+        .opt { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; text-align: left; cursor: pointer; transition: all .2s; font-size: 14.5px; }
+        .opt:hover:not(:disabled) { border-color: var(--accent); background: #faf8ff; }
+        .opt:disabled { cursor: default; }
+        .opt .l { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--cell); font-weight: 700; font-size: 14px; }
+        .opt.right { border-color: var(--teal); background: var(--teal-soft); }
+        .opt.right .l { background: var(--teal); color: #FFFFFF; }
+        .opt.wrong { border-color: var(--red); background: var(--red-soft); }
+        .opt.wrong .l { background: var(--red); color: #FFFFFF; }
+        .fb { padding: 12px 14px; border-radius: 10px; font-size: 15px; }
+        .fb.ok { background: var(--teal-soft); }
+        .fb.no { background: var(--red-soft); }
+        .final { margin-top: 20px; padding: 20px 24px; border-radius: 16px; background: #fffbea; border-left: 5px solid #E8A33D; font-weight: 600; font-size: 1.05rem; }
+
+        @media (max-width: 900px) {
+            .map-layout, .qs, .sim-layout, .boxes { grid-template-columns: minmax(0, 1fr); }
+            .detail, .missions { position: static; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header { padding: 2.2rem 1.4rem; }
+            .header h1 { font-size: 1.7rem; }
+            .header p { font-size: 1rem; }
+            .content { padding: 2rem 1.2rem; }
+            .menu-btn { padding: 0.7rem 1rem; font-size: 0.9rem; }
+            .match { grid-template-columns: minmax(0, 1fr); }
+            .bins { grid-template-columns: minmax(0, 1fr); }
+            .b-view { height: 380px; }
+            .b-page { padding: 18px; }
+            .site-head { margin: -18px -18px 16px; }
+        }
+        @media (max-width: 640px) {
+            .map svg.links { display: none; }
+            .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .center { grid-column: 1 / -1; order: -1; max-width: 140px; }
+            .node { min-height: 92px; }
+            .detail, .ex { padding: 18px; }
+            .b-zoom, #bZoomOut { display: none; }
+            .fc { height: 330px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-globe"></i> Използване на интернет в ежедневието</h1>
+                <p>Правила за безопасна работа в интернет · КМИТ - 5 клас</p>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="activity-menu">
+                <button class="menu-btn active" data-tab="lesson" onclick="showTab('lesson')">
+                    <i class="fas fa-book-open"></i> Урок
+                </button>
+                <button class="menu-btn" data-tab="mindmap" onclick="showTab('mindmap')">
+                    <i class="fas fa-diagram-project"></i> Мисловна карта
+                </button>
+                <button class="menu-btn" data-tab="browser" onclick="showTab('browser')">
+                    <i class="fas fa-window-maximize"></i> Браузър-тренажор
+                </button>
+                <button class="menu-btn" data-tab="exercises" onclick="showTab('exercises')">
+                    <i class="fas fa-puzzle-piece"></i> Упражнения
+                </button>
+                <button class="menu-btn" data-tab="cards" onclick="showTab('cards')">
+                    <i class="fas fa-clone"></i> Флаш карти
+                </button>
+                <button class="menu-btn" data-tab="quiz" onclick="showTab('quiz')">
+                    <i class="fas fa-circle-question"></i> Тест
+                </button>
+            </div>
+
+            <!-- ===================== Урок ===================== -->
+            <div id="panel-lesson" class="tab-panel active">
+                <div class="sec-head">
+                    <h2>Какво ще научим</h2>
+                    <p>Какво е интернет, браузър, уеб адрес и хипервръзка, как да се движим из уеб сайтовете и как да бъдем в безопасност в интернет. Щракни върху всяка тема от картата.</p>
+                </div>
+                <div class="map-layout">
+                    <div class="map" id="map">
+                        <svg class="links" id="links" aria-hidden="true"></svg>
+                        <div class="map-grid" id="mapGrid"></div>
+                    </div>
+                    <aside class="detail" id="detail" aria-live="polite"></aside>
+                </div>
+
+                <div class="section" id="safety">
+                    <div class="sec-head">
+                        <h2><i class="fas fa-shield-halved"></i> Правила за безопасна работа в интернет</h2>
+                        <p>Интернет е полезен, но крие и рискове. Спазвай тези правила всеки път, когато си онлайн.</p>
+                    </div>
+                    <div class="rules" id="rules"></div>
+                </div>
+
+                <div class="section">
+                    <div class="boxes">
+                        <div class="box">
+                            <h3><i class="fas fa-laptop"></i> Задачи с истински сайтове</h3>
+                            <ol>
+                                <li>Отвори <a href="https://www.safenet.bg" target="_blank" rel="noopener">www.safenet.bg</a> – сайта на Националния център за безопасен интернет. Какви секции има той?</li>
+                                <li>Разгледай <a href="https://www.nationallibrary.bg" target="_blank" rel="noopener">www.nationallibrary.bg</a>, <a href="https://www.louvre.fr" target="_blank" rel="noopener">www.louvre.fr</a> и <a href="https://www.britannica.com" target="_blank" rel="noopener">www.britannica.com</a>, като използваш хипервръзките.</li>
+                                <li>Отвори <a href="https://www.google.bg/maps" target="_blank" rel="noopener">www.google.bg/maps</a>. Намери нашето училище. Разгледай го в изглед Earth и Street View. Направи маршрут от училището до жп гарата или до автогарата.</li>
+                            </ol>
+                        </div>
+                        <div class="box">
+                            <h3><i class="fas fa-comments"></i> Да помислим</h3>
+                            <details><summary>По какво друго се различава хипервръзката от останалия текст?</summary><p>Често е с друг цвят и е подчертана. Когато мишката е върху нея, показалецът става „ръчичка“, а най-долу в браузъра се вижда адресът, към който води.</p></details>
+                            <details><summary>Може ли да се въведе адрес на сайт на кирилица?</summary><p>Да. Има адреси, изписани на кирилица, например такива, които завършват на <b>.бг</b>. Пробвай www.библиотека.бг в браузър-тренажора.</p></details>
+                            <details><summary>Защо някои сайтове искат регистрация, а други – не?</summary><p>Регистрация се иска, когато сайтът трябва да знае кой си: пощата, социалните мрежи, онлайн магазините, електронният дневник. Сайтовете само за четене (новини, енциклопедии) обикновено не я искат.</p></details>
+                            <details><summary>Как са се справяли хората, когато не е имало интернет?</summary><p>Писма по пощата, телеграми, стационарен телефон, вестници, библиотеки, хартиени карти, гишета за билети. Някога са предавали съобщения дори с огньове и морзова азбука.</p></details>
+                            <details><summary>По какво си приличат правилата за движение по пътя и правилата за безопасност в интернет?</summary><p>И двете ни пазят от опасности, важат за всички и изискват внимание. Например и на пътя, и в интернет не тръгваме с непознати.</p></details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== Мисловна карта ===================== -->
+            <div id="panel-mindmap" class="tab-panel">
+                <div class="mindmap-wrapper">
+                    <p class="mindmap-hint"><i class="fas fa-circle-info"></i> Кликни върху възел, за да разгънеш или свиеш клона му. Плъзгай за преместване, скрол или бутоните долу вдясно за мащаб.</p>
+                    <div class="markmap-host">
+                        <svg id="mindmap-svg"></svg>
+                        <div class="markmap-toolbar-host"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== Браузър-тренажор ===================== -->
+            <div id="panel-browser" class="tab-panel">
+                <div class="sec-head">
+                    <h2>Браузър-тренажор</h2>
+                    <p>Това е учебен браузър с измислени сайтове. Изпълни мисиите вдясно: пиши адреси, щраквай хипервръзки, използвай бутоните Назад, Напред и Презареди.</p>
+                </div>
+                <div class="sim-layout">
+                    <div class="browser" id="browser">
+                        <div class="b-tabs"><div class="b-tab" id="bTab"><i class="fas fa-globe"></i><span>Нов раздел</span></div></div>
+                        <form class="b-bar" id="bBar" autocomplete="off">
+                            <button type="button" class="b-btn" id="bBack" title="Назад (Back)" aria-label="Назад"><i class="fas fa-arrow-left"></i></button>
+                            <button type="button" class="b-btn" id="bFwd" title="Напред (Forward)" aria-label="Напред"><i class="fas fa-arrow-right"></i></button>
+                            <button type="button" class="b-btn" id="bReload" title="Презареди (Refresh)" aria-label="Презареди"><i class="fas fa-rotate-right"></i></button>
+                            <label class="b-addr" title="Адресно поле">
+                                <i class="fas fa-magnifying-glass" id="bAddrIco"></i>
+                                <input type="text" id="bAddr" spellcheck="false" placeholder="Въведи уеб адрес и натисни Enter" aria-label="Адресно поле">
+                            </label>
+                            <button type="button" class="b-btn" id="bStar" title="Отметка (bookmark)" aria-label="Направи отметка"><i class="far fa-star"></i></button>
+                            <button type="button" class="b-btn" id="bZoomOut" title="Намали (Ctrl и −)" aria-label="Намали"><i class="fas fa-magnifying-glass-minus"></i></button>
+                            <span class="b-zoom" id="bZoom">100%</span>
+                            <button type="button" class="b-btn" id="bZoomIn" title="Увеличи (Ctrl и +)" aria-label="Увеличи"><i class="fas fa-magnifying-glass-plus"></i></button>
+                        </form>
+                        <div class="b-marks" id="bMarks"><span>Отметките ще се появят тук</span></div>
+                        <div class="b-view" id="bView"><div class="b-page" id="bPage"></div></div>
+                        <div class="b-status" id="bStatus">&nbsp;</div>
+                    </div>
+
+                    <aside class="missions" id="missions">
+                        <h3><i class="fas fa-flag-checkered"></i> Мисии</h3>
+                        <div class="mprog" aria-hidden="true"><span id="mBar"></span></div>
+                        <p class="hint" style="font-size:13px;color:var(--muted)">Изпълнени <b id="mDone">0</b> от <b id="mTotal">0</b></p>
+                        <div id="mList" style="display:grid;gap:10px"></div>
+                        <div id="mMsg" aria-live="polite"></div>
+                        <button type="button" class="btn ghost" id="mReset"><i class="fas fa-rotate-left"></i> Отначало</button>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- ===================== Упражнения ===================== -->
+            <div id="panel-exercises" class="tab-panel">
+                <div class="ex" id="exSort">
+                    <div class="ex-head">
+                        <h3><span class="num">1</span> Безопасно или опасно?</h3>
+                        <button class="btn ghost" type="button" id="sortReset"><i class="fas fa-rotate-left"></i> Отначало</button>
+                    </div>
+                    <p class="hint">Плъзни всяка карта в правилната кутия. Можеш и да щракнеш карта, а после кутията.</p>
+                    <div class="pool" id="sortPool"></div>
+                    <div class="bins">
+                        <div class="bin safe" data-bin="safe"><h4><i class="fas fa-circle-check"></i> Безопасно</h4></div>
+                        <div class="bin danger" data-bin="danger"><h4><i class="fas fa-triangle-exclamation"></i> Опасно</h4></div>
+                    </div>
+                    <button class="btn" type="button" id="sortCheck"><i class="fas fa-check"></i> Провери</button>
+                    <div id="sortResult" aria-live="polite"></div>
+                </div>
+
+                <div class="ex" id="exFill">
+                    <div class="ex-head">
+                        <h3><span class="num">2</span> Попълни пропуските</h3>
+                        <button class="btn ghost" type="button" id="fillReset"><i class="fas fa-rotate-left"></i> Отначало</button>
+                    </div>
+                    <p class="hint">Щракни върху дума, за да попълни избраното празно място. Щракни върху попълнено място, за да върнеш думата. Внимание: две думи са излишни.</p>
+                    <div class="bank" id="fillBank"></div>
+                    <div class="fill-text" id="fillText"></div>
+                    <button class="btn" type="button" id="fillCheck"><i class="fas fa-check"></i> Провери</button>
+                    <div id="fillResult" aria-live="polite"></div>
+                </div>
+
+                <div class="ex" id="exMatch">
+                    <div class="ex-head">
+                        <h3><span class="num">3</span> Свържи понятието с обяснението</h3>
+                        <button class="btn ghost" type="button" id="matchReset"><i class="fas fa-rotate-left"></i> Отначало</button>
+                    </div>
+                    <p class="hint">Щракни понятие отляво, а после неговото обяснение отдясно.</p>
+                    <div class="match">
+                        <div class="col" id="matchTerms"></div>
+                        <div class="col" id="matchDefs"></div>
+                    </div>
+                    <div id="matchResult" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <!-- ===================== Флаш карти ===================== -->
+            <div id="panel-cards" class="tab-panel">
+                <div class="sec-head">
+                    <h2>Флаш карти</h2>
+                    <p>Прочети въпроса, опитай да отговориш наум и щракни картата, за да я обърнеш.</p>
+                </div>
+                <div class="fc-wrap">
+                    <button class="fc" type="button" id="fc" aria-live="polite">
+                        <div class="fc-inner">
+                            <div class="fc-face fc-front" id="fcFront"></div>
+                            <div class="fc-face fc-back" id="fcBack"></div>
+                        </div>
+                    </button>
+                    <div class="fc-nav">
+                        <button class="btn ghost" type="button" id="fcPrev"><i class="fas fa-arrow-left"></i> Назад</button>
+                        <span class="fc-count" id="fcCount"></span>
+                        <button class="btn" type="button" id="fcNext">Напред <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <div class="dots" id="fcDots"></div>
+                    <button class="btn ghost" type="button" id="fcShuffle"><i class="fas fa-shuffle"></i> Разбъркай</button>
+                </div>
+            </div>
+
+            <!-- ===================== Тест ===================== -->
+            <div id="panel-quiz" class="tab-panel">
+                <div class="sec-head">
+                    <h2>Тест: провери се</h2>
+                    <p>Щракни върху отговор, за да видиш дали е верен и защо.</p>
+                </div>
+                <div class="score">
+                    <span>Отговорени <strong id="answered">0</strong> от <strong id="total">0</strong></span>
+                    <span>Верни <strong id="correct">0</strong></span>
+                    <div class="bar" aria-hidden="true"><span id="barFill"></span></div>
+                    <button class="btn" type="button" id="resetQuiz">Започни отначало</button>
+                </div>
+                <div class="qs" id="qs"></div>
+                <p class="final" id="final" hidden></p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Образователен Портал | Създадено с ❤️ за ученето</p>
+            <p style="margin-top:.4rem;font-size:.85rem">По урок 7 „Използване на интернет в ежедневието. Правила за безопасна работа в интернет“ от учебника по КМИТ за 5 клас.</p>
+        </div>
+    </div>
+
+    <script>
+        // Случаен фон на страницата от папка backgrounds/
+        (function () {
+            const backgrounds = [
+                '../../../backgrounds/IT.jpg',
+                '../../../backgrounds/Informatics.jpg',
+                '../../../backgrounds/Lessons.jpg',
+                '../../../backgrounds/Malta.jpg',
+                '../../../backgrounds/Modul1.jpg',
+                '../../../backgrounds/Modul2.jpg',
+                '../../../backgrounds/Modul2.png',
+                '../../../backgrounds/Modul3.jpg',
+                '../../../backgrounds/Modul4.jpg',
+                '../../../backgrounds/Other.jpg',
+                '../../../backgrounds/Start.jpg'
+            ];
+            const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.body.style.backgroundImage =
+                `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url('${pick}')`;
+        })();
+
+        const mindmapInitialized = { mindmap: false };
+
+        // markmap измерва контейнера при инициализация, затова панелът първо става
+        // видим (класът "active") и чак тогава се рисува; веднъж не се пресъздава.
+        function showTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`.menu-btn[data-tab="${name}"]`).classList.add('active');
+
+            if (name === 'mindmap' && !mindmapInitialized.mindmap) {
+                mindmapInitialized.mindmap = true;
+                renderMermaidMindmap('mindmap-svg', 'H5P/Urok6/Интернет_мисловна_карта.mmd');
+            }
+            window.dispatchEvent(new Event('resize'));
+        }
+    </script>
+    <script src="../../../libs/markmap-embed.js"></script>
+
+    <script>
+(function () {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function shuffle(a) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+
+  /* =====================================================================
+     УРОК: карта с 8 теми
+     ===================================================================== */
+  const BR = [
+    { id: "net", t: "Компютърна мрежа", sub: "свързани компютри", icon: "fa-network-wired", col: "--b1",
+      pts: ["<b>Компютърна мрежа</b> е група от свързани помежду си компютри, които обменят информация.",
+            "Компютрите може да са в една стая (например компютърният кабинет) или пръснати по целия свят.",
+            "Свързват се с кабели или безжично (Wi-Fi)."],
+      fun: "Задача от учебника: начертай мисловна карта „мрежа“. Какво друго наричаме мрежа? Рибарска мрежа, паяжина, мрежа на футболна врата…" },
+    { id: "inet", t: "Интернет", sub: "мрежа от мрежи", icon: "fa-globe", col: "--b2",
+      pts: ["<b>Интернет</b> е мрежа от компютърни мрежи, създадена, за да се предава информация на големи разстояния.",
+            "Името е съкращение от <i>International Network</i>, което означава „международна мрежа“.",
+            "Появил се е през 60-те години на 20-и век.",
+            "Смята се за най-революционното откритие в технологиите."],
+      fun: "Как хората са предавали информация в миналото? С огньове на високо място, с морзова азбука, с писма и телеграми." },
+    { id: "daily", t: "Интернет в ежедневието", sub: "какво правим онлайн", icon: "fa-house-laptop", col: "--b3",
+      tags: ["търсене на информация", "видео и филми", "музика", "телевизия", "радио", "прогноза за времето", "покупки", "резервации на билети", "общуване", "планиране на събития", "съвместна работа", "карти и снимки от сателит"],
+      pts: ["Все повече услуги в интернет навлизат в живота ни.",
+            "В интернет можем да учим, да се забавляваме, да пазаруваме и да общуваме."],
+      fun: "Дай примери: за какво използваш интернет ти? А твоите родители?", lab: "home" },
+    { id: "browser", t: "Браузър", sub: "програма за сайтове", icon: "fa-window-maximize", col: "--b4",
+      pts: ["За да четем информация от интернет, ни трябва програма, наречена <b>браузър</b> (<i>browser</i>).",
+            "Най-използваните браузъри са: <i>Microsoft Edge, Chrome, Firefox, Opera, Safari</i>.",
+            "Някои браузъри имат и инструменти като писалка, маркер, залепваща бележка и изрязване на част от екрана."],
+      fun: "Кой браузър има на твоя компютър или телефон?", lab: "home" },
+    { id: "url", t: "Уеб адрес", sub: "адресът на сайта", icon: "fa-link", col: "--b5",
+      pts: ["Текстовото поле най-горе в браузъра е <b>адресното поле</b>. В него пишем адреса на ресурса (сайт, видео).",
+            "Всеки ресурс в интернет има уникален адрес – <b>уеб адрес</b>.",
+            "Уеб адресът е поредица от знаци <b>без интервали</b>, например <code>www.nmd.bg</code>.",
+            "След като напишем адреса, натискаме клавиша <span class=\"kbd\">Enter</span>.",
+            "Има и адреси на кирилица, например завършващи на <b>.бг</b>."],
+      fun: "Уеб адрес може да се „скрие“ и в QR код. Телефонът го прочита с камерата и отваря сайта.", lab: "url" },
+    { id: "site", t: "Уеб сайт", sub: "съвкупност от страници", icon: "fa-sitemap", col: "--b6",
+      pts: ["Уеб страницата е документ, в който има текст, картинки, звук, видео.",
+            "<b>Уеб сайтът</b> е съвкупност от уеб страници.",
+            "Често срещани раздели на сайтовете са: „За нас“, „Новини“, „Контакти“."],
+      fun: "Отвори сайта на зоопарка в браузър-тренажора и виж колко страници има той.", lab: "home" },
+    { id: "link", t: "Хипервръзка", sub: "щракни и отиди", icon: "fa-hand-pointer", col: "--b7",
+      pts: ["<b>Хипервръзката</b> е специален текст или обект (например картинка). Когато щракнем върху нея, браузърът зарежда друг документ.",
+            "Тя може да води до друго място в същия документ, до друга страница, картинка, видео или файл.",
+            "Когато мишката е над хипервръзка, показалецът се превръща в „ръчичка“ <i class=\"fas fa-hand-pointer\"></i>.",
+            "Обикновено хипервръзките са оцветени и подчертани."],
+      fun: "Движи мишката по страница с новини. Къде показалецът става „ръчичка“?", lab: "link" },
+    { id: "btns", t: "Бутони и отметки", sub: "Back, Forward, Refresh", icon: "fa-arrows-left-right", col: "--b8",
+      pts: ["<i class=\"fas fa-arrow-left\"></i> <b>Back</b> (Назад) – връща към предишната страница.",
+            "<i class=\"fas fa-arrow-right\"></i> <b>Forward</b> (Напред) – отива пак напред.",
+            "<i class=\"fas fa-rotate-right\"></i> <b>Refresh / Reload</b> (Презареди) – зарежда страницата отново.",
+            "<i class=\"far fa-star\"></i> <b>Отметка</b> (<i>bookmark</i>) – запомня сайт, който посещаваш често.",
+            "<span class=\"kbd\">Ctrl</span> + <span class=\"kbd\">+</span> увеличава образа, а <span class=\"kbd\">Ctrl</span> + <span class=\"kbd\">−</span> го намалява."],
+      fun: "Кога ти се налага да се върнеш назад или да презаредиш страница?", lab: "btns" }
+  ];
+
+  const grid = $("mapGrid");
+  const slots = [0, 1, 2, 3, 5, 6, 7, 8];
+  const cells = new Array(9);
+  BR.forEach((b, k) => {
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "node"; btn.id = "node-" + b.id;
+    btn.setAttribute("aria-pressed", "false");
+    btn.innerHTML = '<span class="ico" style="background:var(' + b.col + ')"><i class="fas ' + b.icon + '"></i></span><strong>' + esc(b.t) + "</strong><small>" + esc(b.sub) + "</small>";
+    btn.addEventListener("click", () => select(k));
+    cells[slots[k]] = btn;
+  });
+  const center = document.createElement("div");
+  center.className = "center";
+  center.innerHTML = '<div><i class="fas fa-globe"></i><strong>Интернет</strong></div>';
+  cells[4] = center;
+  cells.forEach((el) => grid.appendChild(el));
+
+  function drawLinks() {
+    const svg = $("links"), map = $("map");
+    const r = map.getBoundingClientRect();
+    if (!r.width) return;
+    svg.setAttribute("viewBox", "0 0 " + r.width + " " + r.height);
+    const cr = center.getBoundingClientRect();
+    const cx = cr.left - r.left + cr.width / 2, cy = cr.top - r.top + cr.height / 2;
+    svg.innerHTML = BR.map((b) => {
+      const nr = $("node-" + b.id).getBoundingClientRect();
+      const x = nr.left - r.left + nr.width / 2, y = nr.top - r.top + nr.height / 2;
+      return '<line x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="var(' + b.col + ')" stroke-width="5" stroke-linecap="round"/>';
+    }).join("");
+  }
+
+  function select(k) {
+    const b = BR[k];
+    BR.forEach((x, j) => $("node-" + x.id).setAttribute("aria-pressed", j === k ? "true" : "false"));
+    $("node-" + b.id).classList.add("seen");
+    $("detail").innerHTML =
+      '<span class="chip" style="background:var(' + b.col + ')">' + (k + 1) + " от " + BR.length + "</span>" +
+      "<h3>" + esc(b.t) + "</h3>" +
+      "<ul>" + b.pts.map((p) => "<li>" + p + "</li>").join("") + "</ul>" +
+      (b.tags ? '<div class="tags">' + b.tags.map((t) => "<span>" + esc(t) + "</span>").join("") + "</div>" : "") +
+      '<p class="fun"><i class="fas fa-lightbulb" style="color:#E8A33D"></i> ' + esc(b.fun) + "</p>" +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px">' +
+      (b.lab ? '<button class="btn" type="button" id="tryBranch"><i class="fas fa-window-maximize"></i> Пробвай в браузъра</button>' : "") +
+      (k < BR.length - 1 ? '<button class="btn ghost" type="button" id="nextBranch">Следваща тема <i class="fas fa-arrow-right"></i></button>'
+                         : '<button class="btn ghost" type="button" id="toSafety">Към правилата <i class="fas fa-arrow-down"></i></button>') +
+      "</div>";
+    if (b.lab) $("tryBranch").addEventListener("click", () => { showTab("browser"); $("panel-browser").scrollIntoView({ block: "start" }); });
+    if ($("nextBranch")) $("nextBranch").addEventListener("click", () => select(k + 1));
+    if ($("toSafety")) $("toSafety").addEventListener("click", () => $("safety").scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
+  select(0);
+  drawLinks();
+  if ("ResizeObserver" in window) new ResizeObserver(drawLinks).observe($("map"));
+  else window.addEventListener("resize", drawLinks);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawLinks);
+
+  /* правила за безопасност */
+  const RULES = [
+    { i: "fa-id-card", t: "Не давай лична информация", d: "име, адрес, домашен телефон, училище, месторабота или служебен телефон на родителите." },
+    { i: "fa-camera", t: "Не изпращай снимки", d: "нито свои, нито на своите близки." },
+    { i: "fa-user-secret", t: "Не приемай срещи", d: "с хора, с които си се запознал в интернет." },
+    { i: "fa-comment-slash", t: "Не отговаряй на обидни съобщения", d: "на заплашващи или неприлични съобщения. Кажи на родителите си за тях." },
+    { i: "fa-envelope", t: "Не отваряй писма от непознати", d: "Може да съдържат вирус или програма, която да повреди компютъра." },
+    { i: "fa-masks-theater", t: "Не се представяй за друг", d: "и помни, че отсреща може да пише човек с чужда самоличност." },
+    { i: "fa-download", t: "Не сваляй програми без родител", d: "Може да се повреди компютърът или да изтекат личните ти данни." },
+    { i: "fa-handshake", t: "Бъди вежлив", d: "и уважавай правата на другите.", good: true },
+    { i: "fa-person-chalkboard", t: "Кажи на родител или учител", d: "ако видиш текст, снимка или видео, което не ти харесва или те смущава.", good: true }
+  ];
+  $("rules").innerHTML = RULES.map((r) =>
+    '<div class="rule' + (r.good ? " good" : "") + '"><span class="ri"><i class="fas ' + r.i + '"></i></span><p><b>' + esc(r.t) + "</b>" + esc(r.d) + "</p></div>").join("");
+
+  /* =====================================================================
+     БРАУЗЪР-ТРЕНАЖОР (всички сайтове са измислени и живеят само тук)
+     ===================================================================== */
+  const ZOO = "www.zoopark.bg", LIB = "www.библиотека.бг", WEATHER = "www.vremeto.bg", GAMES = "www.igri.bg";
+  const ANIMALS = {
+    lav: { n: "Лъв", e: "🦁", f: ["Лъвът е „царят на животните“.", "Живее в Африка на групи, наречени прайдове.", "Рикането му се чува на 8 километра."] },
+    zhiraf: { n: "Жираф", e: "🦒", f: ["Жирафът е най-високото животно на сушата.", "Езикът му е дълъг около половин метър.", "Спи само по около 2 часа на ден."] },
+    pingvin: { n: "Пингвин", e: "🐧", f: ["Пингвините не могат да летят, но плуват отлично.", "Повечето живеят в Южното полукълбо.", "Императорският пингвин е най-едрият."] },
+    slon: { n: "Слон", e: "🐘", f: ["Слонът е най-голямото сухоземно животно.", "С хобота си може да пие и да се къпе.", "Има отлична памет."] }
+  };
+  const zooHead = '<div class="site-head" style="background:#3f8f3a"><span class="logo">🦓</span><b>Зоопарк „Слънце“</b></div>' +
+    '<nav class="site-nav"><a data-href="' + ZOO + '">Начало</a><a data-href="' + ZOO + '/zhivotni">Животни</a><a data-href="' + ZOO + '/novini">Новини</a><a data-href="' + ZOO + '/kontakti">Контакти</a></nav>';
+  const now = () => { const d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0"); };
+
+  const SITES = {
+    "": () => ({ title: "Нов раздел", html:
+      '<div class="newtab"><i class="fas fa-globe"></i><p><b>Нов раздел</b><br>Щракни в адресното поле горе, напиши уеб адрес и натисни Enter.</p>' +
+      '<p style="font-size:13px">Сайтове в тренажора:</p><div class="tiles"><code>' + ZOO + "</code><code>" + WEATHER + "</code><code>" + LIB + "</code><code>" + GAMES + "</code></div></div>" }),
+    [ZOO]: () => ({ title: "Зоопарк „Слънце“ – Начало", html: zooHead +
+      "<h4>Добре дошли!</h4><p>Зоопарк „Слънце“ е дом на над 300 животни от целия свят.</p>" +
+      '<p>Разгледай нашите <a data-href="' + ZOO + '/zhivotni">животни</a> или прочети последните <a data-href="' + ZOO + '/novini">новини</a>.</p>' +
+      '<p style="margin-top:14px;color:#55627A;font-size:13px">Работно време: всеки ден от 9:00 до 18:00.</p>' }),
+    [ZOO + "/zhivotni"]: () => ({ title: "Животни – Зоопарк „Слънце“", html: zooHead +
+      "<h4>Нашите животни</h4><p>Щракни върху животно, за да научиш повече за него.</p><div class=\"animals\">" +
+      Object.keys(ANIMALS).map((k) => '<a data-href="' + ZOO + "/zhivotni/" + k + '"><span>' + ANIMALS[k].e + "</span>" + ANIMALS[k].n + "</a>").join("") + "</div>" }),
+    [ZOO + "/novini"]: () => ({ title: "Новини – Зоопарк „Слънце“", html: zooHead +
+      "<h4>Новини</h4><p><b>Роди се малко жирафче!</b> Вижте го в раздел <a data-href=\"" + ZOO + "/zhivotni/zhiraf\">Жираф</a>.</p>" +
+      "<p><b>Нови пингвини</b> пристигнаха в зоопарка. Повече за тях – <a data-href=\"" + ZOO + "/zhivotni/pingvin\">тук</a>.</p>" +
+      '<p style="margin-top:14px;color:#55627A;font-size:13px">Страницата е заредена в ' + now() + "</p>" }),
+    [ZOO + "/kontakti"]: () => ({ title: "Контакти – Зоопарк „Слънце“", html: zooHead +
+      "<h4>Контакти</h4><p>Каса и информация: на главния вход на зоопарка, всеки ден от 9:00 до 18:00.</p><p>Обърни внимание: на сайта на зоопарка има контакти на <b>зоопарка</b>, а не лични данни на хора.</p>" }),
+    [LIB]: () => ({ title: "Детска библиотека", html:
+      '<div class="site-head" style="background:#8a4fbf"><span class="logo">📚</span><b>Детска библиотека</b></div>' +
+      "<h4>Браво! Адресът на този сайт е на кирилица.</h4><p>Уеб адресите могат да са и на кирилица – например тези, които завършват на <b>.бг</b>.</p>" +
+      "<p>Препоръчваме ти книга за животни. Можеш да видиш и истинските животни в <a data-href=\"" + ZOO + "/zhivotni\">сайта на зоопарка</a>.</p>" }),
+    [WEATHER]: () => {
+      const t = 8 + Math.floor(Math.random() * 12);
+      const sky = shuffle(["☀️ Слънчево", "⛅ Разкъсана облачност", "🌧️ Слаб дъжд", "🌤️ Предимно слънчево"])[0];
+      return { title: "Времето днес", html:
+        '<div class="site-head" style="background:#1a5fd0"><span class="logo">🌦️</span><b>Времето днес</b></div>' +
+        '<div class="weather"><span class="t">' + t + "°C</span><div><b>Бургас</b><br>" + sky + "</div></div>" +
+        '<p style="margin-top:14px">Данните се обновяват постоянно. Натисни <b>Презареди</b> <i class="fas fa-rotate-right"></i>, за да видиш най-новите.</p>' +
+        '<p style="color:#55627A;font-size:13px">Последно обновяване: ' + now() + "</p>" };
+    },
+    [GAMES]: () => ({ title: "Игри онлайн", popup: true, html:
+      '<div class="site-head" style="background:#e05d2b"><span class="logo">🎮</span><b>Игри онлайн</b></div>' +
+      "<h4>Най-новите игри</h4><p>Тук има много игри. Но внимавай – някои сайтове показват изскачащи съобщения, които се опитват да те подмамят.</p>" })
+  };
+  for (const k in ANIMALS) {
+    const a = ANIMALS[k];
+    SITES[ZOO + "/zhivotni/" + k] = () => ({ title: a.n + " – Зоопарк „Слънце“", html: zooHead +
+      '<div class="big-emoji">' + a.e + "</div><h4>" + a.n + "</h4><ul style=\"padding-left:20px\">" + a.f.map((x) => "<li>" + x + "</li>").join("") + "</ul>" +
+      '<p style="margin-top:12px"><a data-href="' + ZOO + '/zhivotni">← Към всички животни</a></p>' });
+  }
+
+  const MISSIONS = [
+    { id: "open", t: "Отвори сайта " + ZOO, h: "Напиши адреса в адресното поле и натисни Enter." },
+    { id: "link", t: "Щракни хипервръзката „Животни“", h: "Показалецът става „ръчичка“ над хипервръзка." },
+    { id: "animal", t: "Отвори страницата на някое животно", h: "И картинките могат да бъдат хипервръзки." },
+    { id: "back", t: "Върни се назад", h: "Бутонът Back (стрелка наляво)." },
+    { id: "fwd", t: "Отиди отново напред", h: "Бутонът Forward (стрелка надясно)." },
+    { id: "reload", t: "Отвори " + WEATHER + " и я презареди", h: "Бутонът Refresh (кръгла стрелка). Виж как се променя часът." },
+    { id: "star", t: "Направи отметка на сайт", h: "Звездичката вдясно от адресното поле." },
+    { id: "zoom", t: "Увеличи образа", h: "Бутонът с лупа и плюс или клавишите Ctrl и +." },
+    { id: "cyr", t: "Отвори адрес на кирилица: " + LIB, h: "Превключи клавиатурата на кирилица за „библиотека“ и „бг“." },
+    { id: "safe", t: "Отвори " + GAMES + " и реагирай безопасно", h: "Помисли за правилата за безопасност." }
+  ];
+
+  const B = { hist: [""], idx: 0, zoom: 100, marks: [], done: new Set(), popupOpen: false };
+  $("mTotal").textContent = MISSIONS.length;
+
+  function normalize(raw) {
+    let s = raw.trim().toLowerCase();
+    s = s.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+    if (s && !s.startsWith("www.") && SITES["www." + s.split("/")[0]] !== undefined) s = "www." + s;
+    return s;
+  }
+
+  function complete(id, html) {
+    if (B.done.has(id)) return;
+    B.done.add(id);
+    const m = MISSIONS.find((x) => x.id === id);
+    msg("ok", html || '<i class="fas fa-star" style="color:#E8A33D"></i> Мисията „' + esc(m.t) + "“ е изпълнена!");
+    renderMissions();
+  }
+  function msg(kind, html) { $("mMsg").innerHTML = html ? '<div class="sim-msg ' + kind + '">' + html + "</div>" : ""; }
+
+  function renderMissions() {
+    const firstOpen = MISSIONS.findIndex((m) => !B.done.has(m.id));
+    $("mList").innerHTML = MISSIONS.map((m, i) => {
+      const d = B.done.has(m.id);
+      return '<div class="mission' + (d ? " done" : "") + (i === firstOpen ? " cur" : "") + '"><span class="mi">' + (d ? '<i class="fas fa-check"></i>' : i + 1) +
+        '</span><span class="mt">' + esc(m.t) + (i === firstOpen ? "<small>" + esc(m.h) + "</small>" : "") + "</span></div>";
+    }).join("");
+    $("mDone").textContent = B.done.size;
+    $("mBar").style.width = (B.done.size / MISSIONS.length * 100) + "%";
+    if (B.done.size === MISSIONS.length) msg("ok", "🎉 Браво! Изпълни всички мисии. Вече можеш да работиш с браузър!");
+  }
+
+  function render(loading) {
+    const url = B.hist[B.idx];
+    const site = SITES[url];
+    let page;
+    if (site) page = site();
+    else if (/\s/.test(url)) page = { title: "Грешен адрес", html: '<div class="err-page"><i class="fas fa-circle-exclamation"></i><h4>В адреса има интервал</h4><p>Уеб адресът е поредица от знаци <b>без интервали</b>. Провери как си го написал.</p></div>' };
+    else page = { title: "Няма такава страница", html: '<div class="err-page"><i class="fas fa-plug-circle-xmark"></i><h4>Страницата не може да бъде намерена</h4><p>Провери дали адресът <b>' + esc(url) + "</b> е написан правилно. Всяка буква и точка са важни.</p><p style=\"font-size:13px\">В тренажора има сайтове: " + [ZOO, WEATHER, LIB, GAMES].join(", ") + "</p></div>" };
+
+    $("bTab").querySelector("span").textContent = page.title;
+    $("bAddr").value = url;
+    $("bAddrIco").className = url ? "fas fa-lock" : "fas fa-magnifying-glass";
+    $("bBack").disabled = B.idx === 0;
+    $("bFwd").disabled = B.idx >= B.hist.length - 1;
+    updateStar();
+    const p = $("bPage");
+    p.innerHTML = page.html;
+    applyZoom();
+    $("bView").scrollTop = 0;
+    $("bStatus").innerHTML = "&nbsp;";
+    B.popupOpen = false;
+    if (page.popup) showPopup();
+    if (loading) {
+      const l = document.createElement("div");
+      l.className = "b-loading"; l.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      $("bView").appendChild(l);
+      setTimeout(() => l.remove(), 450);
+    }
+    // проверки на мисиите, които зависят от отворената страница
+    if (url === ZOO) complete("open");
+    if (url === ZOO + "/zhivotni") complete("link");
+    if (url.startsWith(ZOO + "/zhivotni/")) complete("animal");
+    if (url === LIB) complete("cyr");
+  }
+
+  function showPopup() {
+    B.popupOpen = true;
+    const back = document.createElement("div");
+    back.className = "popup-back"; back.id = "popup";
+    back.innerHTML = '<div class="popup" role="dialog" aria-label="Изскачащо съобщение">' +
+      '<button class="x" type="button" id="popX" aria-label="Затвори" title="Затвори"><i class="fas fa-xmark"></i></button>' +
+      '<div style="font-size:42px">🎁📱</div><div class="big">ЧЕСТИТО! Ти спечели нов телефон!</div>' +
+      "<p>За да го получиш, напиши своето име, адреса си и телефона на мама.</p>" +
+      '<button class="grab" type="button" id="popGrab">Въведи данните и вземи наградата!</button></div>';
+    $("bView").appendChild(back);
+    $("popX").addEventListener("click", () => {
+      back.remove(); B.popupOpen = false;
+      const t = '<i class="fas fa-shield-halved"></i> Правилно! Затвори съобщението, без да пишеш лични данни. Такива „награди“ са капан, за да ти вземат личната информация.';
+      if (B.done.has("safe")) msg("ok", t); else complete("safe", t);
+    });
+    $("popGrab").addEventListener("click", () => {
+      msg("no", '<i class="fas fa-triangle-exclamation"></i> Стоп! Никога не давай име, адрес и телефон в интернет. Никой не раздава телефони просто така. Затвори съобщението с <b>✕</b>.');
+    });
+  }
+
+  function go(url) {
+    B.hist = B.hist.slice(0, B.idx + 1);
+    B.hist.push(url); B.idx++;
+    render(true);
+  }
+
+  $("bBar").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const raw = $("bAddr").value;
+    if (!raw.trim()) return;
+    if (/\S\s+\S/.test(raw.trim())) { go(raw.trim()); return; }
+    go(normalize(raw));
+    $("bAddr").blur();
+  });
+  $("bBack").addEventListener("click", () => {
+    if (B.idx === 0) return;
+    B.idx--; render(true);
+    if (B.done.has("animal")) complete("back");
+  });
+  $("bFwd").addEventListener("click", () => {
+    if (B.idx >= B.hist.length - 1) return;
+    B.idx++; render(true);
+    if (B.done.has("back")) complete("fwd");
+  });
+  $("bReload").addEventListener("click", () => {
+    render(true);
+    if (B.hist[B.idx] === WEATHER) complete("reload");
+    else if (!B.done.has("reload")) msg("no", "Страницата се презареди. За мисията отвори <b>" + WEATHER + "</b> и натисни Презареди там.");
+  });
+  $("bStar").addEventListener("click", () => {
+    const url = B.hist[B.idx];
+    if (!SITES[url] || !url) return;
+    const i = B.marks.indexOf(url);
+    if (i >= 0) B.marks.splice(i, 1); else { B.marks.push(url); complete("star"); }
+    renderMarks(); updateStar();
+  });
+  function updateStar() {
+    const url = B.hist[B.idx], starred = B.marks.includes(url);
+    $("bStar").classList.toggle("on", starred);
+    $("bStar").innerHTML = '<i class="' + (starred ? "fas" : "far") + ' fa-star"></i>';
+    $("bStar").disabled = !SITES[url] || url === "";
+  }
+  function renderMarks() {
+    if (!B.marks.length) { $("bMarks").innerHTML = "<span>Отметките ще се появят тук</span>"; return; }
+    $("bMarks").innerHTML = B.marks.map((u) => '<button type="button" data-href="' + esc(u) + '"><i class="fas fa-star"></i>' + esc(SITES[u]().title.split(" – ")[0]) + "</button>").join("");
+  }
+  $("bMarks").addEventListener("click", (e) => { const b = e.target.closest("button[data-href]"); if (b) go(b.dataset.href); });
+
+  function applyZoom() {
+    const z = B.zoom / 100;
+    const p = $("bPage");
+    p.style.transform = "scale(" + z + ")";
+    p.style.width = (100 / z) + "%";
+    $("bZoom").textContent = B.zoom + "%";
+  }
+  function zoom(d) {
+    B.zoom = Math.max(50, Math.min(200, B.zoom + d));
+    applyZoom();
+    if (d > 0 && B.zoom > 100) complete("zoom");
+  }
+  $("bZoomIn").addEventListener("click", () => zoom(10));
+  $("bZoomOut").addEventListener("click", () => zoom(-10));
+  // Ctrl и + / Ctrl и − увеличават само учебния браузър, когато фокусът е в него
+  $("browser").addEventListener("keydown", (e) => {
+    if (!e.ctrlKey && !e.metaKey) return;
+    if (e.key === "+" || e.key === "=" || e.code === "NumpadAdd") { e.preventDefault(); zoom(10); }
+    else if (e.key === "-" || e.code === "NumpadSubtract") { e.preventDefault(); zoom(-10); }
+  });
+  $("bView").tabIndex = 0;
+
+  $("bPage").addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-href]");
+    if (!a) return;
+    e.preventDefault();
+    go(a.dataset.href);
+  });
+  $("bPage").addEventListener("mouseover", (e) => {
+    const a = e.target.closest("a[data-href]");
+    $("bStatus").textContent = a ? a.dataset.href : " ";
+  });
+  $("bPage").addEventListener("mouseleave", () => { $("bStatus").innerHTML = "&nbsp;"; });
+
+  $("mReset").addEventListener("click", () => {
+    B.hist = [""]; B.idx = 0; B.zoom = 100; B.marks = []; B.done.clear();
+    msg("", ""); renderMarks(); renderMissions(); render(false);
+  });
+
+  renderMissions(); render(false);
+
+  /* =====================================================================
+     УПРАЖНЕНИЕ 1: сортиране (плъзгане с Pointer Events + щракване)
+     ===================================================================== */
+  const SORT = [
+    { t: "Казвам на родител, когато видя нещо, което ме плаши.", a: "safe", w: "Възрастните могат да помогнат – това е правилното поведение." },
+    { t: "Пиша вежливо в чата на класа.", a: "safe", w: "Вежливостта и уважението към другите са правило и в интернет." },
+    { t: "Питам родител, преди да изтегля игра.", a: "safe", w: "Програмите от интернет може да съдържат вируси." },
+    { t: "Изтривам писмо от непознат подател, без да го отварям.", a: "safe", w: "Писмата от непознати може да съдържат вирус." },
+    { t: "Не казвам паролата си дори на приятел.", a: "safe", w: "Паролата е само твоя (и на родителите ти)." },
+    { t: "Пиша домашния си адрес в коментар.", a: "danger", w: "Адресът е лична информация – не я споделяй." },
+    { t: "Изпращам снимка на семейството си на непознат.", a: "danger", w: "Не изпращай свои снимки или снимки на близките си." },
+    { t: "Отивам на среща с „приятел“, когото познавам само от интернет.", a: "danger", w: "Отсреща може да е друг човек, а не този, за когото се представя." },
+    { t: "Отговарям с обида на обидно съобщение.", a: "danger", w: "Не отговаряй – кажи на родителите си." },
+    { t: "Казвам телефона на мама в онлайн игра.", a: "danger", w: "Телефонът на родителите също е лична информация." }
+  ];
+  let sortSel = null;
+  function sortInit() {
+    $("sortPool").innerHTML = "";
+    document.querySelectorAll(".bin").forEach((b) => b.querySelectorAll(".dcard").forEach((c) => c.remove()));
+    $("sortResult").innerHTML = "";
+    sortSel = null;
+    shuffle(SORT.map((s, i) => i)).forEach((i) => {
+      const c = document.createElement("div");
+      c.className = "dcard"; c.dataset.i = i; c.tabIndex = 0;
+      c.setAttribute("role", "button");
+      c.innerHTML = '<i class="fas fa-grip-vertical grip"></i><span>' + esc(SORT[i].t) + "</span>";
+      $("sortPool").appendChild(c);
+    });
+  }
+  function placeCard(card, zone) {
+    card.classList.remove("sel", "right", "wrong");
+    const why = card.querySelector(".why"); if (why) why.remove();
+    zone.appendChild(card);
+    $("sortResult").innerHTML = "";
+  }
+  function zoneAt(x, y) {
+    const el = document.elementFromPoint(x, y);
+    return el ? el.closest(".bin, #sortPool") : null;
+  }
+  // плъзгане: работи с мишка и с пръст
+  let drag = null;
+  $("exSort").addEventListener("pointerdown", (e) => {
+    const card = e.target.closest(".dcard");
+    if (!card || e.button > 0) return;
+    drag = { card, x0: e.clientX, y0: e.clientY, moved: false, ghost: null, id: e.pointerId };
+  });
+  window.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 6) return;
+    if (!drag.moved) {
+      drag.moved = true;
+      const r = drag.card.getBoundingClientRect();
+      drag.dx = e.clientX - r.left; drag.dy = e.clientY - r.top;
+      drag.ghost = drag.card.cloneNode(true);
+      drag.ghost.classList.add("ghost"); drag.ghost.style.width = r.width + "px";
+      document.body.appendChild(drag.ghost);
+      drag.card.classList.add("placeholder");
+    }
+    drag.ghost.style.left = (e.clientX - drag.dx) + "px";
+    drag.ghost.style.top = (e.clientY - drag.dy) + "px";
+    document.querySelectorAll(".bin").forEach((b) => b.classList.remove("over"));
+    const z = zoneAt(e.clientX, e.clientY);
+    if (z && z.classList.contains("bin")) z.classList.add("over");
+  });
+  function endDrag(e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    const d = drag; drag = null;
+    document.querySelectorAll(".bin").forEach((b) => b.classList.remove("over"));
+    if (!d.moved) {
+      // щракване: избор на карта
+      if (sortSel === d.card) { d.card.classList.remove("sel"); sortSel = null; return; }
+      if (sortSel) sortSel.classList.remove("sel");
+      sortSel = d.card; d.card.classList.add("sel");
+      return;
+    }
+    d.ghost.remove(); d.card.classList.remove("placeholder");
+    const z = zoneAt(e.clientX, e.clientY);
+    if (z) placeCard(d.card, z);
+  }
+  window.addEventListener("pointerup", endDrag);
+  window.addEventListener("pointercancel", (e) => { if (drag && drag.ghost) { drag.ghost.remove(); drag.card.classList.remove("placeholder"); } drag = null; });
+  // щракване върху кутия, след като е избрана карта
+  document.querySelectorAll(".bin, #sortPool").forEach((z) => z.addEventListener("click", (e) => {
+    if (!sortSel || e.target.closest(".dcard")) return;
+    placeCard(sortSel, z); sortSel = null;
+  }));
+  $("exSort").addEventListener("keydown", (e) => {
+    const card = e.target.closest(".dcard");
+    if (!card) return;
+    if (e.key === "ArrowLeft") { placeCard(card, document.querySelector(".bin.safe")); card.focus(); }
+    if (e.key === "ArrowRight") { placeCard(card, document.querySelector(".bin.danger")); card.focus(); }
+  });
+  $("sortCheck").addEventListener("click", () => {
+    let ok = 0, placed = 0;
+    document.querySelectorAll(".bin").forEach((b) => b.querySelectorAll(".dcard").forEach((c) => {
+      placed++;
+      const s = SORT[+c.dataset.i], good = s.a === b.dataset.bin;
+      c.classList.toggle("right", good); c.classList.toggle("wrong", !good);
+      let why = c.querySelector(".why");
+      if (!good && !why) { why = document.createElement("small"); why.className = "why"; why.textContent = s.w; c.querySelector("span").appendChild(why); }
+      if (good) ok++;
+    }));
+    const left = SORT.length - placed;
+    $("sortResult").innerHTML = '<div class="result ' + (ok === SORT.length ? "ok" : "no") + '">' +
+      (ok === SORT.length ? "🎉 Отлично! Всички 10 карти са на правилното място." :
+        "Верни: " + ok + " от " + SORT.length + "." + (left ? " Остават още " + left + " карти за подреждане." : "") + " Премести червените карти в другата кутия.") + "</div>";
+  });
+  $("sortReset").addEventListener("click", sortInit);
+  sortInit();
+
+  /* =====================================================================
+     УПРАЖНЕНИЕ 2: попълни пропуските
+     ===================================================================== */
+  const FILL = [
+    "", "Интернет", " е мрежа от компютърни мрежи. Програмата, с която разглеждаме уеб сайтове, се нарича ",
+    "браузър", ". Адреса на сайта пишем в ", "адресното поле", " и натискаме Enter. Всеки ресурс в интернет има уникален ",
+    "уеб адрес", ", който не съдържа ", "интервали", ". Съвкупност от уеб страници е ", "уеб сайт",
+    ". Текст или картинка, при щракване върху които се зарежда друг документ, е ", "хипервръзка",
+    ". Над нея показалецът на мишката се превръща в ", "ръчичка", ". С бутона ", "Back",
+    " се връщаме към предишната страница, а с бутона ", "Refresh", " я презареждаме."
+  ];
+  const ANSWERS = FILL.filter((x, i) => i % 2 === 1);
+  const EXTRA = ["принтер", "клавиатура"];
+  let fillFocus = 0;
+  function fillInit() {
+    let h = "", bi = 0;
+    FILL.forEach((part, i) => {
+      if (i % 2 === 0) h += esc(part);
+      else { h += '<button type="button" class="blank" data-b="' + bi + '" aria-label="Празно място ' + (bi + 1) + '">&nbsp;</button>'; bi++; }
+    });
+    $("fillText").innerHTML = h;
+    $("fillBank").innerHTML = shuffle(ANSWERS.concat(EXTRA)).map((w) => '<button type="button" class="word" data-w="' + esc(w) + '">' + esc(w) + "</button>").join("");
+    $("fillResult").innerHTML = "";
+    setFillFocus(0);
+  }
+  function blanks() { return Array.from($("fillText").querySelectorAll(".blank")); }
+  function setFillFocus(i) {
+    fillFocus = i;
+    blanks().forEach((b, j) => b.classList.toggle("focus", j === i));
+  }
+  function nextEmpty(from) {
+    const bs = blanks();
+    for (let k = 0; k < bs.length; k++) { const j = (from + k) % bs.length; if (!bs[j].dataset.w) return j; }
+    return -1;
+  }
+  $("fillBank").addEventListener("click", (e) => {
+    const w = e.target.closest(".word"); if (!w) return;
+    let i = fillFocus;
+    if (i < 0 || blanks()[i].dataset.w) i = nextEmpty(Math.max(i, 0));
+    if (i < 0) return;
+    const b = blanks()[i];
+    b.dataset.w = w.dataset.w; b.textContent = w.dataset.w;
+    b.classList.remove("right", "wrong");
+    w.classList.add("used");
+    $("fillResult").innerHTML = "";
+    setFillFocus(nextEmpty(i + 1));
+  });
+  $("fillText").addEventListener("click", (e) => {
+    const b = e.target.closest(".blank"); if (!b) return;
+    if (b.dataset.w) {
+      const w = $("fillBank").querySelector('.word.used[data-w="' + CSS.escape(b.dataset.w) + '"]');
+      if (w) w.classList.remove("used");
+      delete b.dataset.w; b.innerHTML = "&nbsp;"; b.classList.remove("right", "wrong");
+    }
+    setFillFocus(+b.dataset.b);
+  });
+  $("fillCheck").addEventListener("click", () => {
+    let ok = 0, empty = 0;
+    blanks().forEach((b, i) => {
+      b.classList.remove("focus");
+      if (!b.dataset.w) { empty++; return; }
+      const good = b.dataset.w === ANSWERS[i];
+      b.classList.toggle("right", good); b.classList.toggle("wrong", !good);
+      if (good) ok++;
+    });
+    $("fillResult").innerHTML = '<div class="result ' + (ok === ANSWERS.length ? "ok" : "no") + '">' +
+      (ok === ANSWERS.length ? "🎉 Браво! Всички думи са на мястото си." : "Верни: " + ok + " от " + ANSWERS.length + "." + (empty ? " Има още " + empty + " празни места." : "") + " Щракни червените думи, за да ги върнеш, и опитай пак.") + "</div>";
+  });
+  $("fillReset").addEventListener("click", fillInit);
+  fillInit();
+
+  /* =====================================================================
+     УПРАЖНЕНИЕ 3: свързване
+     ===================================================================== */
+  const PAIRS = [
+    ["Интернет", "Мрежа от компютърни мрежи, която обхваща целия свят."],
+    ["Компютърна мрежа", "Група от свързани помежду си компютри, които обменят информация."],
+    ["Браузър", "Програма, с която разглеждаме уеб сайтове."],
+    ["Уеб адрес", "Уникален адрес на ресурс в интернет, без интервали."],
+    ["Хипервръзка", "Текст или картинка, която при щракване зарежда друг документ."],
+    ["Уеб сайт", "Съвкупност от уеб страници."],
+    ["Отметка (bookmark)", "Запомня сайт, който посещаваме често."]
+  ];
+  let mSel = null, mDone = 0;
+  function matchInit() {
+    mSel = null; mDone = 0;
+    $("matchTerms").innerHTML = shuffle(PAIRS.map((p, i) => i)).map((i) => '<button type="button" class="mbtn term" data-i="' + i + '">' + esc(PAIRS[i][0]) + "</button>").join("");
+    $("matchDefs").innerHTML = shuffle(PAIRS.map((p, i) => i)).map((i) => '<button type="button" class="mbtn def" data-i="' + i + '">' + esc(PAIRS[i][1]) + "</button>").join("");
+    $("matchResult").innerHTML = "";
+  }
+  $("exMatch").addEventListener("click", (e) => {
+    const b = e.target.closest(".mbtn"); if (!b || b.classList.contains("done")) return;
+    if (!mSel || mSel.classList.contains("term") === b.classList.contains("term")) {
+      if (mSel) mSel.classList.remove("sel");
+      mSel = b; b.classList.add("sel"); return;
+    }
+    if (mSel.dataset.i === b.dataset.i) {
+      mDone++;
+      [mSel, b].forEach((x) => { x.classList.remove("sel"); x.classList.add("done"); x.disabled = true; x.insertAdjacentHTML("afterbegin", '<span class="pair">' + mDone + "</span>"); });
+      mSel = null;
+      if (mDone === PAIRS.length) $("matchResult").innerHTML = '<div class="result ok">🎉 Чудесно! Свърза всички понятия.</div>';
+    } else {
+      const a = mSel; a.classList.remove("sel"); mSel = null;
+      [a, b].forEach((x) => { x.classList.remove("shake"); void x.offsetWidth; x.classList.add("shake"); });
+      setTimeout(() => [a, b].forEach((x) => x.classList.remove("shake")), 400);
+    }
+  });
+  $("matchReset").addEventListener("click", matchInit);
+  matchInit();
+
+  /* =====================================================================
+     ФЛАШ КАРТИ
+     ===================================================================== */
+  let CARDS = [
+    { i: "fa-globe", q: "Какво е интернет?", a: "Мрежа от компютърни мрежи, създадена, за да се предава информация на големи разстояния." },
+    { i: "fa-language", q: "От кои думи идва „интернет“?", a: "<i>International Network</i> – „международна мрежа“." },
+    { i: "fa-network-wired", q: "Какво е компютърна мрежа?", a: "Група от свързани помежду си компютри, които обменят информация." },
+    { i: "fa-clock-rotate-left", q: "Кога се е появил интернет?", a: "През 60-те години на 20-и век." },
+    { i: "fa-window-maximize", q: "Какво е браузър? Дай примери.", a: "Програма за разглеждане на уеб сайтове: Edge, Chrome, Firefox, Opera, Safari." },
+    { i: "fa-link", q: "Какво е уеб адрес?", a: "Уникалният адрес на ресурс в интернет. Пише се в адресното поле и няма интервали." },
+    { i: "fa-sitemap", q: "Какво е уеб сайт?", a: "Съвкупност от уеб страници с текст, картинки, звук и видео." },
+    { i: "fa-hand-pointer", q: "Какво е хипервръзка?", a: "Текст или обект, който при щракване зарежда друг документ. Над нея показалецът става „ръчичка“." },
+    { i: "fa-arrows-rotate", q: "Какво правят бутоните Back, Forward и Refresh?", a: "Back – назад, Forward – напред, Refresh – презарежда страницата." },
+    { i: "fa-star", q: "Какво е отметка (bookmark)?", a: "Запомнен сайт, който отваряме често, с едно щракване." },
+    { i: "fa-magnifying-glass-plus", q: "Как се увеличава образът в браузъра?", a: "С клавишите <span class=\"kbd\">Ctrl</span> и <span class=\"kbd\">+</span>." },
+    { i: "fa-shield-halved", q: "Каква информация не бива да даваш в интернет?", a: "Име, адрес, телефон, училище, снимки, данни на родителите." },
+    { i: "fa-person-chalkboard", q: "Какво правиш, ако видиш нещо, което те смущава?", a: "Казваш задължително на родител или учител." }
+  ];
+  let fcI = 0;
+  function fcRender() {
+    const c = CARDS[fcI];
+    $("fc").classList.remove("flipped");
+    $("fcFront").innerHTML = '<div style="display:grid;gap:12px;justify-items:center"><i class="fas ' + c.i + '"></i><b>' + esc(c.q) + "</b><small>Щракни, за да обърнеш</small></div>";
+    $("fcBack").innerHTML = "<div>" + c.a + "</div>";
+    $("fcCount").textContent = (fcI + 1) + " / " + CARDS.length;
+    $("fcDots").innerHTML = CARDS.map((x, i) => '<button type="button" class="' + (i === fcI ? "on" : "") + '" data-i="' + i + '" aria-label="Карта ' + (i + 1) + '"></button>').join("");
+  }
+  $("fc").addEventListener("click", () => $("fc").classList.toggle("flipped"));
+  $("fcPrev").addEventListener("click", () => { fcI = (fcI - 1 + CARDS.length) % CARDS.length; fcRender(); });
+  $("fcNext").addEventListener("click", () => { fcI = (fcI + 1) % CARDS.length; fcRender(); });
+  $("fcDots").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { fcI = +b.dataset.i; fcRender(); } });
+  $("fcShuffle").addEventListener("click", () => { CARDS = shuffle(CARDS); fcI = 0; fcRender(); });
+  fcRender();
+
+  /* =====================================================================
+     ТЕСТ (първият отговор е верният; при показване се разбъркват)
+     ===================================================================== */
+  const Q = [
+    { p: "Какво е интернет?", o: ["Мрежа от компютърни мрежи", "Програма за рисуване", "Един много голям компютър", "Вид принтер"], e: "Интернет свързва много компютърни мрежи по целия свят." },
+    { p: "От кои думи е съкращението „интернет“?", o: ["International Network", "Internal Net", "Interesting Network", "Inter Telephone"], e: "International Network означава „международна мрежа“." },
+    { p: "Кога се е появил интернет?", o: ["През 60-те години на 20-и век", "През 19-и век", "През 2010 г.", "През Средновековието"], e: "Интернет се е появил през 60-те години на 20-и век." },
+    { p: "Коя от тези програми е браузър?", o: ["Chrome", "Paint", "Word", "Калкулатор"], e: "Chrome е браузър, както и Edge, Firefox, Opera и Safari." },
+    { p: "Къде пишем адреса на сайт, който искаме да отворим?", o: ["В адресното поле на браузъра", "В Paint", "В лентата със задачи", "На работния плот"], e: "Адресното поле е текстовото поле най-горе в браузъра." },
+    { p: "Кой от тези уеб адреси е написан правилно?", o: ["www.zoopark.bg", "www.zoo park.bg", "www zoopark bg", "zoopark .bg"], e: "Уеб адресът е поредица от знаци без интервали." },
+    { p: "Какво е хипервръзка?", o: ["Текст или обект, при щракване върху който се зарежда друг документ", "Много бърза интернет връзка", "Кабелът към рутера", "Голям шрифт в текста"], e: "Хипервръзките ни „пренасят“ към друга страница, картинка, видео или файл." },
+    { p: "Как изглежда показалецът на мишката над хипервръзка?", o: ["Като „ръчичка“", "Като пясъчен часовник", "Като буква I", "Изчезва"], e: "Ръчичката подсказва, че там може да се щракне." },
+    { p: "Кой бутон ни връща към предишната страница?", o: ["Back (Назад)", "Forward (Напред)", "Refresh (Презареди)", "Bookmark (Отметка)"], e: "Back връща назад, Forward – напред, Refresh презарежда." },
+    { p: "Как се увеличава образът в браузъра?", o: ["Ctrl и +", "Ctrl и C", "Alt и F4", "Shift и Enter"], e: "Ctrl и + увеличава, Ctrl и − намалява." },
+    { p: "Какво е уеб сайт?", o: ["Съвкупност от уеб страници", "Една буква в адреса", "Програма за писане на писма", "Компютърна игра"], e: "Сайтът има много страници: „За нас“, „Новини“, „Контакти“ и др." },
+    { p: "Непознат в игра те пита на кое училище учиш. Какво правиш?", o: ["Не казвам и съобщавам на родител", "Казвам му, щом е любезен", "Казвам само името на класа", "Изпращам му снимка от училище"], e: "Училището е лична информация. Не я споделяй с непознати." },
+    { p: "Получаваш писмо от непознат подател с прикачен файл. Какво правиш?", o: ["Не го отварям", "Отварям файла веднага", "Препращам го на приятели", "Отговарям с личните си данни"], e: "Писмо от непознат може да съдържа вирус." },
+    { p: "Видиш снимка в интернет, която те притеснява. Какво трябва да направиш?", o: ["Да кажа на родител или учител", "Да я изпратя на приятел", "Да я запазя", "Да не казвам на никого"], e: "Задължително информирай родител или учител." }
+  ];
+  const LET = ["а", "б", "в", "г"];
+  let answered = 0, correct = 0;
+  $("total").textContent = Q.length;
+  function renderQuiz() {
+    answered = 0; correct = 0; updateScore();
+    $("final").hidden = true;
+    $("qs").innerHTML = "";
+    Q.forEach((q, qi) => {
+      const card = document.createElement("article");
+      card.className = "q";
+      const order = shuffle(q.o.map((t, k) => ({ t, ok: k === 0 })));
+      card.innerHTML = '<p class="qn">Въпрос ' + (qi + 1) + "</p>" +
+        '<p class="prompt">' + esc(q.p) + "</p>" +
+        '<div class="opts">' + order.map((o, k) => '<button type="button" class="opt" data-ok="' + (o.ok ? 1 : 0) + '"><span class="l">' + LET[k] + "</span><span>" + esc(o.t) + "</span></button>").join("") + "</div>" +
+        '<div class="fb-slot"></div>';
+      card.querySelectorAll(".opt").forEach((btn) => btn.addEventListener("click", () => answer(card, btn, q)));
+      $("qs").appendChild(card);
+    });
+  }
+  function answer(card, btn, q) {
+    const ok = btn.dataset.ok === "1";
+    card.querySelectorAll(".opt").forEach((b) => { b.disabled = true; if (b.dataset.ok === "1") b.classList.add("right"); });
+    if (!ok) btn.classList.add("wrong");
+    answered++; if (ok) correct++;
+    card.querySelector(".fb-slot").innerHTML = '<div class="fb ' + (ok ? "ok" : "no") + '"><strong>' + (ok ? "Вярно!" : "Не точно.") + "</strong> " + esc(q.e) + "</div>";
+    updateScore();
+  }
+  function updateScore() {
+    $("answered").textContent = answered;
+    $("correct").textContent = correct;
+    $("barFill").style.width = (answered / Q.length * 100) + "%";
+    if (answered === Q.length) {
+      const pct = correct / Q.length;
+      $("final").hidden = false;
+      $("final").textContent = "Резултат: " + correct + " от " + Q.length + ". " +
+        (pct >= 0.85 ? "Отлично! Ти си умен и безопасен потребител на интернет." : pct >= 0.6 ? "Добре! Прочети обясненията при грешните отговори." : "Прегледай урока и флаш картите и опитай пак.");
+    }
+  }
+  $("resetQuiz").addEventListener("click", () => { renderQuiz(); $("panel-quiz").scrollIntoView({ block: "start" }); });
+  renderQuiz();
+})();
+    </script>
+<!-- fullscreen-toggle: мини бутон горе вдясно за цял екран (виж README). В Moodle iframe-ът трябва да има allowfullscreen, иначе бутонът се скрива сам. -->
+<style>
+#fs-toggle{position:fixed;top:10px;right:10px;z-index:2147483000;width:34px;height:34px;padding:0;border:0;border-radius:8px;background:rgba(15,23,42,.55);color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;opacity:.75;transition:opacity .2s,background .2s}
+#fs-toggle:hover,#fs-toggle:focus-visible{opacity:1;background:rgba(15,23,42,.9)}
+#fs-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<button id="fs-toggle" type="button" title="Цял екран" aria-label="Цял екран"></button>
+<script>
+(function () {
+    var btn = document.getElementById('fs-toggle');
+    var root = document.documentElement;
+    var enter = root.requestFullscreen || root.webkitRequestFullscreen;
+    var exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!btn || !enter || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;
+    var IN = '<svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>';
+    var OUT = '<svg viewBox="0 0 24 24"><path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"/></svg>';
+    function active() { return document.fullscreenElement || document.webkitFullscreenElement; }
+    function sync() {
+        btn.innerHTML = active() ? OUT : IN;
+        var t = active() ? 'Изход от цял екран' : 'Цял екран';
+        btn.title = t; btn.setAttribute('aria-label', t);
+    }
+    btn.addEventListener('click', function () {
+        try { active() ? exit.call(document) : enter.call(root); } catch (e) {}
+    });
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    sync();
+    btn.style.display = 'inline-flex';
+})();
+</script>
+</body>
+</html>

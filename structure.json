@@ -155,6 +155,11 @@
     "path": "Lessons/KMIT/5 klass/05 Файлова структура на организация на данните.html"
   },
   {
+    "name": "06 Използване на интернет в ежедневието",
+    "type": "file",
+    "path": "Lessons/KMIT/5 klass/06 Използване на интернет в ежедневието.html"
+  },
+  {
     "name": "Other",
     "type": "folder",
     "path": "Lessons/Other/"
