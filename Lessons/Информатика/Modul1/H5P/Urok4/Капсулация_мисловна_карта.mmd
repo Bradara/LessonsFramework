@@ -1,0 +1,65 @@
+---
+config:
+  layout: tidy-tree
+  theme: base
+  fontFamily: "MapFont, Calibri, Carlito, sans-serif"
+  themeVariables:
+    fontFamily: "MapFont, Calibri, Carlito, sans-serif"
+    fontSize: 15px
+    primaryColor: "#F2F4F7"
+    primaryTextColor: "#1B2230"
+    cScale0: "#E8A33D"
+    cScaleLabel0: "#1B2230"
+    cScale1: "#2A9D8F"
+    cScaleLabel1: "#FFFFFF"
+    cScale2: "#7FA7D9"
+    cScaleLabel2: "#1B2230"
+    cScale3: "#D1495B"
+    cScaleLabel3: "#FFFFFF"
+    cScale4: "#9CCB86"
+    cScaleLabel4: "#1B2230"
+    cScale5: "#B49FDA"
+    cScaleLabel5: "#1B2230"
+    cScale6: "#F08A5D"
+    cScaleLabel6: "#1B2230"
+    cScale7: "#8A97A8"
+    cScaleLabel7: "#1B2230"
+---
+mindmap
+  root(("Капсулация"))
+    a["Какво е капсулация"]
+      a1["Обединява кода и данните в едно цяло"]
+      a2["Скрива детайлите"]
+      a3["Показва публичен интерфейс"]
+      a4["Контрол на достъпа и валидация"]
+    b["Ползи"]
+      b1["Промените остават локални"]
+      b2["Намалява комплексността"]
+      b3["Валидно състояние на обекта"]
+    c["Модификатори за достъп"]
+      c1["private – само в класа"]
+      c2["public – без ограничения"]
+      c3["internal – в целия проект"]
+      c4["protected – класът и наследниците"]
+      c5["Подразбиране: членове private, клас internal"]
+    d["Полета и свойства"]
+      d1["Полетата са private"]
+      d2["Свойствата са public"]
+      d3["get чете, set записва"]
+      d4["private set – променя само класът"]
+      d5["override ToString()"]
+    e["Изключения"]
+      e1["Грешки по време на изпълнение"]
+      e2["throw – хвърля изключение"]
+      e3["Без catch програмата спира"]
+      e4["try / catch – хваща и реагира"]
+    f["Валидация"]
+      f1["В setter-ите"]
+      f2["Невалидни данни → ArgumentException"]
+      f3["Конструкторът ползва свойствата"]
+      f4["Правила: име ≥ 3 символа, възраст ≥ 1, заплата ≥ 460"]
+    g["Стълбове на ООП"]
+      g1["Капсулация"]
+      g2["Абстракция"]
+      g3["Полиморфизъм"]
+      g4["Наследяване"]
